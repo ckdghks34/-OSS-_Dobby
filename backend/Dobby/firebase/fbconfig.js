@@ -1,4 +1,4 @@
-const admin = rqeuire("firebase-admin");
+const admin = require("firebase-admin");
 
 const serviceAccount = require("./dobby-1c071-firebase-adminsdk-bfmst-7a00fcf92e.json");
 
