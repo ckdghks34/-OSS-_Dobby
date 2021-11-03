@@ -10,7 +10,7 @@ RUN npm install
 
 COPY . .
 
-COPY ../../../../../etc/letsencrypt/archive/k5d105.p.ssafy.io /app
+COPY ../../../../../../etc/letsencrypt/archive/k5d105.p.ssafy.io /app
 
 EXPOSE 3030
 
