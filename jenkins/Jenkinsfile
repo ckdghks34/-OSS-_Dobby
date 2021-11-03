@@ -26,8 +26,8 @@ pipeline {
 		stage('Docker build') {
 			agent any
 			steps {
-				sh 'docker build -t dobbybe:latest "/var/jenkins_home/S05P31D105/backend/Dobby"'
-				sh 'docker build -t dobbyfe:latest "/var/jenkins_home/S05P31D105/frontend/vue3"'
+				sh 'docker build -t dobbyfe:latest "/var/jenkins_home/workspace/Dobby/frontend/vue3"'
+				sh 'docker build -t dobbybe:latest "/var/jenkins_home/workspace/Dobby/backend/Dobby"'
 			}
 		}
 		stage('Docker run') {
