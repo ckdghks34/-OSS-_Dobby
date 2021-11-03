@@ -1,8 +1,6 @@
 const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 const { signInWithEmailAndPassword } = require("firebase/auth");
 
-const saltRounds = 10;
-
 /**
  * 회원가입
  */
