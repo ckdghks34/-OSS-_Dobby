@@ -1,102 +1,85 @@
-var database = require("./../../firebase/fbconfig");
-var bcrypt = require("bcrypt-nodejs");
-const { query } = require("express");
+const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
+const { signInWithEmailAndPassword } = require("firebase/auth");
 
 const saltRounds = 10;
-
-/**
- * 회원가입 필수 데이터 검사
- * @param {Object} data - Request User Data
- * @returns
- */
-function checkValidJoinData(data) {
-  var valid = true;
-
-  Object.keys(data).forEach((value) => {
-    if (value != "address") {
-      if (data[value] == "") valid = false;
-    }
-  });
-
-  return valid;
-}
-
-/**
- * 회원 비밀번호 Hasing
- * @param {String} data
- * @returns
- */
-function hasingPassword(data) {
-  var salt = bcrypt.genSaltSync(saltRounds);
-
-  return bcrypt.hashSync(data, salt);
-}
 
 /**
  * 회원가입
  */
 async function signUp(req, res, next) {
-  const docRef = database.collection("users");
+  var phone = "+82" + req.body.phone.substring(1);
+  adminauth
+    .createUser({
+      email: req.body.email,
+      phoneNumber: phone,
+      password: req.body.password,
+      displayName: req.body.name,
+    })
+    .then((user) => {
+      const data = {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName,
+        nickname: req.body.nickname,
+        address: req.body.address,
+        phone: user.phoneNumber,
+      };
 
-  var salt = bcrypt.genSaltSync(saltRounds);
-  var encodingPW = bcrypt.hashSync(req.body.password, salt);
+      const docRef = admin.collection("users").doc(user.uid);
+      docRef.set(data);
 
-  const data = req.body;
-
-  if (checkValidJoinData(data)) {
-    data.password = hasingPassword(data);
-    await docRef.add(data);
-
-    return res.json({
-      msg: "회원가입 성공!",
-      user: data,
-      valid: true,
+      console.log("회원가입 성공");
+      return res.json({
+        msg: "회원가입 성공!",
+        user: data,
+        valid: true,
+      });
+    })
+    .catch((error) => {
+      console.log("회원가입 실패");
+      console.log("Error creating new user : ", error);
+      return res.status(401).json({
+        msg: "가입에 문제가 발생하였습니다.",
+      });
     });
-  } else {
-    return res.status(401).json({
-      msg: "입력되지 않은 정보가 있습니다.",
-      valid: false,
-    });
-  }
 }
 
 /**
  * 로그인
  */
 async function login(req, res, next) {
-  const docRef = database.collection("users");
-  const querydata = await docRef.where("id", "==", req.body.id).get();
+  signInWithEmailAndPassword(auth, req.body.email, req.body.password)
+    .then(async (userCredential) => {
+      const uid = userCredential.user.uid;
+      const doc = await admin.collection("users").doc(uid).get();
 
-  if (querydata.empty) {
-    return res.status(401).json({
-      error: "가입된 아이디가 없습니다.",
-    });
-  } else {
-    var data = [];
-
-    querydata.forEach((doc) => {
-      data = doc.data();
-    });
-
-    if (bcrypt.compareSync(req.body.password, data.password)) {
+      const user = doc.data();
+      console.log("로그인 성공");
       return res.json({
-        msg: "로그인 성공",
-        data: data,
+        msg: "성공",
+        user: user,
+        token: userCredential.user.stsTokenManager,
       });
-    } else {
+    })
+    .catch((error) => {
+      console.log("login error : " + error);
+
       return res.status(401).json({
-        error: "비밀번호가 틀렸습니다.",
+        error: "로그인 실패",
       });
-    }
-  }
+    });
 }
 
 /**
  * 아이디 찾기
  */
 async function findID(req, res, next) {
-  const docRef = database.collection("users");
-  const querydata = await docRef.where("email", "==", req.body.email).get();
+  var phone = "+82" + req.body.phone.substring(1);
+  const docRef = admin.collection("users");
+  const querydata = await docRef
+    .where("name", "==", req.body.name)
+    .where("phone", "==", phone)
+    .get();
 
   if (querydata.empty) {
     return res.status(401).json({
@@ -110,7 +93,7 @@ async function findID(req, res, next) {
     });
 
     return res.json({
-      id: data.id,
+      id: data.email,
     });
   }
 }
@@ -119,10 +102,11 @@ async function findID(req, res, next) {
  * 비밀번호 찾기
  */
 async function findPW(req, res, next) {
-  const docRef = database.collection("users");
+  var phone = "+82" + req.body.phone.substring(1);
+  const docRef = admin.collection("users");
   const querydata = await docRef
-    .where("id", "==", req.body.id)
     .where("email", "==", req.body.email)
+    .where("phone", "==", phone)
     .get();
 
   if (querydata.empty) {
@@ -138,9 +122,8 @@ async function findPW(req, res, next) {
     });
 
     return res.json({
-      id: data.id,
-      vaild: true,
       email: data.email,
+      valid: true,
     });
   }
 }
@@ -149,32 +132,29 @@ async function findPW(req, res, next) {
  * 비민번호 변경
  */
 async function changePW(req, res, next) {
-  const docRef = database.collection("users");
-  const querydata = await docRef.where("id", "==", req.body.id).get();
-
-  var salt = bcrypt.genSaltSync(saltRounds);
-  var pw = bcrypt.hashSync(req.body.password, salt);
-
-  var uid = "";
-  var data = [];
-  querydata.forEach((doc) => {
-    dataid = doc.id;
-    data = doc.data();
-  });
-
-  data.password = pw;
-  database.collection("users").doc(uid).set(data);
-
-  return res.json({
-    msg: "비밀번호가 변경 되었습니다.",
-  });
+  adminauth
+    .updateUser(req.body.uid, {
+      password: req.body.password,
+    })
+    .then((user) => {
+      console.log(user.uid + user.email + user.displayName + "비밀번호 변경 성공");
+      res.json({
+        msg: "비밀번호가 변경 되었습니다.",
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(401).json({
+        error: "비밀번호 변경 실패",
+      });
+    });
 }
 
 /**
  * 아이디 중복 체크
  */
 async function checkDuplicateID(req, res, next) {
-  const docRef = database.collection("users");
+  const docRef = admin.collection("users");
   const querydata = await docRef.where("id", "==", req.query.id).get();
 
   if (querydata.empty) {
@@ -194,10 +174,8 @@ async function checkDuplicateID(req, res, next) {
  * 닉네임 중복 체크
  */
 async function checkDuplicateNickname(req, res, next) {
-  const docRef = database.collection("users");
-  const querydata = await docRef
-    .where("nickname", "==", req.query.nickname)
-    .get();
+  const docRef = admin.collection("users");
+  const querydata = await docRef.where("nickname", "==", req.query.nickname).get();
 
   if (querydata.empty) {
     return res.json({
@@ -216,7 +194,7 @@ async function checkDuplicateNickname(req, res, next) {
  * 이메일 중복 체크
  */
 async function checkDuplicateEmail(req, res, next) {
-  const docRef = database.collection("users");
+  const docRef = admin.collection("users");
   const querydata = await docRef.where("email", "==", req.query.email).get();
 
   if (querydata.empty) {
@@ -236,28 +214,51 @@ async function checkDuplicateEmail(req, res, next) {
  * 회원탈퇴
  */
 async function withdrawUser(req, res, next) {
-  const docRef = database.collection("users");
-  const querydata = await docRef.where("id", "==", req.body.id).get();
+  const uid = req.body.uid;
+  adminauth
+    .deleteUser(uid)
+    .then(() => {
+      admin.collection("users").doc(uid).delete();
 
-  if (querydata.empty) {
-    return res.status(401).json({
-      error: "등록된 회원 정보가 없습니다.",
-      withdraw: false,
+      console.log("회원 탈퇴 성공!");
+      return res.json({
+        msg: "회원 탈퇴 되었습니다.",
+        withdraw: true,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(401).json({
+        msg: "등록된 회원정보가 없습니다.",
+        withdraw: false,
+      });
     });
-  } else {
-    var uid = "";
+}
 
-    querydata.forEach((doc) => {
-      uid = doc.id;
-    });
-
-    docRef.doc(uid).delete();
-
-    return res.json({
-      msg: "회원 탈퇴 되었습니다.",
-      withdraw: true,
-    });
-  }
+async function authSignout(req, res, next) {
+  var idToken = req.body.idToken;
+  adminauth.verifyIdToken(idToken).then((decodedToken) => {
+    const uid = decodedToken.uid;
+    console.log("uid : " + uid);
+    adminauth
+      .revokeRefreshTokens(uid)
+      .then((revokeRes) => {
+        console.log("토큰 리브 성공");
+        console.log(revokeRes);
+        return res.json({
+          msg: "로그아웃 성공!",
+          valid: true,
+        });
+      })
+      .catch((error) => {
+        console.log("토큰 리브 실패");
+        console.log(error);
+        res.status(401).json({
+          msg: "로그아웃 실패!",
+          valid: false,
+        });
+      });
+  });
 }
 
 module.exports = {
@@ -270,4 +271,6 @@ module.exports = {
   checkDuplicateID,
   checkDuplicateNickname,
   withdrawUser,
+  authSignout,
 };
+// firebase authen

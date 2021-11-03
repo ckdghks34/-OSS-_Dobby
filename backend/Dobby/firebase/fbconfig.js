@@ -1,28 +1,28 @@
-const admin = require("firebase-admin");
-
-const serviceAccount = require("./dobby-1c071-firebase-adminsdk-bfmst-7a00fcf92e.json");
+const firebase_admin = require("firebase-admin");
+const firebase = require("firebase/app");
+const firebaseauth = require("firebase/auth");
+const serviceAccount = require("./dobby-eba4c-firebase-adminsdk-voed8-afd1eeb458.json");
 
 const firebaseConfig = {
-  // apiKey: "AIzaSyCdGn3Zl8JA9rkO5nHVW05pnWlVyG5nM64",
-  // authDomain: "dobby-1c071.firebaseapp.com",
-  // projectId: "dobby-1c071",
-  // storageBucket: "dobby-1c071.appspot.com",
-  // messagingSenderId: "317541903976",
-  // appId: "1:317541903976:web:9d627cf0c6c909524a55dd",
-  // measurementId: "G-6TZ41VKCX1",
-  // databaseURL: "https://dobby-1c071.firebaseio.com",
-  apiKey: process.env.apiKey,
-  authDomain: process.env.authDomain,
-  projectId: process.env.projectId,
-  storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId,
-  appId: process.env.appId,
-  measurementId: process.env.measurementId,
-  databaseURL: process.env.databaseURL,
-  credential: admin.credential.cert(serviceAccount),
+  apiKey: "AIzaSyDqARHqN5dQAk_JKYCvRlO6O7VyWzZQb0w",
+  authDomain: "dobby-eba4c.firebaseapp.com",
+  projectId: "dobby-eba4c",
+  storageBucket: "dobby-eba4c.appspot.co",
+  messagingSenderId: "185760420823",
+  appId: "1:185760420823:web:8fa5c8b47f5c1dbbcfb192",
+  measurementId: "G-VEVJDN7LYX",
 };
 
-admin.initializeApp(firebaseConfig);
-const database = admin.firestore();
+firebase.initializeApp(firebaseConfig);
+firebase_admin.initializeApp(
+  { credential: firebase_admin.credential.cert(serviceAccount) },
+  process.env.databaseURL,
+  process.env.storageBucket
+);
 
-module.exports = database;
+const admin = firebase_admin.firestore();
+const adminauth = firebase_admin.auth();
+const auth = firebaseauth.getAuth();
+
+firebaseauth.signInWithEmailAndPassword;
+module.exports = { admin, adminauth, auth };
