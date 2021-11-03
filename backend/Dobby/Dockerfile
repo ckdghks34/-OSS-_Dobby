@@ -2,14 +2,16 @@ From node:10.19.0
 
 MAINTAINER SeungHyeop Chae <shchae.dev@gmail.com>
 
+RUN mkdir -p /app
+
 WORKDIR /app
 
-COPY package*.json ./
+ADD . /app
+
+COPY package*.json /app
 
 RUN npm install
 
-COPY . .
-
 EXPOSE 3030
 
-CMD ["npm","start"]
+CMD ["sudo","npm","start"]
