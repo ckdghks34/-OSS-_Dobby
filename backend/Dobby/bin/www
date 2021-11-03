@@ -34,9 +34,12 @@ server.on("listening", onListening);
  * Create HTTPS server.
  */
 const options = {
-  ca: fs.readFileSync("/etc/letsencrypt/live/k5d105.p.ssafy.io/fullchain.pem"),
-  key: fs.readFileSync("/etc/letsencrypt/live/k5d105.p.ssafy.io/privkey.pem"),
-  cert: fs.readFileSync("/etc/letsencrypt/live/k5d105.p.ssafy.io/cert.pem"),
+	// ca : fs.readFileSync('/etc/letsencrypt/archive/k5d105.p.ssafy.io/fullchain.pem'),
+	// key : fs.readFileSync('/etc/letsencrypt/archive/k5d105.p.ssafy.io/privkey.pem'),
+	// cert : fs.readFileSync('/etc/letsencrypt/archive/k5d105.p.ssafy.io/cert.pem')
+  ca : fs.readFileSync('/var/www/fullchain.pem'),
+	key : fs.readFileSync('/var/www/privkey.pem'),
+	cert : fs.readFileSync('/var/www/cert.pem')
 };
 
 var httpsserver = https.createServer(options, app);
