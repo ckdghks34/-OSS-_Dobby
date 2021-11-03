@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 3030
 
-CMD ["npm","start"]
+CMD ["sudo","npm","start"]
