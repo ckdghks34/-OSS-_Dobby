@@ -53,7 +53,7 @@ pipeline {
 					| xargs -r docker rmi'
 				// docker container 실행
 				sh 'docker run -d --name dobbyfe -p 80:80 dobbyfe:latest'
-				sh 'docker run -d --name dobbybe -p 3030:3030 dobbybe:latest'
+				sh 'docker run -d --name dobbybe -p 3030:3030 -v /var/jenkins_home/www:/var/www dobbybe:latest'
 			}
 		}
 	}
