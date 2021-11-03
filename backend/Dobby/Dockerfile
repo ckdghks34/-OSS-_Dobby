@@ -8,7 +8,7 @@ WORKDIR /app
 
 ADD . /app
 
-COPY package*.json /app
+COPY package*.json ./
 
 RUN npm install
 
