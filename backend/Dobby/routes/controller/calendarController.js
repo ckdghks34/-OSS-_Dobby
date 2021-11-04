@@ -10,18 +10,19 @@ async function getUserCalendar(req, res, next) {
     const calendar = await calendarRef.get();
 
     if (!calendar.empty) {
-      res.json({
-        calendar: calendar.data(),
-        msg: "개인 일정 조회 성공",
+      const calendarData = calendar.docs.map((doc) => doc.data());
+      res.status(200).json({
+        id: calendarData.creator,
+        calendar: calendarData,
       });
     } else {
-      res.json({
-        error: "일정이 없습니다.",
+      res.status(401).json({
+        msg: "일정 정보가 없습니다.",
       });
     }
   } else {
     res.status(401).json({
-      msg: "등록된 회원 정보가 없습니다.",
+      msg: "회원 정보가 없습니다.",
     });
   }
 }
