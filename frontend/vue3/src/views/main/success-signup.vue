@@ -27,12 +27,6 @@ export default {
 </script>
 
 <style>
-.successSignup {
-  display: flex;
-  height: 80vh;
-  align-items: center;
-}
-
 .successSignupDiv {
   width: 100%;
   min-width: 270px;

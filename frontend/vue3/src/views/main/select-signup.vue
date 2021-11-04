@@ -25,7 +25,9 @@
         </div>
       </router-link>
       <br />
-      <router-link to="/main"><button>돌아가기</button></router-link>
+      <router-link to="/main"
+        ><button class="blueBtn">돌아가기</button></router-link
+      >
     </div>
   </div>
 </template>
@@ -71,8 +73,7 @@ export default {
   cursor: pointer;
 }
 
-.signupRouter > div:hover,
-.signupBox > a > button:hover {
+.signupRouter > div:hover {
   box-shadow: 0 0 10px #719ece;
 }
 
@@ -92,11 +93,6 @@ export default {
   height: 50px;
   margin: 5%;
   font-size: 20px;
-  font-family: 'Gowun Batang', serif !important;
-  color: white;
-  background-color: #a9c9de;
-  border: none;
-  border-radius: 4px;
 }
 
 @media screen and (max-width: 999px) {

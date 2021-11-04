@@ -4,23 +4,30 @@
       <span>{{ info.message }}</span>
     </el-dialog>
     <div class="findId">
-      <h2 v-if="info.find">아이디 찾기</h2>
+      <h2 v-if="info.find">이메일 찾기</h2>
       <h2 v-else>비밀번호 찾기</h2>
       <div v-if="!info.result">
         <p v-if="info.find">가입 시 등록한 이메일을 입력해 주세요</p>
         <p v-else>가입 시 등록한 정보를 입력해 주세요</p>
         <div v-if="info.find">
           <el-input
-            v-model="info.userEmail"
-            placeholder="이메일"
-            @keyup.enter="clickFindId"
+            v-model="info.userName"
+            placeholder="이름"
+            @keyup.enter="clickFindEmail"
+          ></el-input>
+          <el-input
+            v-model="info.userPhone"
+            placeholder="전화번호"
+            @keyup.enter="clickFindEmail"
+            maxlength="11"
           ></el-input>
         </div>
         <div v-else>
           <el-input
-            v-model="info.userId"
-            placeholder="아이디"
+            v-model="info.userPhone"
+            placeholder="전화번호"
             @keyup.enter="clickFindPw"
+            maxlength="11"
           ></el-input>
           <el-input
             v-model="info.userEmail"
@@ -29,21 +36,26 @@
           ></el-input>
         </div>
         <button
-          class="findIdBtn"
+          class="findIdBtn blueBtn"
           v-if="info.find"
           type="button"
-          @click="clickFindId"
+          @click="clickFindEmail"
         >
-          아이디 찾기
+          이메일 찾기
         </button>
-        <button class="findIdBtn" v-else type="button" @click="clickFindPw">
+        <button
+          class="findIdBtn blueBtn"
+          v-else
+          type="button"
+          @click="clickFindPw"
+        >
           비밀번호 찾기
         </button>
       </div>
 
       <div v-else>
         <div v-if="info.find">
-          <span>아이디: {{ info.userId }}</span>
+          <span>이메일: {{ info.userEmail }}</span>
         </div>
         <div v-else>
           <p style="margin-top:5%">비밀번호 변경</p>
@@ -66,17 +78,21 @@
               <el-input v-model="state.form.checkPw" type="password"></el-input>
             </el-form-item>
           </el-form>
-          <button class="findIdBtn" type="button" @click="clickChangePw">
+          <button
+            class="findIdBtn blueBtn"
+            type="button"
+            @click="clickChangePw"
+          >
             비밀번호 변경
           </button>
         </div>
       </div>
 
       <router-link to="/main"
-        ><button class="findCancelBtn">취소</button></router-link
+        ><button class="findCancelBtn redBtn">취소</button></router-link
       >
       <button
-        class="findPwBtn"
+        class="findPwBtn blueBtn"
         v-if="info.find"
         type="button"
         @click=";(info.find = false), (info.result = false)"
@@ -84,12 +100,12 @@
         비밀번호 찾기
       </button>
       <button
-        class="findPwBtn"
+        class="findPwBtn blueBtn"
         v-else
         type="button"
         @click=";(info.find = true), (info.result = false)"
       >
-        아이디 찾기
+        이메일 찾기
       </button>
     </div>
   </div>
@@ -107,8 +123,9 @@ export default {
 
     const info = reactive({
       find: true,
-      userId: '',
+      userName: '',
       userEmail: '',
+      userPhone: '',
       dialogVisible: false,
       message: '',
       result: false,
@@ -148,15 +165,16 @@ export default {
       },
     })
 
-    const clickFindId = function() {
-      if (info.userEmail) {
+    const clickFindEmail = function() {
+      if (info.userName && info.userPhone) {
         axios
           .post('https://k5d105.p.ssafy.io:3030/users/findID', {
-            email: info.userEmail,
+            name: info.userName,
+            phone: info.userPhone,
           })
           .then((res) => {
             info.result = true
-            info.userId = res.data.id
+            info.userEmail = res.data.id
           })
           .catch(() => {
             info.dialogVisible = true
@@ -166,11 +184,11 @@ export default {
     }
 
     const clickFindPw = function() {
-      if (info.userId && info.userEmail) {
+      if (info.userPhone && info.userEmail) {
         axios
           .post('https://k5d105.p.ssafy.io:3030/users/findPW', {
-            id: info.userId,
             email: info.userEmail,
+            phone: info.userPhone,
           })
           .then(() => {
             info.result = true
@@ -186,13 +204,15 @@ export default {
       changePwForm.value.validate((valid) => {
         if (valid) {
           axios
-            .post('https://k5d105.p.ssafy.io:3030/users/changePW', {
-              id: info.userId,
+            .put('https://k5d105.p.ssafy.io:3030/users/changePW', {
+              email: info.userEmail,
               password: state.form.password,
             })
             .then(() => {
               info.dialogVisible = true
               info.message = '비밀번호가 변경되었습니다'
+              state.form.password = ''
+              state.form.checkPw = ''
             })
         }
       })
@@ -201,7 +221,7 @@ export default {
       changePwForm,
       info,
       state,
-      clickFindId,
+      clickFindEmail,
       clickFindPw,
       clickChangePw,
     }
@@ -235,48 +255,19 @@ export default {
   width: 100%;
 }
 
-.findId input {
-  border: 2px solid #a9c9de;
-}
-
-.findId input:hover,
-.findId input:focus {
-  outline: none;
-  border: 2px solid #a9c9de;
-  box-shadow: 0 0 5px #a9c9de;
-}
-
 .findIdBtn,
 .findPwBtn,
 .findCancelBtn {
   height: 40px;
-  border: none;
-  border-radius: 2px;
-  background-color: #a9c9de;
-  font-family: 'Gowun Batang', serif !important;
-  color: white;
 }
 
 .findPwBtn {
   margin: 5% 0 0 3%;
 }
 
-.findIdBtn:hover,
-.findPwBtn:hover {
-  box-shadow: 0 0 10px #a9c9de;
-}
-
 .findPwBtn,
 .findCancelBtn {
   width: 48%;
-}
-
-.findCancelBtn {
-  background-color: rgb(255, 155, 155);
-}
-
-.findCancelBtn:hover {
-  box-shadow: 0 0 10px rgb(255, 155, 155);
 }
 
 .changePwForm .el-input {

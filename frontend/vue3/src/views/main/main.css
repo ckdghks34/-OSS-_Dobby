@@ -1,0 +1,43 @@
+.blueBtn {
+  background-color: #a9c9de;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.blueBtn:hover {
+  box-shadow: 0 0 10px #a9c9de;
+}
+
+.redBtn {
+  background-color: rgb(255, 155, 155);
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.redBtn:hover {
+  box-shadow: 0 0 10px rgb(255, 155, 155);
+}
+
+.input,
+.el-input input,
+.textarea textarea {
+  outline: none;
+  border: 2px solid #a9c9de;
+  border-radius: 4px;
+}
+
+.input:focus,
+.el-input input:hover,
+.el-input input:focus,
+.textarea textarea:hover,
+.textarea textarea:focus {
+  outline: none;
+  border: 2px solid #a9c9de;
+  box-shadow: 0 0 5px #a9c9de;
+}
+
+.el-form-item.is-error .el-input__inner {
+  border-color: rgb(255, 155, 155) !important;
+}
