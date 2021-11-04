@@ -136,7 +136,7 @@ async function changePW(req, res, next) {
   const querydata = await userRef.where("email", "==", req.body.email).get();
 
   if (querydata.empty) {
-    res.status(401).json({
+    return res.status(401).json({
       error: "등록된 회원 정보가 없습니다.",
     });
   } else {
@@ -148,14 +148,14 @@ async function changePW(req, res, next) {
       })
       .then(() => {
         console.log("Password updated successfully for user: " + user.uid);
-        res.json({
+        return res.json({
           msg: "비밀번호가 변경 되었습니다.",
           valid: true,
         });
       })
       .catch((error) => {
         console.log("Error updating password : ", error);
-        res.status(401).json({
+        return res.status(401).json({
           error: "비밀번호 변경 실패",
           valid: false,
         });
@@ -266,7 +266,7 @@ async function authSignout(req, res, next) {
       .catch((error) => {
         console.log("토큰 리브 실패");
         console.log(error);
-        res.status(401).json({
+        return res.status(401).json({
           msg: "로그아웃 실패!",
           valid: false,
         });
@@ -281,13 +281,13 @@ async function getUserInfo(req, res, next) {
   const user = await docRef.get();
 
   if (user.empty) {
-    res.status(401).json({
+    return res.status(401).json({
       error: "등록된 회원 정보가 없습니다.",
     });
   } else {
     const userdata = user.data();
 
-    res.json({
+    return res.json({
       user: userdata,
       valid: true,
     });
