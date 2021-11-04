@@ -1,5 +1,5 @@
 <template>
-  <div class="newGroup">
+  <div class="newGroup textarea">
     <div class="newGroupDiv">
       <img src="@/assets/dobby.png" alt="" />
       <el-form
@@ -39,8 +39,10 @@
           ></el-input>
         </el-form-item>
       </el-form>
-      <router-link to="/main"><button>취소</button></router-link>
-      <button type="button" @click="clickNewGroupBtn">생성</button>
+      <router-link to="/main"><button class="redBtn">취소</button></router-link>
+      <button class="blueBtn" type="button" @click="clickNewGroupBtn">
+        생성
+      </button>
     </div>
   </div>
 </template>
@@ -96,12 +98,6 @@ export default {
 </script>
 
 <style>
-.newGroup {
-  display: flex;
-  height: 80vh;
-  align-items: center;
-}
-
 .newGroupDiv {
   width: 90%;
   min-width: 260px;
@@ -119,46 +115,22 @@ export default {
   text-align: left;
 }
 
-.newGroupDiv input,
-.newGroupDiv textarea {
-  border: 2px solid #a9c9de;
-}
-
-.newGroupDiv input:hover,
-.newGroupDiv input:focus,
-.newGroupDiv textarea:hover,
-.newGroupDiv textarea:focus,
-.newGroupDiv > button:hover {
-  outline: none;
-  border: 2px solid #a9c9de;
-  box-shadow: 0 0 5px #a9c9de;
-}
-
 .newGroupDiv textarea {
   height: 100px !important;
+}
+
+.newGroupDiv .el-form-item.is-error .el-textarea__inner {
+  border-color: rgb(255, 155, 155);
 }
 
 .newGroupDiv button {
   width: 48%;
   height: 30px;
   margin-top: 5%;
-  font-family: 'Gowun Batang', serif !important;
-  color: white;
-  border: none;
-  border-radius: 4px;
 }
 
 .newGroupDiv > a > button {
-  background-color: rgb(255, 155, 155);
   margin-right: 4%;
-}
-
-.newGroupDiv > a > button:hover {
-  box-shadow: 0 0 10px rgb(255, 155, 155);
-}
-
-.newGroupDiv > button {
-  background-color: #a9c9de;
 }
 
 .newGroupDiv .el-switch.is-checked .el-switch__core {
