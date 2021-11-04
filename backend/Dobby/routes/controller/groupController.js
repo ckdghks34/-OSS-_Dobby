@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 
 async function getAllgroups(req, res, next) {
@@ -201,3 +202,5 @@ module.exports = {
   changePrivate,
   addMember,
 };
+=======
+>>>>>>> Be
