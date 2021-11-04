@@ -134,7 +134,7 @@ async function changePW(req, res, next) {
   const userRef = admin.collection("users");
   const querydata = await userRef.where("email", "==", req.body.email).get();
 
-  if (user.empty) {
+  if (querydata.empty) {
     res.status(401).json({
       error: "등록된 회원 정보가 없습니다.",
     });
