@@ -1,7 +1,7 @@
 const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 const { signInWithEmailAndPassword } = require("firebase/auth");
 
-// const { query } = require("express");
+const { query } = require("express");
 /**
  * 회원가입
  */
