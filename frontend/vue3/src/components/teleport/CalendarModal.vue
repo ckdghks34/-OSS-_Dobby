@@ -70,7 +70,7 @@ export default {
         axios
           .delete('https://k5d105.p.ssafy.io:3030/calendar/deleteCalendar',
             {
-              uid: 'uuu',
+              uid: localStorage.getItem('uid'),
               cid: 'ccc'
             })
             .then(() => {
@@ -80,14 +80,9 @@ export default {
         console.log('x')
       }
     }
-
-
     const state = reactive({
       mData: computed(() => store.getters.getModalDataFormat),
     })
-
-  
-
     return { isOpen, hide, show, state, delEvent };
   },
   data() {
@@ -96,23 +91,6 @@ export default {
   },
   
   method: {
-    dddd: function() {
-      this.$confirm('This will permanently delete the file. Continue?', 'Warning', {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: 'Delete completed'
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: 'Delete canceled'
-          });          
-        });
-    }
   }
 };
 </script>
