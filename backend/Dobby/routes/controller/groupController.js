@@ -45,12 +45,17 @@ async function createGroup(req, res, next) {
     .toISOString()
     .replace("T", " ")
     .replace(/\..*/, "");
+  const members = [];
+  members.push({
+    uid: req.body.uid,
+    email: req.body.email,
+  });
 
   const groupRef = admin.collection("groups");
   const group = await groupRef.add({
     name: req.body.name,
     description: req.body.description,
-    members: req.body.members,
+    members: members,
     private: false,
     createdAt: time,
   });
@@ -84,7 +89,6 @@ async function updateGroup(req, res, next) {
       .update({
         name: req.body.name,
         description: req.body.description,
-        members: req.body.members,
         private: req.body.private,
       })
       .then(() => {
@@ -161,6 +165,7 @@ async function addMember(req, res, next) {
   const groupRef = admin.collection("groups").doc(gid);
   const group = await groupRef.get();
 
+  const members = new Set(req.body.members);
   if (group.empty) {
     return res.status(401).json({
       message: "존재하지 않는 그룹입니다.",
