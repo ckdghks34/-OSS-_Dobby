@@ -47,7 +47,6 @@ async function createGroup(req, res, next) {
     .replace(/\..*/, "");
   const members = [];
   members.push({
-    uid: req.body.uid,
     email: req.body.email,
   });
 
@@ -171,6 +170,22 @@ async function addMember(req, res, next) {
       message: "존재하지 않는 그룹입니다.",
     });
   } else {
+    await groupRef
+      .update({
+        members: members,
+      })
+      .then(() => {
+        console.log("Group updated successfully for group: " + gid);
+        return res.status(200).json({
+          message: "그룹 멤버 추가 성공",
+        });
+      })
+      .catch((error) => {
+        console.log("Error updating group : ", error);
+        return res.status(401).json({
+          message: "그룹 멤버 추가 실패",
+        });
+      });
   }
 }
 
