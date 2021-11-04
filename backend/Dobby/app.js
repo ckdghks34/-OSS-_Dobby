@@ -9,6 +9,7 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var calendarRouter = require("./routes/calendar");
 var groupRouter = require("./routes/group.js");
+var groupCalendarRouter = require("./routes/groupCalendar.js");
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/calendar", calendarRouter);
 app.use("/group", groupRouter);
+app.use("/groupCalendar", groupCalendarRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
