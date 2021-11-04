@@ -1,6 +1,7 @@
 const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 const { signInWithEmailAndPassword } = require("firebase/auth");
 
+// const { query } = require("express");
 /**
  * 회원가입
  */
@@ -273,6 +274,25 @@ async function authSignout(req, res, next) {
   });
 }
 
+async function getUserInfo(req, res, next) {
+  const uid = req.body.uid;
+
+  const docRef = admin.collection("users").doc(uid);
+  const user = await docRef.get();
+
+  if (user.empty) {
+    res.status(401).json({
+      error: "등록된 회원 정보가 없습니다.",
+    });
+  } else {
+    const userdata = user.data();
+
+    res.json({
+      user: userdata,
+      valid: true,
+    });
+  }
+}
 module.exports = {
   signUp,
   login,
@@ -284,5 +304,6 @@ module.exports = {
   checkDuplicateNickname,
   withdrawUser,
   authSignout,
+  getUserInfo,
 };
 // firebase authen
