@@ -1,8 +1,6 @@
 const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 const { signInWithEmailAndPassword } = require("firebase/auth");
 
-const saltRounds = 10;
-
 /**
  * 회원가입
  */
@@ -48,6 +46,7 @@ async function signUp(req, res, next) {
  * 로그인
  */
 async function login(req, res, next) {
+  console.log(req.body.email);
   signInWithEmailAndPassword(auth, req.body.email, req.body.password)
     .then(async (userCredential) => {
       const uid = userCredential.user.uid;
@@ -132,22 +131,35 @@ async function findPW(req, res, next) {
  * 비민번호 변경
  */
 async function changePW(req, res, next) {
-  adminauth
-    .updateUser(req.body.uid, {
-      password: req.body.password,
-    })
-    .then((user) => {
-      console.log(user.uid + user.email + user.displayName + "비밀번호 변경 성공");
-      res.json({
-        msg: "비밀번호가 변경 되었습니다.",
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(401).json({
-        error: "비밀번호 변경 실패",
-      });
+  const userRef = admin.collection("users");
+  const querydata = await userRef.where("email", "==", req.body.email).get();
+
+  if (user.empty) {
+    res.status(401).json({
+      error: "등록된 회원 정보가 없습니다.",
     });
+  } else {
+    const user = querydata.docs[0].data();
+
+    adminauth
+      .updateUser(user.uid, {
+        password: req.body.password,
+      })
+      .then(() => {
+        console.log("Password updated successfully for user: " + user.uid);
+        res.json({
+          msg: "비밀번호가 변경 되었습니다.",
+          valid: true,
+        });
+      })
+      .catch((error) => {
+        console.log("Error updating password : ", error);
+        res.status(401).json({
+          error: "비밀번호 변경 실패",
+          valid: false,
+        });
+      });
+  }
 }
 
 /**

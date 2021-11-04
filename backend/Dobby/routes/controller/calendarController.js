@@ -10,14 +10,9 @@ async function getUserCalendar(req, res, next) {
     const calendar = await calendarRef.get();
 
     if (!calendar.empty) {
-      const calendarData = calendar.docs.map((doc) => {
-        return {
-          id: doc.id,
-          ...doc.data(),
-        };
-      });
       res.json({
-        calendar: calendarData,
+        calendar: calendar.data(),
+        msg: "개인 일정 조회 성공",
       });
     } else {
       res.json({
