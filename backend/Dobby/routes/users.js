@@ -18,5 +18,5 @@ router.get("/checkDuplicateNick", userController.checkDuplicateNickname);
 router.get("/checkDuplicateEmail", userController.checkDuplicateEmail);
 router.delete("/withdraw", userController.withdrawUser);
 router.post("/logout", userController.authSignout);
-
+router.get("/getUserInfo", userController.getUserInfo);
 module.exports = router;
