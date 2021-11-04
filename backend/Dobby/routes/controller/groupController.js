@@ -161,7 +161,6 @@ async function addMember(req, res, next) {
   const groupRef = admin.collection("groups").doc(gid);
   const group = await groupRef.get();
 
-  const list = [];
   if (group.empty) {
     return res.status(401).json({
       message: "존재하지 않는 그룹입니다.",
