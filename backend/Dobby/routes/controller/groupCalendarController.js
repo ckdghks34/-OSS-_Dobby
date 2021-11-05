@@ -11,12 +11,16 @@ async function getGroup(req, res, next) {
         const group = await groupRef.get();
     
         if (!group.empty) {
-          var arr = new Array(group.length);
-          for(var i = 0; i < group.length; i++)
-          {
-            var tem = await admin.collection("groups").doc(group[i].data().gid).get();
-            arr[i] = tem.data().name;
-          }
+          const groupList = [];
+ 
+          group.forEach((doc) =>{
+            var tem = await admin.collection("groups").where('gid', '==', doc.data().gid).get();
+            if(!tem.empty){
+              groupList.push({
+                name: tem.data().name,
+              });
+            }
+          });      
           res.json({
             group: arr,
             msg: "그룹 조회 성공",
