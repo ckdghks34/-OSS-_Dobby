@@ -9,10 +9,12 @@ const BASE_URL = 'https://k5d105.p.ssafy.io:3030/';
 export default createStore({
   state: {
     isData: false,
+    isTodoItem: false,
     calendarData: [],
     modalData: {},
     refreshData: [],
     todayToDoList: [],
+    toDo: {}
   },
   mutations: {
     setCalendarData( state, payload ) {
@@ -25,17 +27,20 @@ export default createStore({
       state.isData = true
     },
     setModalData ( state, payload ) {
-      console.log(payload)
       state.modalData = payload
     },
     refreshCalData ( state, payload ) {
       //todoList 뽑기...
       state.refreshData = payload
+    },
+    SETTODO( state, payload) {
+      state.toDo = payload
+      state.isTodoItem = true
     }
   },
   actions: {
     getCalendarData( {commit} ) {
-      console.log('store axios')
+      // console.log('store axios')
       
       axios.
         post(`${BASE_URL}calendar/getCalendar`,{
@@ -60,7 +65,6 @@ export default createStore({
             }
           })
           commit('setCalendarData', res)
-          // commit('setCalendarData', test)
           commit('checkCalendarData')
         }
         )
@@ -75,6 +79,11 @@ export default createStore({
     refreshCalendarData ( { commit }, payload ) {
       console.log(payload)
       commit('refreshCalData', payload)
+    },
+    setTodo( {commit}, payload) {
+      console.log(1)
+      console.log(payload)
+      commit('SETTODO', payload)
     }
   },
   modules: {},
@@ -103,17 +112,19 @@ export default createStore({
       }
     },
     getTodayToDoList ( state ) {
+
       const calData =  state.refreshData
       let date = dayjs()
       dayjs.extend(isBetween)
-      return calData.filter((day) => {
+
+      const todayList = calData.filter((day) => {
         /* 
           today 조건
           1. 오늘이 시작과 끝 사이다
           2. 끝나는 날이 오늘이다
           3. 시작하는 날이 오늘이다
           ( allday )
-          4. 종일일정이 오늘이다
+          4. 종일일정이 오늘이다1
           5. 하루 시작과 끝이 오늘이다.
         */
         if (date.isBetween(day.startStr, day.endStr)) {
@@ -126,12 +137,49 @@ export default createStore({
           return day
         }
       })
+
+      return todayList.sort(daySort)
     }
   }
 })
 
-
-
+function daySort(a, b) {
+  /*
+    요구사항
+    1. 당일 시간순서대로 정렬한다.
+    2. 종일 일정이라면 맨 뒤로 놓는다.
+    2-1. 시작한 날에 따라서 정렬한다.
+    절차
+    1. a 와 b의 시작날짜가 오늘인지 체크 ( allDay 도 체크해야한다.)
+    1-1. 둘 다 오늘이면 정렬한다.
+    1-2. 둘 중 하나라도 오늘이 아니면 뒤로 밀어버린다.
+    1-3. 둘 다 오늘이 아니면 정렬한다. 시작하는 날짜 기준으로
+  */
+  /* 
+    삼항연산자
+      (dateA > dateB) ? 1 : -1
+      () 조건식
+      ? 1 true
+      : -1 false
+    sort 시 1 이면 뒤로 -1 이면 그대로 인 듯하다.
+  */
+  let today = dayjs()
+  let dateA = new Date(a.start).getTime()
+  let dateB = new Date(b.start).getTime()
+  // 둘 다 오늘이면 비교
+  if (today.isSame(a.startStr, 'day') && today.isSame(b.startStr, 'day')) {
+    return dateA > dateB ? 1 : -1
+  }
+  if (!today.isSame(a.startStr, 'day') && today.isSame(b.startStr, 'day')) {
+    return 1
+  }
+  if (today.isSame(a.startStr, 'day') && !today.isSame(b.startStr, 'day')) {
+    return -1
+  }
+  if (!today.isSame(a.startStr, 'day') && !today.isSame(b.startStr, 'day')) {
+    return dateA > dateB ? 1 : -1
+  }
+}
 
 function changeDateFormat(date, allDay) {
   // 날짜 정리하기

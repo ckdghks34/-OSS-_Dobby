@@ -1,6 +1,5 @@
 <template>
   <div class=calendar-main>
-    <h2>Calendar!</h2>
     <div class='calendar-calwrap'>
       <FullCalendar
         class="calendar-calendar"
@@ -12,6 +11,7 @@
       <TodoList 
         class="calendar-todolist"/>
     </div>
+
   </div>
   <teleport to="#destination">
     <!-- 자식 엘리먼트 접근 -->
@@ -40,6 +40,11 @@ import TodoList from '@/views/calendar/TodoList'
 
 // modal
 import CalendarModal from '@/components/teleport/CalendarModal'
+
+// 연분홍 #E67C73
+// 연파랑 #029BE5
+// 라벤더 #7986CB
+
 
 export default {
   name: "UserCalendar",
@@ -79,9 +84,11 @@ export default {
           listPlugin
         ],
         headerToolbar: {
-          left: 'today prev,next',
+          // left: 'today prev,next',
+          left: '',
           center: 'title',
-          right: 'dayGridMonth timeGridWeek timeGridDay listWeek'
+          right: ''
+          // right: 'dayGridMonth timeGridWeek timeGridDay listWeek'
         },
         initialView: 'dayGridMonth',
         dateClick: this.handleClickDate,
@@ -122,7 +129,7 @@ export default {
     },
 
     initData() {
-      console.log('init data')
+      // console.log('init data')
       let calendarApi = this.$refs.fullCalendar.getApi()
       const data = calendarApi.getEvents()
 
@@ -141,6 +148,7 @@ export default {
       const refreshData = calendarApi.getEvents()
       this.refreshCalendarData(refreshData)
     },
+
   }
 }
 </script>
@@ -154,9 +162,64 @@ export default {
     justify-content: center;
   }
 
-  .calendar-calendar {
-    height: 100%;
-    width: 900px;
+  .calendar-todowrap {
+    margin-top: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  
+
+  @media screen and (min-width: 1200px) {
+    .calendar-calendar {
+      width: 1000px;
+    }
+
+    .calendar-todolist {
+      width: 1000px;
+    }
+
+  }
+
+  @media screen and (max-width: 1199px) and (min-width: 993px) {
+    .calendar-calendar {
+      width: 793px;
+    }
+
+    .calendar-todolist {
+      width: 793px;
+    }
+  }
+
+  @media screen and (max-width: 992px) and (min-width: 768px) {
+    .calendar-calendar {
+      width: 569px;
+    }
+
+    .calendar-todolist {
+      width: 569px;
+    }
+  }
+
+  @media screen and (max-width: 767px) and (min-width: 500px) {
+    .calendar-calendar {
+      width: 400px;
+    }
+
+    .calendar-todolist {
+      width: 400px;
+    }
+  }
+
+  @media screen and (max-width: 499px) {
+    .calendar-calendar {
+      width: 300px;
+    }
+
+    .calendar-todolist {
+      width: 300px;
+    }
   }
 
 </style>

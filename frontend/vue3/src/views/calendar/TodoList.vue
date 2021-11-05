@@ -1,6 +1,18 @@
 <template>
   <div class="todoList">
-    <TodoListInfo />
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <div class="grid-content bg-purple">
+          <TodoListInfo />
+        </div>
+      </el-col>
+      <!-- <el-col :span="2"></el-col> -->
+      <el-col :span="12">
+        <div class="grid-content bg-purple">
+          <TodoListCurrent />
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -9,11 +21,13 @@ import { computed, provide, reactive } from 'vue'
 import { useStore } from 'vuex'
 
 import TodoListInfo from '@/views/calendar/TodoListInfo'
+import TodoListCurrent from '@/views/calendar/TodoListCurrent'
 
 export default {
   name: "TodoList",
   components: {
-    TodoListInfo
+    TodoListInfo,
+    TodoListCurrent,
   },
   setup() {
     const store = useStore()
@@ -22,7 +36,10 @@ export default {
     })
 
     provide( 'todayData',
-      computed(() => store.getters.getTodayToDoList)
+      computed(() => state.mData)
+    )
+    provide('toDoItem',
+      computed(() => state.mData[0])
     )
 
     return { state }
@@ -31,8 +48,9 @@ export default {
 </script>
 
 <style>
-.todoList {
-  padding: 0 10%;
-}
-
+  .todoList{
+    border-radius: 1rem;
+    padding :10px 0;
+    background-color: #EDEDED;
+  }
 </style>
