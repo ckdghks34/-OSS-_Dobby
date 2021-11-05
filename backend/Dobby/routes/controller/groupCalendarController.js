@@ -19,11 +19,12 @@ async function getGroup(req, res, next) {
             if(!tem.empty){
               groupList.push({
                 name: tem.data().name,
+                gid: tem.data().gid,
               });
             }
           });      
           res.json({
-            group: arr,
+            group: groupList,
             msg: "그룹 조회 성공",
           });
         } else {
