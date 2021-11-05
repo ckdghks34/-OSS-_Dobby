@@ -2,20 +2,20 @@ const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 
 
 async function getGroup(req, res, next) {
-    const uid = req.body.uid;
+    const uid = req.query.uid;
 
     const user = admin.collection("users").doc(uid).get();
 
     if (!user.empty) {
-        const groupRef = admin.collection("users").doc(uid).collection("groups");
+        const groupRef = admin.collectionGroup("members").where('uid', '==', uid);
         const group = await groupRef.get();
     
         if (!group.empty) {
           var arr = new Array(group.length);
           for(var i = 0; i < group.length; i++)
           {
-            var tem = admin.collection("groups").doc(group[i]).get();
-            arr[i] = (await tem).data().name;
+            var tem = await admin.collection("groups").doc(group[i].data().gid).get();
+            arr[i] = tem.data().name;
           }
           res.json({
             group: arr,
@@ -35,12 +35,12 @@ async function getGroup(req, res, next) {
 
 
 async function getCalendar(req, res, next) {
-    const gid = req.body.gid;
+    const gid = req.query.gid;
 
     const group = admin.collection("groups").doc(gid).get();
 
     if (!group.empty) {
-        const calendarRef = admin.collection("group").doc(gid).collection("calendar");
+        const calendarRef = admin.collection("group").doc(gid).collection("groupcalendar");
         const calendar = await calendarRef.get();
     
         if (!calendar.empty) {
@@ -69,11 +69,20 @@ async function createCalendar(req, res, next) {
     .replace("T", " ")
     .replace(/\..*/, "");
 
-  const group = admin.collection("groups").doc(gid).get();
+  const memberRef = admin.collection("groups").doc(gid).collection("members");
+  const member = await memberRef.get();
 
   if (!group.empty) {
-    const calendarRef = admin.collection("groups").doc(gid).collection("calendar");
-    var arr = new Array((await group).data().members.length)
+    const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
+    var arr = new Array.form({length : member.data().length}, () => false);
+    const memberList = [];
+    member.forEach((doc) => {
+      memberList.push({
+        uid: doc.id,
+        email: doc.data().email,
+        name: doc.data().name,
+      });
+    });
     const list = {
       title: req.body.title,
       content: req.body.content,
@@ -86,7 +95,7 @@ async function createCalendar(req, res, next) {
       placeLng: req.body.placeLng,
       allDay: req.body.allDay,
       color: req.body.color,
-      participant: (await group).data().members,
+      participant: memberList,
       completed: arr,
       creator: uid,
       createdAt: time,
@@ -129,7 +138,7 @@ async function updateCalendar(req, res, next) {
     .toISOString()
     .replace("T", " ")
     .replace(/\..*/, "");
-  const calendarRef = admin.collection("groups").doc(gid).collection("calendar");
+  const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
   const calendar = await calendarRef.doc(cid).get();
 
   if (!calendar.empty) {
@@ -182,25 +191,33 @@ async function updateCalendar(req, res, next) {
 async function deleteCalendar(req, res, next) {
   const gid = req.body.gid;
   const cid = req.body.cid;
+  const uid = req.body.uid;
 
-  const calendarRef = admin.collection("groups").doc(gid).collection("calendar");
+  const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
   const calendar = await calendarRef.doc(cid).get();
 
   if (!calendar.empty) {
-    calendarRef
-      .doc(cid)
-      .delete()
-      .then(() => {
-        res.json({
-          msg: "그룹 일정 삭제 성공",
+    if(calendar.data().uid == uid){
+      calendarRef
+        .doc(cid)
+        .delete()
+        .then(() => {
+          res.json({
+            msg: "그룹 일정 삭제 성공",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(401).json({
+            msg: "그룹 일정 삭제 실패",
+          });
         });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(401).json({
-          msg: "그룹 일정 삭제 실패",
-        });
+    }
+    else{
+      res.status(401).json({
+        msg: "그룹 일정은 생성자만 삭제할 수 있습니다.",
       });
+    }
   } else {
     res.status(401).json({
       msg: "그룹 일정 정보가 없습니다.",
@@ -214,7 +231,7 @@ async function checkCalendar(req, res, next) {
   const uid = req.body.uid;
   const cid = req.body.cid;
 
-  const calendarRef = admin.collection("groups").doc(gid).collection("calendar");
+  const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
   const calendar = await calendarRef.doc(cid).get();
 
   var value;
