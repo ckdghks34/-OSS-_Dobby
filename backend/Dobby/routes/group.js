@@ -11,5 +11,5 @@ router.delete("/deleteGroup", groupController.deleteGroup);
 router.put("/changePrivate", groupController.changePrivate);
 router.put("/addMember", groupController.addMember);
 router.delete("/leaveMember", groupController.leaveMember);
-
+router.get("/getPublicGroups", groupController.getPublicgroups);
 module.exports = router;
