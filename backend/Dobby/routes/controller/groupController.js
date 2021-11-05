@@ -157,7 +157,7 @@ async function deleteGroup(req, res, next) {
     const groupMemberRef = admin.collection("groups").doc(gid).collection("members");
     const groupMembers = await groupMemberRef.get();
 
-    const groupCalendarRef = admin.collection("groups").doc(gid).collection("calendars");
+    const groupCalendarRef = admin.collection("groups").doc(gid).collection("calendar");
     const groupCalendars = await groupCalendarRef.get();
 
     if (!groupMembers.empty) {
