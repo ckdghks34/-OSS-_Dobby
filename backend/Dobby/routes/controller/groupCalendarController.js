@@ -13,9 +13,9 @@ async function getGroup(req, res, next) {
         if (!group.empty) {
           const groupList = [];
  
-          group.forEach((doc) =>{
+          group.forEach(async (doc) =>{
             var temRef = admin.collection("groups").where('gid', '==', doc.data().gid);
-            var tem = temRef.get(); 
+            var tem = await temRef.get(); 
             if(!tem.empty){
               groupList.push({
                 name: tem.data().name,
