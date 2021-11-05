@@ -10,5 +10,6 @@ router.put("/updateGroup", groupController.updateGroup);
 router.delete("/deleteGroup", groupController.deleteGroup);
 router.put("/changePrivate", groupController.changePrivate);
 router.put("/addMember", groupController.addMember);
+router.delete("/leaveMember", groupController.leaveMember);
 
 module.exports = router;

@@ -231,6 +231,15 @@ async function withdrawUser(req, res, next) {
   adminauth
     .deleteUser(uid)
     .then(() => {
+      const userCalendarRef = admin.collection("users").doc(uid).collection("calendar");
+      const userCalendar = userCalendarRef.get();
+
+      if (!userCalendar.empty) {
+        userCalendar.forEach((doc) => {
+          userCalendarRef.doc(doc.id).delete();
+        });
+      }
+
       admin.collection("users").doc(uid).delete();
 
       console.log("회원 탈퇴 성공!");
