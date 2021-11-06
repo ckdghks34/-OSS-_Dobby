@@ -1,4 +1,3 @@
-const { async } = require("@firebase/util");
 const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 
 async function getAllgroups(req, res, next) {
@@ -128,15 +127,26 @@ async function createGroup(req, res, next) {
 
       const userdata = user.data();
 
-      admin.collection("groups").doc(group.id).collection("members").add({
-        gid: group.id,
-        uid: userdata.uid,
-        name: userdata.name,
-        email: userdata.email,
-        admin: true,
-      });
+      await admin
+        .collection("groups")
+        .doc(group.id)
+        .collection("members")
+        .add({
+          gid: group.id,
+          uid: userdata.uid,
+          name: userdata.name,
+          email: userdata.email,
+          nickname: userdata.nickname,
+          admin: true,
+          writer: true,
+        })
+        .then((doc) => {
+          groupRef.doc(group.id).update({
+            uid: doc.id,
+          });
+        });
 
-      groupRef
+      await groupRef
         .doc(group.id)
         .get()
         .then((doc) => {
@@ -163,6 +173,7 @@ async function updateGroup(req, res, next) {
         description: req.body.description,
         private: req.body.private,
         password: req.body.password,
+        name: req.body.name,
       })
       .then(() => {
         console.log("Group updated successfully for group: " + gid);
@@ -300,7 +311,9 @@ async function addMember(req, res, next) {
               name: member.name,
               email: member.email,
               uid: member.uid,
+              nickname: member.nickname,
               admin: false,
+              writer: false,
             })
             .then(() => {
               console.log(
@@ -405,7 +418,9 @@ async function joinGroup(req, res, next) {
             name: user.docs[0].data().name,
             email: user.docs[0].data().email,
             uid: user.docs[0].data().uid,
+            nickname: user.docs[0].data().nickname,
             admin: false,
+            writer: false,
           })
           .then(() => {
             console.log("Group Join successfully for group: " + gid);
@@ -414,7 +429,7 @@ async function joinGroup(req, res, next) {
             });
           })
           .catch((error) => {
-            console.log("Error Group Join group : ", error);
+            console.log("Error Join Group : ", error);
             res.json({
               msg: "그룹 가입 실패",
             });
@@ -428,6 +443,146 @@ async function joinGroup(req, res, next) {
     }
   }
 }
+
+async function updateWriterAuth(req, res, next) {
+  const gid = req.body.gid;
+
+  const groupRef = admin.collection("groups").doc(gid);
+  const group = await groupRef.get();
+
+  if (group.empty) {
+    res.status(401).json({
+      msg: "존재하는 그룹이 없습니다.",
+    });
+  } else {
+    const memberRef = groupRef.collection("members");
+    const member = await memberRef
+      .where("nickname", "==", req.body.nickname)
+      .get();
+
+    if (member.empty) {
+      res.json({
+        msg: "그룹에 해당하는 멤버가 없습니다.",
+      });
+    }
+    const mid = member.docs[0].id;
+    console.log(mid);
+    await groupRef
+      .collection("members")
+      .doc(mid)
+      .update({
+        writer: req.body.writer,
+      })
+      .then(async () => {
+        await memberRef
+          .doc(mid)
+          .get()
+          .then((doc) => {
+            console.log(
+              "Writer Auth change successfully for members : " + doc.id
+            );
+            res.json({
+              member: doc.data(),
+              msg: "멤버 업데이트 성공",
+            });
+          });
+      })
+      .catch((error) => {
+        console.log("Error Change Write Auth : " + error);
+        res.status(401).json({
+          error: error,
+        });
+      });
+  }
+}
+
+async function changeAdmin(req, res, next) {
+  const gid = req.body.gid;
+  const currentAdminuid = req.body.currentuid;
+  const changeAdminNickname = req.body.changenickname;
+
+  const groupRef = admin.collection("groups").doc(gid);
+  const group = await groupRef.get();
+
+  if (group.empty) {
+    console.log("해당 그룹이 없습니다.");
+    res.status.json({
+      error: "해당 그룹이 없습니다.",
+    });
+  } else {
+    const memberRef = admin.collection("groups").doc(gid).collection("members");
+    const currentAdmin = await memberRef
+      .where("uid", "==", currentAdminuid)
+      .get()
+      .then((doc) => {
+        if (doc.empty) {
+          console.log("그룹에 해당 멤버가 없습니다.");
+          res.status(401).json({
+            error: "그룹에 해당 멤버(Admin)가 없습니다.",
+          });
+        } else {
+          data = doc.docs[0].data();
+          if (data.admin) {
+            return {
+              mid: doc.docs[0].id,
+              ...data,
+            };
+          } else {
+            console.log("그룹장이 아닙니다.");
+            res.status(401).json({
+              error: error,
+            });
+          }
+        }
+      });
+
+    const changeAdmin = await memberRef
+      .where("nickname", "==", changeAdminNickname)
+      .get()
+      .then((doc) => {
+        if (doc.empty) {
+          console.log("그룹에 해당 멤버가 없습니다.");
+          res.status(401).json({
+            error: error,
+          });
+        } else {
+          return {
+            mid: doc.docs[0].id,
+            ...doc.docs[0].data(),
+          };
+        }
+      });
+
+    groupRef
+      .update({
+        uid: changeAdmin.mid,
+      })
+      .then(() => {
+        memberRef.doc(currentAdmin.mid).update({
+          admin: false,
+        });
+
+        memberRef
+          .doc(changeAdmin.mid)
+          .update({
+            admin: true,
+            writer: true,
+          })
+          .then(() => {
+            res.json({
+              msg: "그룹장이 변경되었습니다.",
+            });
+          });
+      })
+      .catch((error) => {
+        console.log("Error Change Admin : ", error);
+        res.status(401).json({
+          error: error,
+        });
+      });
+  }
+}
+
 module.exports = {
   getAllgroups,
   getGroup,
@@ -440,4 +595,6 @@ module.exports = {
   addMember,
   leaveMember,
   joinGroup,
+  updateWriterAuth,
+  changeAdmin,
 };

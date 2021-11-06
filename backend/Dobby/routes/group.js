@@ -14,5 +14,7 @@ router.delete("/leaveMember", groupController.leaveMember);
 router.get("/getPublicGroups", groupController.getPublicgroups);
 router.post("/getGroupMember", groupController.getGroupMember);
 router.post("/joinGroup", groupController.joinGroup);
+router.put("/updateWriterAuth", groupController.updateWriterAuth);
+router.put("/changeAdmin", groupController.changeAdmin);
 
 module.exports = router;
