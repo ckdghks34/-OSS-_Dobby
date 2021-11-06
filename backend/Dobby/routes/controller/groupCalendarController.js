@@ -46,8 +46,8 @@ async function getGroup(req, res, next) {
 
 async function getCalendar(req, res, next) {
     const gid = req.query.gid;
-
-    const group = admin.collection("groups").doc(gid).get();
+    const groupRef = admin.collection("groups").doc(gid);
+    const group = await groupRef.get();
 
     if (!group.empty) {
         const calendarRef = admin.collection("group").doc(gid).collection("groupcalendar");
@@ -65,7 +65,7 @@ async function getCalendar(req, res, next) {
         }
       } else {
         res.status(401).json({
-          msg: "등록된 회원 정보가 없습니다.",
+          msg: "등록된 그룹 정보가 없습니다.",
         });
       }
 }
