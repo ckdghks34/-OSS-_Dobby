@@ -69,7 +69,6 @@ export default createStore({
         }
         )
         .catch( error => {
-          console.log('getCalendar Error')
           console.log(error)
         })
     },
@@ -77,12 +76,9 @@ export default createStore({
       commit('setModalData', payload)
     },
     refreshCalendarData ( { commit }, payload ) {
-      console.log(payload)
       commit('refreshCalData', payload)
     },
     setTodo( {commit}, payload) {
-      console.log(1)
-      console.log(payload)
       commit('SETTODO', payload)
     }
   },
@@ -263,134 +259,3 @@ function changeDateFormat(date, allDay) {
   return `${date[3]}년 ${month}월 ${date[2]}일 (${dow})`
 }
 
-
-
-// const test = [
-//   { title: 'event 1',
-//     start: '2021-11-01',
-//     end: '2021-11-07',
-//     color: 'yellow',
-//     textColor:'black',
-//     extendedProps: {
-//       // status: 'done',
-//     }
-//   },
-//   { title: 'event 2', start: '2021-11-28' },
-//   {
-//     title: 'event 3 add time',
-//     start: '2021-11-26T18:00:00',
-//     end: '2021-11-30T18:00:00',
-//     color: '#156452',
-//     textColor: 'black',
-//   },
-//   {
-//     title: 'event 4 today',
-//     start: '2021-11-03T18:00:00',
-//     end: '2021-11-03T21:00:00',
-//     color: 'blue', // 당일 일정은 textColor 를 먹지 않는다.
-//   },
-//   {
-//     title: 'test1',
-//     start: '2021-11-14T12:00:00',
-//     end: '2021-11-14T18:00:00',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test2',
-//     start: '2021-11-15T12:00:00',
-//     end: '2021-11-15T18:00:00',
-//     color: '#546122',
-//   },
-//   {
-//     title: 'test3',
-//     start: '2021-11-16T12:00:00',
-//     end: '2021-11-16T18:00:00',
-//     color: '#442236',
-//   },
-//   {
-//     title: 'test4',
-//     start: '2021-11-17T12:00:00',
-//     end: '2021-11-17T18:00:00',
-//     color: '#665532',
-//   },
-//   {
-//     title: 'test5',
-//     allDay: true,
-//     start: '2021-11-18',
-//     end: '2021-11-18',
-//     color: '#337898',
-//   },
-//   {
-//     title: 'test6',
-//     start: '2021-11-19T12:00:00',
-//     end: '2021-11-19T18:00:00',
-//     color: '#995522',
-//   },
-//   {
-//     title: 'test7',
-//     start: '2021-11-20T12:00:00',
-//     end: '2021-11-20T18:00:00',
-//     color: '#119955',
-//   },
-//   {
-//     title: 'test8',
-//     start: '2021-01-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test9',
-//     start: '2021-02-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test10',
-//     start: '2021-03-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test11',
-//     start: '2021-04-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test12',
-//     start: '2021-05-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test13',
-//     start: '2021-06-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test14',
-//     start: '2021-07-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test15',
-//     start: '2021-08-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test16',
-//     start: '2021-09-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test17',
-//     start: '2021-10-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test18',
-//     start: '2021-12-14',
-//     color: '#785235',
-//   },
-//   {
-//     title: 'test19',
-//     start: '2021-11-10',
-//     color: '#335566',
-//     allDay: true,
-//   }
-// ]

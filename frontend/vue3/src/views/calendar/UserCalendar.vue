@@ -7,6 +7,8 @@
         :options="calendarOptions" />
     </div>
 
+    <button @click="tttt">asdfsdaf</button>
+
     <div class='calendar-todowrap'>
       <TodoList 
         class="calendar-todolist"/>
@@ -58,18 +60,25 @@ export default {
     const store = useStore()
     const cData = computed(() => store.state.calendarData)
 
+    const fullCalendar = ref(null)
+
     const modal = ref(null);
     function showModal() {
       // VMmodal.vue에 접근하여 show 함수 실행
       modal.value.show();
     }
 
+    const tttt = function () {
+      console.log(fullCalendar)
+    }
 
     return {
       // disableTeleport,
       modal,
       showModal,
-      cData
+      cData,
+      fullCalendar,
+      tttt
     };
   },
 

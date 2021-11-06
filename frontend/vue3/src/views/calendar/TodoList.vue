@@ -1,5 +1,5 @@
 <template>
-  <div class="todoList">
+  <div class="todoList" v-if="state.isTodayData">
     <el-row :gutter="10">
       <el-col :span="12">
         <div class="grid-content bg-purple">
@@ -13,6 +13,8 @@
         </div>
       </el-col>
     </el-row>
+  </div>
+  <div v-else>
   </div>
 </template>
 
@@ -32,7 +34,10 @@ export default {
   setup() {
     const store = useStore()
     const state = reactive({
-      mData: computed(() => store.getters.getTodayToDoList)
+      mData: computed(() => store.getters.getTodayToDoList),
+      isTodayData: computed(() => {
+        return (store.getters.getTodayToDoList.length > 0) ? true : false
+      })
     })
 
     provide( 'todayData',
