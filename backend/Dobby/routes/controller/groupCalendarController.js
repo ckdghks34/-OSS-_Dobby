@@ -12,31 +12,32 @@ async function getGroup(req, res, next) {
         const group = await groupRef.get();
     
         if (!group.empty) {
-          const groupList = [];
-          try{
+          var groupList = [];
+          new Promise((resolve, reject) => {
             group.forEach(async (doc) =>{
               console.log(doc.data().name);
               var temRef = admin.collection("groups").doc(doc.data().gid);
               var tem = await temRef.get();
               if(!tem.empty){
                 console.log(tem.data().name);
-                console.log(tem.data().gid);
+                console.log(tem.data().gid); 
                 groupList.push({
                   name: tem.data().name,
                   gid: tem.data().gid,
                 });
               }
             });
-          } catch{
-            res.json({
-              error: "에러 발생",
-            });  
-          } finally{
+            resolve();
+          }) .then(() =>{
             res.json({
               group: groupList,
               msg: "그룹 조회 성공",
             });
-          }
+          }) .catch(() =>{
+            res.json({
+              error: "에러 발생",
+            });  
+          }) 
         } else {
           res.json({
             error: "그룹이 없습니다.",
