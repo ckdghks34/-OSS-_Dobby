@@ -251,7 +251,7 @@ async function deleteCalendar(req, res, next) {
   const calendar = await calendarRef.doc(cid).get();
 
   if (!calendar.empty) {
-    if(calendar.data().uid == uid){
+    if(calendar.data().creator == uid){
       calendarRef
         .doc(cid)
         .delete()
