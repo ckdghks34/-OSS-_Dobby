@@ -83,7 +83,7 @@ async function createCalendar(req, res, next) {
   const group = await groupRef.get();
   const memberRef = admin.collection("groups").doc(gid).collection("members");
   const member = await memberRef.get();
-  const writer = false;
+  var writer = false;
 
   if (!group.empty) {
     const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
