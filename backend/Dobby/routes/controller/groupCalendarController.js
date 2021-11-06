@@ -55,7 +55,7 @@ async function getCalendar(req, res, next) {
     
         if (!calendar.empty) {
           res.json({
-            calendar: calendar.data(),
+            calendar: calendar.docs.data(),
             msg: "그룹 캘린더 조회 성공",
           });
         } else {
