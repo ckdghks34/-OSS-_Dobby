@@ -7,7 +7,7 @@ async function getAllgroups(req, res, next) {
 
   if (groups.empty) {
     return res.status(401).json({
-      message: "생성된 그룹이 없습니다.",
+      msg: "생성된 그룹이 없습니다.",
     });
   } else {
     const groupsList = [];
@@ -18,7 +18,7 @@ async function getAllgroups(req, res, next) {
       });
     });
     return res.status(200).json({
-      message: "그룹 조회 성공",
+      msg: "그룹 조회 성공",
       groups: groupsList,
     });
   }
@@ -30,7 +30,7 @@ async function getPublicgroups(req, res, next) {
 
   if (groups.empty) {
     return res.status(401).json({
-      message: "생성된 그룹이 없습니다.",
+      msg: "생성된 그룹이 없습니다.",
     });
   } else {
     const groupsList = [];
@@ -41,7 +41,7 @@ async function getPublicgroups(req, res, next) {
       });
     });
     return res.status(200).json({
-      message: "그룹 조회 성공",
+      msg: "그룹 조회 성공",
       groups: groupsList,
     });
   }
@@ -59,7 +59,31 @@ async function getGroup(req, res, next) {
     });
   } else {
     return res.status(401).json({
-      message: "존재하지 않는 그룹입니다.",
+      msg: "존재하지 않는 그룹입니다.",
+    });
+  }
+}
+
+async function getGroupMember(req, res, next) {
+  const gid = req.body.gid;
+  const membersRef = admin.collection("groups").doc(gid).collection("members");
+  const members = await membersRef.get();
+
+  if (!members.empty) {
+    const membersList = [];
+    members.forEach((doc) => {
+      membersList.push({
+        ...doc.data(),
+      });
+    });
+
+    return res.status(200).json({
+      msg: "그룹 멤버 조회 성공",
+      members: membersList,
+    });
+  } else {
+    return res.status(401).json({
+      msg: "존재하지 않는 그룹입니다.",
     });
   }
 }
@@ -120,7 +144,7 @@ async function updateGroup(req, res, next) {
 
   if (group.empty) {
     return res.status(401).json({
-      message: "존재하지 않는 그룹입니다.",
+      msg: "존재하지 않는 그룹입니다.",
     });
   } else {
     await groupRef
@@ -131,14 +155,19 @@ async function updateGroup(req, res, next) {
       })
       .then(() => {
         console.log("Group updated successfully for group: " + gid);
-        return res.status(200).json({
-          message: "그룹 정보 수정 성공",
+        const groupdata = {};
+
+        groupRef.get().then((data) => {
+          return res.status(200).json({
+            group: data.data(),
+            msg: "그룹 정보 수정 성공",
+          });
         });
       })
       .catch((error) => {
         console.log("Error updating group : ", error);
         return res.status(401).json({
-          message: "그룹 정보 수정 실패",
+          msg: "그룹 정보 수정 실패",
         });
       });
   }
@@ -151,7 +180,7 @@ async function deleteGroup(req, res, next) {
 
   if (group.empty) {
     return res.status(401).json({
-      message: "존재하지 않는 그룹입니다.",
+      msg: "존재하지 않는 그룹입니다.",
     });
   } else {
     const groupMemberRef = admin.collection("groups").doc(gid).collection("members");
@@ -176,13 +205,13 @@ async function deleteGroup(req, res, next) {
       .then(() => {
         console.log("Group deleted successfully for group: " + gid);
         return res.status(200).json({
-          message: "그룹 삭제 성공",
+          msg: "그룹 삭제 성공",
         });
       })
       .catch((error) => {
         console.log("Error deleting group : ", error);
         return res.status(401).json({
-          message: "그룹 삭제 실패",
+          msg: "그룹 삭제 실패",
         });
       });
   }
@@ -200,7 +229,7 @@ async function changePrivate(req, res, next) {
   }
   if (group.empty) {
     return res.status(401).json({
-      message: "존재하지 않는 그룹입니다.",
+      msg: "존재하지 않는 그룹입니다.",
     });
   } else {
     await groupRef
@@ -210,13 +239,13 @@ async function changePrivate(req, res, next) {
       .then(() => {
         console.log("Group updated successfully for group: " + gid);
         return res.status(200).json({
-          message: "그룹 정보 수정 성공",
+          msg: "그룹 정보 수정 성공",
         });
       })
       .catch((error) => {
         console.log("Error updating group : ", error);
         return res.status(401).json({
-          message: "그룹 정보 수정 실패",
+          msg: "그룹 정보 수정 실패",
         });
       });
   }
@@ -228,7 +257,7 @@ async function addMember(req, res, next) {
 
   if (group.empty) {
     return res.status(401).json({
-      message: "존재하지 않는 그룹입니다.",
+      msg: "존재하지 않는 그룹입니다.",
     });
   } else {
     const members = new Set(req.body.members);
@@ -282,7 +311,7 @@ async function leaveMember(req, res, next) {
 
   if (group.empty) {
     return res.status(401).json({
-      message: "존재하지 않는 그룹입니다.",
+      msg: "존재하지 않는 그룹입니다.",
     });
   } else {
     const memberRef = await groupRef
@@ -292,7 +321,7 @@ async function leaveMember(req, res, next) {
 
     if (memberRef.empty) {
       return res.status(401).json({
-        message: "존재하지 않는 멤버입니다.",
+        msg: "존재하지 않는 멤버입니다.",
       });
     } else {
       const member = memberRef.docs[0].id;
@@ -315,15 +344,68 @@ async function leaveMember(req, res, next) {
     }
   }
 }
+async function joinGroup(req, res, next) {
+  const gid = req.body.gid;
+  const uid = req.body.uid;
+  const groupRef = admin.collection("groups").doc(gid);
+  const group = await groupRef.get();
 
+  if (group.empty) {
+    return res.status(401).json({
+      msg: "존재하지 않는 그룹입니다.",
+    });
+  } else {
+    const userRef = admin.collection("users").doc(uid);
+    const user = await userRef.get();
+
+    if (user.empty) {
+      return res.status(401).json({
+        msg: "존재하지 않는 유저입니다.",
+      });
+    } else {
+      const groupmemberRef = await groupRef.collection("members").where("uid", "==", uid).get();
+
+      if (groupmemberRef.empty) {
+        groupRef
+          .collection("members")
+          .add({
+            gid: gid,
+            name: user.docs[0].data().name,
+            email: user.docs[0].data().email,
+            uid: user.docs[0].data().uid,
+            admin: false,
+          })
+          .then(() => {
+            console.log("Group Join successfully for group: " + gid);
+            res.json({
+              msg: "그룹 가입 성공",
+            });
+          })
+          .catch((error) => {
+            console.log("Error Group Join group : ", error);
+            res.json({
+              msg: "그룹 가입 실패",
+            });
+          });
+      } else {
+        console.log("User already in group");
+        res.json({
+          msg: "멤버 업데이트 성공",
+        });
+      }
+    }
+  }
+}
 module.exports = {
   getAllgroups,
   getGroup,
+  getPublicgroups,
+  getGroupMember,
   createGroup,
   updateGroup,
   deleteGroup,
   changePrivate,
   addMember,
-  getPublicgroups,
   leaveMember,
+  joinGroup,
 };
