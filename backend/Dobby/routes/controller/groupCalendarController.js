@@ -98,7 +98,7 @@ async function createCalendar(req, res, next) {
           name: doc.data().name,
         });
 
-        if(doc.data().uid == uid && doc.data().writer == True){
+        if(doc.data().uid == uid && doc.data().writer == true){
           writer = true;
         }
       }
