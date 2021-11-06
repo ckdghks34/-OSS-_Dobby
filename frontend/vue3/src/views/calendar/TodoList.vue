@@ -1,6 +1,6 @@
 <template>
   <div class="todoList">
-    <el-row :gutter="20">
+    <el-row :gutter="10">
       <el-col :span="12">
         <div class="grid-content bg-purple">
           <TodoListInfo />

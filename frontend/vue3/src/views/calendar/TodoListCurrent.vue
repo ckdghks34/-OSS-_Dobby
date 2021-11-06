@@ -1,33 +1,21 @@
 <template>
-  <div v-if="!state.isTodoItem">
-    <el-space wrap>
-      <el-card class="box-card">
-        <div>
-          <span>
-          {{ todayItem }}
-          </span>
-        </div>
-      </el-card>
-    </el-space>
-  </div>
-  <div v-else>
-    <el-space wrap>
-      <el-card class="box-card">
-        <div>
-          <span>
-            {{ state.toDo }}
-          </span>
-        </div>
-      </el-card>
-    </el-space>
-  </div>
+  <TodoListCurrentInit v-if="!state.isTodoItem && todayItem" />
+  <TodoListCurrentCheck v-else />
 </template>
 
 <script>
 import { computed, inject, reactive } from 'vue'
 import { useStore } from 'vuex'
+
+import TodoListCurrentInit from '@/views/calendar/TodoListCurrentInit'
+import TodoListCurrentCheck from'@/views/calendar/TodoListCurrentCheck'
+
 export default {
   name: "TodoListCurrent",
+  components: {
+    TodoListCurrentInit,
+    TodoListCurrentCheck
+  },
   setup() {
     const store = useStore()
     const today = inject('todayData')

@@ -263,6 +263,8 @@ function changeDateFormat(date, allDay) {
   return `${date[3]}년 ${month}월 ${date[2]}일 (${dow})`
 }
 
+
+
 // const test = [
 //   { title: 'event 1',
 //     start: '2021-11-01',
