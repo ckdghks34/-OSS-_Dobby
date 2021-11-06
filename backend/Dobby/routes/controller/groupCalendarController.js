@@ -283,16 +283,16 @@ async function checkCalendar(req, res, next) {
   const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
   const calendar = await calendarRef.doc(cid).get();
 
-  var value;
-  for(var i = 0; i < calendar.data().participant.length; i++)
+  var participant = calendar.data().participant;
+  for(let doc of participant)
   {
-    if(calendar.data().participant[i] == uid)
+    if(doc.uid == uid)
     {
-      if(calendar.data().completed[i]){
-        value = false;
+      if(doc.completed){
+        doc.completed = false;
       }
       else{
-        value = true;
+        doc.completed = true;
       }
     }
   }
@@ -300,7 +300,7 @@ async function checkCalendar(req, res, next) {
   if (!calendar.empty) {
     calendarRef
       .doc(cid)
-      .update({ completed: value })
+      .update({ participant: participant })
       .then(() => {
         calendarRef
           .doc(cid)
