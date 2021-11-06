@@ -14,10 +14,10 @@ async function getGroup(req, res, next) {
         if (!group.empty) {
           var groupList = [];
           new Promise((resolve, reject) => {
-            group.forEach(async (doc) =>{
+            for(let doc of group){
               console.log(doc.data().name);
               var temRef = admin.collection("groups").doc(doc.data().gid);
-              var tem = await temRef.get();
+              var tem = temRef.get();
               new Promise((resolve, reject) =>{
                 if(!tem.empty){
                   console.log(tem.data().name);
@@ -32,7 +32,7 @@ async function getGroup(req, res, next) {
                 }
                 resolve();
               });
-            });
+            }
             resolve();
           }) .then(() =>{
             res.json({
