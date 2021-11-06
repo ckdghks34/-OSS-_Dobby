@@ -79,60 +79,80 @@ async function createCalendar(req, res, next) {
     .replace("T", " ")
     .replace(/\..*/, "");
 
+  const groupRef = admin.collection("groups").doc(gid);
+  const group = await groupRef.get();
   const memberRef = admin.collection("groups").doc(gid).collection("members");
   const member = await memberRef.get();
+  const writer = false;
 
   if (!group.empty) {
     const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-    var arr = new Array.form({length : member.data().length}, () => false);
+    var arr = new Array.form({length : member.docs.length}, () => false);
     const memberList = [];
-    member.forEach((doc) => {
-      memberList.push({
-        uid: doc.id,
-        email: doc.data().email,
-        name: doc.data().name,
-      });
-    });
-    const list = {
-      title: req.body.title,
-      content: req.body.content,
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
-      startTime: req.body.startTime,
-      endTime: req.body.endTime,
-      placeName: req.body.placeName,
-      placeLat: req.body.placeLat,
-      placeLng: req.body.placeLng,
-      allDay: req.body.allDay,
-      color: req.body.color,
-      participant: memberList,
-      completed: arr,
-      creator: uid,
-      createdAt: time,
-    };
 
-    const calendar = await calendarRef.add(list);
-    calendarRef
-      .doc(calendar.id)
-      .update({ cid: calendar.id })
-      .then(() => {
-        calendarRef
-          .doc(calendar.id)
-          .get()
-          .then((doc) => {
-            res.json({
-              calendar: doc.data(),
-              msg: "그룹 일정 생성 성공",
-            });
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(401).json({
-          msg: "그룹 일정 생성 실패",
+    new Promise(async (resolve, reject) => {
+      for(let doc of member.docs){
+        memberList.push({
+          uid: doc.data().uid,
+          email: doc.data().email,
+          name: doc.data().name,
         });
+
+        if(doc.data().uid == uid && doc.data().writer == True){
+          writer = True;
+        }
+      }
+      resolve();
+    })
+
+    if(writer){
+      const list = {
+        title: req.body.title,
+        content: req.body.content,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
+        placeName: req.body.placeName,
+        placeLat: req.body.placeLat,
+        placeLng: req.body.placeLng,
+        allDay: req.body.allDay,
+        color: req.body.color,
+        participant: memberList,
+        completed: arr,
+        creator: uid,
+        createdAt: time,
+      };
+
+      const calendar = await calendarRef.add(list);
+      calendarRef
+        .doc(calendar.id)
+        .update({ cid: calendar.id })
+        .then(() => {
+          calendarRef
+            .doc(calendar.id)
+            .get()
+            .then((doc) => {
+              res.json({
+                calendar: doc.data(),
+                msg: "그룹 일정 생성 성공",
+              });
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(401).json({
+            msg: "그룹 일정 생성 실패",
+          });
+        });
+    }
+    else{
+      res.status(401).json({
+        msg: "작성 권한이 없습니다.",
       });
-  } else {
+    }
+  } 
+  else {
     res.status(401).json({
       msg: "그룹 정보가 없습니다.",
     });
