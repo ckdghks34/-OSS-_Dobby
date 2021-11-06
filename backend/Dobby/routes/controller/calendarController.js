@@ -134,6 +134,7 @@ async function updateUserCalendar(req, res, next) {
       placeLat: req.body.placeLat,
       placeLng: req.body.placeLng,
       allDay: req.body.allDay,
+      completed: req.body.completed,
       timeStamp: time,
     };
 
