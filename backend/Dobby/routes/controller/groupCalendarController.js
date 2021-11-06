@@ -12,11 +12,11 @@ async function getGroup(req, res, next) {
     
     if (!group.empty) {
       var groupList = [];
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         for(let doc of group.docs){
           console.log(doc.data().name);
           var temRef = admin.collection("groups").doc(doc.data().gid);
-          var tem = temRef.get();
+          var tem = await temRef.get();
 
           new Promise((resolve, reject) =>{
             if(!tem.empty){
