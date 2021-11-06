@@ -99,7 +99,7 @@ async function createCalendar(req, res, next) {
         });
 
         if(doc.data().uid == uid && doc.data().writer == True){
-          writer = True;
+          writer = true;
         }
       }
       resolve();
