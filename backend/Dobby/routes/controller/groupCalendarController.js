@@ -50,7 +50,7 @@ async function getCalendar(req, res, next) {
     const group = await groupRef.get();
 
     if (!group.empty) {
-        const calendarRef = admin.collection("group").doc(gid).collection("groupcalendar");
+        const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
         const calendar = await calendarRef.get();
     
         if (!calendar.empty) {
