@@ -53,13 +53,24 @@ async function getGroup(req, res, next) {
   const group = await groupsRef.get();
 
   if (!group.empty) {
+    const adminRef = await groupsRef
+      .collection("members")
+      .where("admin", "==", true)
+      .get();
+    const admin = adminRef.docs[0].data();
+
+    const groupdata = {
+      admin: admin.email,
+      ...group.data(),
+    };
+
     res.json({
-      group: group.data(),
+      group: groupdata,
       msg: "그룹 조회 성공",
     });
   } else {
     return res.status(401).json({
-      msg: "존재하지 않는 그룹입니다.",
+      message: "존재하지 않는 그룹입니다.",
     });
   }
 }
@@ -183,10 +194,16 @@ async function deleteGroup(req, res, next) {
       msg: "존재하지 않는 그룹입니다.",
     });
   } else {
-    const groupMemberRef = admin.collection("groups").doc(gid).collection("members");
+    const groupMemberRef = admin
+      .collection("groups")
+      .doc(gid)
+      .collection("members");
     const groupMembers = await groupMemberRef.get();
 
-    const groupCalendarRef = admin.collection("groups").doc(gid).collection("calendar");
+    const groupCalendarRef = admin
+      .collection("groups")
+      .doc(gid)
+      .collection("calendar");
     const groupCalendars = await groupCalendarRef.get();
 
     if (!groupMembers.empty) {
@@ -270,7 +287,10 @@ async function addMember(req, res, next) {
           .get();
 
         if (groupmemberRef.empty) {
-          const userRef = await admin.collection("users").where("email", "==", data).get();
+          const userRef = await admin
+            .collection("users")
+            .where("email", "==", data)
+            .get();
           const member = userRef.docs[0].data();
 
           groupRef
@@ -283,7 +303,9 @@ async function addMember(req, res, next) {
               admin: false,
             })
             .then(() => {
-              console.log("Group Member updated successfully for group: " + gid);
+              console.log(
+                "Group Member updated successfully for group: " + gid
+              );
             })
             .catch((error) => {
               console.log("Error Member updating group : ", error);
@@ -311,17 +333,23 @@ async function leaveMember(req, res, next) {
 
   if (group.empty) {
     return res.status(401).json({
-      msg: "존재하지 않는 그룹입니다.",
+      message: "존재하지 않는 그룹입니다.",
     });
   } else {
+    const userRef = await admin
+      .collection("users")
+      .where("nickname", "==", req.body.nickname)
+      .get();
+    const user = userRef.docs[0].data();
+
     const memberRef = await groupRef
       .collection("members")
-      .where("email", "==", req.body.email)
+      .where("uid", "==", user.uid)
       .get();
 
     if (memberRef.empty) {
       return res.status(401).json({
-        msg: "존재하지 않는 멤버입니다.",
+        message: "존재하지 않는 멤버입니다.",
       });
     } else {
       const member = memberRef.docs[0].id;
@@ -344,6 +372,7 @@ async function leaveMember(req, res, next) {
     }
   }
 }
+
 async function joinGroup(req, res, next) {
   const gid = req.body.gid;
   const uid = req.body.uid;
@@ -363,7 +392,10 @@ async function joinGroup(req, res, next) {
         msg: "존재하지 않는 유저입니다.",
       });
     } else {
-      const groupmemberRef = await groupRef.collection("members").where("uid", "==", uid).get();
+      const groupmemberRef = await groupRef
+        .collection("members")
+        .where("uid", "==", uid)
+        .get();
 
       if (groupmemberRef.empty) {
         groupRef
