@@ -13,7 +13,7 @@ async function getGroup(req, res, next) {
     if (!group.empty) {
       var groupList = [];
       new Promise((resolve, reject) => {
-        for(let doc of group){
+        for(let doc of group.docs){
           console.log(doc.data().name);
           var temRef = admin.collection("groups").doc(doc.data().gid);
           var tem = temRef.get();
