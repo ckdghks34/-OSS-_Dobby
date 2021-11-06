@@ -289,9 +289,8 @@ async function addMember(req, res, next) {
     });
   } else {
     const members = new Set(req.body.members);
-
-    try {
-      members.forEach(async (data) => {
+    new Promise(async (resolve, reject) => {
+      for (let data of members) {
         const groupmemberRef = await groupRef
           .collection("members")
           .where("email", "==", data)
@@ -326,17 +325,68 @@ async function addMember(req, res, next) {
         } else {
           console.log("User already in group");
         }
+      }
+      resolve();
+    })
+      .then(() => {
+        res.json({
+          msg: "멤버 업데이트 성공",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(401).json({
+          msg: "멤버 추가에 문제가 발생하였습니다.",
+        });
       });
-    } catch (error) {
-      console.log(error);
-      res.status(401).json({
-        msg: "멤버 추가에 문제가 발생하였습니다.",
-      });
-    } finally {
-      res.json({
-        msg: "멤버 업데이트 성공",
-      });
-    }
+    //   try {
+    //     members.forEach(async (data) => {
+    //       const groupmemberRef = await groupRef
+    //         .collection("members")
+    //         .where("email", "==", data)
+    //         .get();
+
+    //       if (groupmemberRef.empty) {
+    //         const userRef = await admin
+    //           .collection("users")
+    //           .where("email", "==", data)
+    //           .get();
+    //         const member = userRef.docs[0].data();
+
+    //         groupRef
+    //           .collection("members")
+    //           .add({
+    //             gid: gid,
+    //             name: member.name,
+    //             email: member.email,
+    //             uid: member.uid,
+    //             nickname: member.nickname,
+    //             admin: false,
+    //             writer: false,
+    //           })
+    //           .then(() => {
+    //             console.log(
+    //               "Group Member updated successfully for group: " + gid
+    //             );
+    //           })
+    //           .catch((error) => {
+    //             console.log("Error Member updating group : ", error);
+    //           });
+    //       } else {
+    //         console.log("User already in group");
+    //       }
+    //     });
+    //   } catch (error) {
+    //     console.log(error);
+    //     res.status(401).json({
+    //       msg: "멤버 추가에 문제가 발생하였습니다.",
+    //     });
+    //   } finally {
+    //     res.json({
+    //       msg: "멤버 업데이트 성공",
+    //     });
+    //   }
+    // }
   }
 }
 async function leaveMember(req, res, next) {
@@ -482,7 +532,7 @@ async function updateWriterAuth(req, res, next) {
               "Writer Auth change successfully for members : " + doc.id
             );
             res.json({
-              member: doc.data(),
+              memberNickname: doc.data().nickname,
               msg: "멤버 업데이트 성공",
             });
           });
