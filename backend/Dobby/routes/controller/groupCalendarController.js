@@ -18,21 +18,14 @@ async function getGroup(req, res, next) {
           var temRef = admin.collection("groups").doc(doc.data().gid);
           var tem = await temRef.get();
 
-          new Promise((resolve, reject) =>{
-            if(!tem.empty){
-              console.log(tem.data().name);
-              console.log(tem.data().gid);
-              
-              new Promise((resolve,reject) =>{
-                groupList.push({
-                  name: tem.data().name,
-                  gid: tem.data().gid,
-                });
-                resolve();
-              })
-            }
-            resolve();
-          })
+          if(!tem.empty){
+            console.log(tem.data().name);
+            console.log(tem.data().gid);
+            groupList.push({
+              name: tem.data().name,
+              gid: tem.data().gid,
+            });
+          }
         }
         resolve();
       }) .then(() =>{
