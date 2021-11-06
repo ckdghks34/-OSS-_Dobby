@@ -70,7 +70,6 @@ async function getCalendar(req, res, next) {
                 allDay: doc.data().allDay,
                 color: doc.data().color,
                 participant: doc.data().participant,
-                completed: doc.data().completed,
                 creator: doc.data().creator,
                 createdAt: doc.data().createdAt,
               });
@@ -111,17 +110,9 @@ async function createCalendar(req, res, next) {
 
   if (!group.empty) {
     const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-    const arr = Array.from({length : member.docs.length}, () => false);
-    const memberList = [];
 
     new Promise(async (resolve, reject) => {
       for(let doc of member.docs){
-        memberList.push({
-          uid: doc.data().uid,
-          email: doc.data().email,
-          name: doc.data().name,
-        });
-
         if(doc.data().uid == uid && doc.data().writer == true){
           writer = true;
         }
@@ -142,8 +133,7 @@ async function createCalendar(req, res, next) {
         placeLng: req.body.placeLng,
         allDay: req.body.allDay,
         color: req.body.color,
-        participant: memberList,
-        completed: arr,
+        participant: req.body.participant,
         creator: uid,
         createdAt: time,
       };
@@ -196,44 +186,49 @@ async function updateCalendar(req, res, next) {
   const calendar = await calendarRef.doc(cid).get();
 
   if (!calendar.empty) {
-    const list = {
-      title: req.body.title,
-      content: req.body.content,
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
-      startTime: req.body.startTime,
-      endTime: req.body.endTime,
-      placeName: req.body.placeName,
-      placeLat: req.body.placeLat,
-      placeLng: req.body.placeLng,
-      allDay: req.body.allDay,
-      color: req.body.color,
-      participant: req.body.participant,
-      completed: req.body.completed,
-      creator: uid,
-      createdAt: time,
-    };
+    if(calendar.data().creator == uid){
+      const list = {
+        title: req.body.title,
+        content: req.body.content,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
+        placeName: req.body.placeName,
+        placeLat: req.body.placeLat,
+        placeLng: req.body.placeLng,
+        allDay: req.body.allDay,
+        color: req.body.color,
+        participant: req.body.participant,
+        creator: req.body.creator,
+        createdAt: time,
+      };
 
-    calendarRef
-      .doc(cid)
-      .update(list)
-      .then(() => {
-        calendarRef
-          .doc(cid)
-          .get()
-          .then((doc) => {
-            res.json({
-              calendar: doc.data(),
-              msg: "그룹 일정 수정 성공",
+      calendarRef
+        .doc(cid)
+        .update(list)
+        .then(() => {
+          calendarRef
+            .doc(cid)
+            .get()
+            .then((doc) => {
+              res.json({
+                calendar: doc.data(),
+                msg: "그룹 일정 수정 성공",
+              });
             });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(401).json({
+            msg: "그룹 일정 수정 실패",
           });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(401).json({
-          msg: "그룹 일정 수정 실패",
         });
+    } else {
+      res.status(401).json({
+        msg: "그룹 일정은 생성자만 수정할 수 있습니다.",
       });
+    }
   } else {
     res.status(401).json({
       msg: "그룹 일정 정보가 없습니다.",
