@@ -3,57 +3,54 @@ const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 
 
 async function getGroup(req, res, next) {
-    const uid = req.query.uid;
+  const uid = req.query.uid;
+  const user = admin.collection("users").doc(uid).get();
 
-    const user = admin.collection("users").doc(uid).get();
-
-    if (!user.empty) {
-        const groupRef = admin.collectionGroup("members").where('uid', '==', uid);
-        const group = await groupRef.get();
+  if (!user.empty) {
+    const groupRef = admin.collectionGroup("members").where('uid', '==', uid);
+    const group = await groupRef.get();
     
-        if (!group.empty) {
-          var groupList = [];
-          new Promise((resolve, reject) => {
-            for(let doc of group){
-              console.log(doc.data().name);
-              var temRef = admin.collection("groups").doc(doc.data().gid);
-              var tem = temRef.get();
-              new Promise((resolve, reject) =>{
-                if(!tem.empty){
-                  console.log(tem.data().name);
-                  console.log(tem.data().gid);
-                  new Promise((resolve,reject) =>{
-                    groupList.push({
-                      name: tem.data().name,
-                      gid: tem.data().gid,
-                    });
-                    resolve();
-                  })
-                }
+    if (!group.empty) {
+      var groupList = [];
+      new Promise((resolve, reject) => {
+        for(let doc of group){
+          console.log(doc.data().name);
+          var temRef = admin.collection("groups").doc(doc.data().gid);
+          var tem = temRef.get();
+
+          new Promise((resolve, reject) =>{
+            if(!tem.empty){
+              console.log(tem.data().name);
+              console.log(tem.data().gid);
+              
+              new Promise((resolve,reject) =>{
+                groupList.push({
+                  name: tem.data().name,
+                  gid: tem.data().gid,
+                });
                 resolve();
-              });
+              })
             }
             resolve();
-          }) .then(() =>{
-            res.json({
-              group: groupList,
-              msg: "그룹 조회 성공",
-            });
-          }) .catch(() =>{
-            res.json({
-              error: "에러 발생",
-            });  
-          }) 
-        } else {
-          res.json({
-            error: "그룹이 없습니다.",
-          });
+          })
         }
-      } else {
-        res.status(401).json({
-          msg: "등록된 회원 정보가 없습니다.",
+        resolve();
+      }) .then(() =>{
+        res.json({
+          group: groupList,
+          msg: "그룹 조회 성공",
         });
-      }
+      }) 
+    } else {
+      res.json({
+        error: "그룹이 없습니다.",
+      });
+    }
+  } else {
+    res.status(401).json({
+      msg: "등록된 회원 정보가 없습니다.",
+    });
+  }
 }
 
 
