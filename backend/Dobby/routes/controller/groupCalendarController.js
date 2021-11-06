@@ -14,13 +14,10 @@ async function getGroup(req, res, next) {
       var groupList = [];
       new Promise(async (resolve, reject) => {
         for(let doc of group.docs){
-          console.log(doc.data().name);
           var temRef = admin.collection("groups").doc(doc.data().gid);
           var tem = await temRef.get();
 
           if(!tem.empty){
-            console.log(tem.data().name);
-            console.log(tem.data().gid);
             groupList.push({
               name: tem.data().name,
               gid: tem.data().gid,
