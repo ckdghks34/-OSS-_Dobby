@@ -52,12 +52,36 @@ async function getCalendar(req, res, next) {
     if (!group.empty) {
         const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
         const calendar = await calendarRef.get();
-    
+        const calendarList = [];
+        
         if (!calendar.empty) {
-          res.json({
-            calendar: calendar.docs.data(),
-            msg: "그룹 캘린더 조회 성공",
-          });
+          new Promise(async (resolve, reject) => {
+            for(let doc of calendar.docs){
+              calendarList.push({
+                title : doc.data().title,
+                content: doc.data().content,
+                startDate: doc.data().startDate,
+                endDate: doc.data().endDate,
+                startTime: doc.data().startTime,
+                endTime: doc.data().endTime,
+                placeName: doc.data().placeName,
+                placeLat: doc.data().placeLat,
+                placeLng: doc.data().placeLng,
+                allDay: doc.data().allDay,
+                color: doc.data().color,
+                participant: doc.data().participant,
+                completed: doc.data().completed,
+                creator: doc.data().creator,
+                createdAt: doc.data().createdAt,
+              });
+            }
+            resolve();
+          }) .then(() =>{
+            res.json({
+              calendar: calendarList,
+              msg: "그룹 일정 조회 성공",
+            });
+          }) 
         } else {
           res.json({
             error: "그룹 캘린더가 없습니다.",
