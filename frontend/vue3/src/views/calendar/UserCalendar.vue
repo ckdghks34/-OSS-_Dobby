@@ -66,6 +66,7 @@ export default {
     function showModal() {
       // VMmodal.vue에 접근하여 show 함수 실행
       modal.value.show();
+      modal.value.calData(fullCalendar);
     }
 
     const tttt = function () {
@@ -78,7 +79,7 @@ export default {
       showModal,
       cData,
       fullCalendar,
-      tttt
+      tttt,
     };
   },
 

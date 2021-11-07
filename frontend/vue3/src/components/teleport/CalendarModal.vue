@@ -36,14 +36,13 @@
     </div>
     <el-dialog
       v-model="state.dialogVisible"
-      title="Tips"
       width="30%">
-      <span>This is a message</span>  
+      <span>일정을 삭제할까요?</span>  
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="state.dialogVisible = false">Cancel</el-button>
+          <el-button @click="state.dialogVisible = false">취소</el-button>
           <el-button type="danger" @click="delEvent" 
-            >Delete</el-button
+            >삭제</el-button
           >
         </span>
       </template>
@@ -75,15 +74,13 @@ export default {
 
     const fullCalendar = ref(null)
 
+    const calData = function (cal) {
+      fullCalendar.value = cal
+    }
+
     const delEvent = () => {
-      state.dialogVisible = false
+      state.dialogVisible = false    
       // 삭제 axios 요청
-      // console.log(state.mData.ModalDate)
-      // console.log(state.mData.ModalDate._def.defId)
-      // let calendarApi = this.$refs.fullCalendar.getApi()
-      // const delE = calendarApi.getEventById(state.mData.ModalDate._def.defId)
-      // console.log(delE)
-    
       axios
         .delete('https://k5d105.p.ssafy.io:3030/calendar/deleteCalendar',
           { 
@@ -93,11 +90,8 @@ export default {
           }
           })
           .then(() => {
-            console.log(123123)
-            console.log(fullCalendar)
-            // console.log(calendarApi.getEvents())
-            // calendarApi.delEvent()
-            // router.go(router.currentRoute)
+            state.mData.ModalDate.remove()
+            isOpen.value = false;
           })
           .catch((error) => {
             console.log(error)
@@ -108,46 +102,12 @@ export default {
       mData: computed(() => store.getters.getModalDataFormat),
       dialogVisible: ref(false)
     })
-    return { isOpen, hide, show, state, delEvent };
+    return { isOpen, hide, show, state, delEvent, calData };
   },
   data() {
     return {
     }
   },
-  
-  method: {
-
-    hanldeDeleteEvent: function () {
-
-      
-      // this.state.dialogVisible = false
-      // 삭제 axios 요청
-      // console.log(state.mData.ModalDate)
-      // console.log(state.mData.ModalDate._def.defId)
-      // let calendarApi = this.$refs.fullCalendar.getApi()
-      // const delE = calendarApi.getEventById(state.mData.ModalDate._def.defId)
-      // console.log(delE)
-    
-      // axios
-      //   .delete('https://k5d105.p.ssafy.io:3030/calendar/deleteCalendar',
-      //     { 
-      //       data: {
-      //         uid: localStorage.getItem('uid'),
-      //         cid: state.mData.ModalDate.extendedProps.cid
-      //     }
-      //     })
-      //     .then(() => {
-      //       console.log(123123)
-      //       // let calendarApi = this.$refs.fullCalendar.getApi()
-      //       // calendarApi.delEvent()
-      //       // router.go(router.currentRoute)
-      //     })
-      //     .catch((error) => {
-      //       console.log(error)
-      //     })
-    }
-
-  }
 };
 </script>
 
