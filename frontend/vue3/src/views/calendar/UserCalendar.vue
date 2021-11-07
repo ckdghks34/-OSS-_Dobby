@@ -1,14 +1,14 @@
 <template>
   <div class=calendar-main>
+    <div class="calendar-header">
+      
+    </div>
     <div class='calendar-calwrap'>
       <FullCalendar
         class="calendar-calendar"
         ref="fullCalendar"
         :options="calendarOptions" />
     </div>
-
-    <button @click="tttt">asdfsdaf</button>
-
     <div class='calendar-todowrap'>
       <TodoList 
         class="calendar-todolist"/>
@@ -16,8 +16,6 @@
 
   </div>
   <teleport to="#destination">
-    <!-- 자식 엘리먼트 접근 -->
-    <!-- <CalendarModal ref="modal" :curModal="curModal"> -->
     <CalendarModal ref="modal">
     </CalendarModal>
   </teleport>
@@ -25,8 +23,8 @@
 
 <script>
 // vue
-import { computed, ref } from "vue";
-import {  useStore, mapActions } from "vuex" 
+import { computed, onMounted, ref } from "vue";
+import {  useStore } from "vuex" 
 
 // Calendar
 import '@fullcalendar/core/vdom' // solves problem with Vite
@@ -60,7 +58,7 @@ export default {
     const store = useStore()
     const cData = computed(() => store.state.calendarData)
 
-    const fullCalendar = ref(null)
+    const fullCalendar = ref(null);
 
     const modal = ref(null);
     function showModal() {
@@ -69,78 +67,20 @@ export default {
       modal.value.calData(fullCalendar);
     }
 
-    const tttt = function () {
-      console.log(fullCalendar)
-    }
-
-    return {
-      // disableTeleport,
-      modal,
-      showModal,
-      cData,
-      fullCalendar,
-      tttt,
-    };
-  },
-
-  data() {
-    return {
-      curModal:{},
-      calendarOptions: {
-        plugins: [ 
-          dayGridPlugin,
-          timeGridPlugin,
-          interactionPlugin,
-          listPlugin
-        ],
-        headerToolbar: {
-          // left: 'today prev,next',
-          left: '',
-          center: 'title',
-          right: ''
-          // right: 'dayGridMonth timeGridWeek timeGridDay listWeek'
-        },
-        initialView: 'dayGridMonth',
-        dateClick: this.handleClickDate,
-        eventClick: this.handleEventClick,
-        eventsSet: this.handleEvents,
-        events: [],
-        eventColor: 'red', // color default?
-        timeZone: "local", // local default
-        display: 'list-item',
-        height: "auto", // height
-      },
-    }
-  },
-
-  mounted() { 
-    // calendar 초기화
-    this.initData()
-  },
-
-  methods: {
-    ...mapActions(['setModal', 'refreshCalendarData']),
-
-    handleClickDate: function (arg) {
+    const handleClickDate =  function (arg) {
       alert('check your schedule!' + arg.dateStr)
-    },
+    }
 
-    handleEventClick(clickInfo) {
-
+    const handleEventClick = (clickInfo) => {
       // vuex 상태전환
-      this.setModal(clickInfo.event)
-
+      store.dispatch('setModal', clickInfo.event)
       // modal open
-      this.showModal()
-    },
+      showModal()
+    }
 
-    handleEvents(events) {
-      this.currentEvents = events
-    },
-
-    initData() {
-      // console.log('init data')
-      let calendarApi = this.$refs.fullCalendar.getApi()
+    const initData = function () {
+      console.log('init data')
+      let calendarApi = fullCalendar.value.getApi()
       const data = calendarApi.getEvents()
 
       // 중복을 방지하기 위해서!
@@ -150,16 +90,55 @@ export default {
         )
       }
       // state 와 동기화 해주기
-      this.cData.map(
+      cData.value.map(
         (c) => {
           calendarApi.addEvent(c)
         })
         
-      const refreshData = calendarApi.getEvents()
-      this.refreshCalendarData(refreshData)
-    },
+      store.dispatch('refreshCalendarData', calendarApi.getEvents())
+    }
 
-  }
+    // calendar Button
+    
+
+    const calendarOptions = {
+        plugins: [ 
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin,
+          listPlugin
+        ],
+        headerToolbar: {
+          // left: 'today prev,next',
+          left: 'prev,next',
+          center: 'title',
+          right: 'today'
+          // right: 'dayGridMonth timeGridWeek timeGridDay listWeek'
+        },
+        initialView: 'dayGridMonth',
+        dateClick: handleClickDate,
+        eventClick: handleEventClick,
+        events: [],
+        eventColor: 'red', // color default?
+        timeZone: "local", // local default
+        display: 'list-item',
+        height: "auto", // height
+    }
+
+    onMounted(() => {
+      store.dispatch('setCalendarApi', fullCalendar.value)
+      initData()
+    })
+
+    return {
+      // disableTeleport,
+      modal,
+      showModal,
+      cData,
+      fullCalendar,
+      calendarOptions
+    };
+  },
 }
 </script>
 
@@ -178,8 +157,6 @@ export default {
     display: flex;
     justify-content: center;
   }
-
-  
 
   @media screen and (min-width: 1200px) {
     .calendar-calendar {

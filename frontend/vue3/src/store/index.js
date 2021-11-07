@@ -14,7 +14,8 @@ export default createStore({
     modalData: {},
     refreshData: [],
     todayToDoList: [],
-    toDo: {}
+    toDo: {},
+    calAPI: {},
   },
   mutations: {
     setCalendarData( state, payload ) {
@@ -36,6 +37,18 @@ export default createStore({
     SETTODO( state, payload) {
       state.toDo = payload
       state.isTodoItem = true
+    },
+    SETCALENDARAPI ( state, payload ) {
+      state.calAPI = payload
+    },
+    PUSHCALENDARDATA ( state, payload ) {
+      state.calendarData.push(payload)
+    },
+    DELETECALENDARDATA ( state, payload ) {
+      // console.log(state.calendarData)
+      state.calendarData = state.calendarData.filter((c) => {
+        return c.cid != payload
+      })
     }
   },
   actions: {
@@ -80,6 +93,15 @@ export default createStore({
     },
     setTodo( {commit}, payload) {
       commit('SETTODO', payload)
+    },
+    setCalendarApi ( { commit }, payload ) {
+      commit('SETCALENDARAPI', payload)
+    },
+    pushCalendarData ( { commit }, payload) {
+      commit('PUSHCALENDARDATA', payload)
+    },
+    deleteCalendarData ( { commit }, payload) {
+      commit('DELETECALENDARDATA', payload)
     }
   },
   modules: {},

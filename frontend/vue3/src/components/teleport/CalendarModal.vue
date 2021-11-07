@@ -2,9 +2,10 @@
   <div class="modal" v-if="isOpen">
     <div class="modal-content">
       <div class="modal-content-header">
-        <span style="fontSize: 2rem">{{ state.mData.title }}</span>
+        <span v-if="state.mData.ModalDate.title.length <= 10" style="fontSize: 2rem">{{ state.mData.ModalDate.title }}</span>
+        <span v-else style="fontSize: 1.5rem">{{ state.mData.ModalDate.title }}</span>
         <div>
-          <i class="el-icon-edit modalIcon"></i>
+          <i class="el-icon-edit modalIcon" @click="modalPut"></i>
           <i class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
           <i class="el-icon-close modalIcon" @click="hide"></i>
         </div>
@@ -53,8 +54,9 @@
 <script>
 import { computed, reactive, ref } from "vue";
 import { useStore } from 'vuex'
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import axios from 'axios';
+
 
 export default {
   props: {
@@ -62,12 +64,14 @@ export default {
   },
   setup() {
     const store = useStore()
-    // const router = useRouter()
+    const router = useRouter()
 
     const isOpen = ref(false);
+
     const hide = () => {
       isOpen.value = false;
     };
+
     const show = () => {
       isOpen.value = true;
     };
@@ -76,6 +80,10 @@ export default {
 
     const calData = function (cal) {
       fullCalendar.value = cal
+    }
+
+    const modalPut = () => {
+      router.push({name: 'PutSchedule'})
     }
 
     const delEvent = () => {
@@ -102,7 +110,7 @@ export default {
       mData: computed(() => store.getters.getModalDataFormat),
       dialogVisible: ref(false)
     })
-    return { isOpen, hide, show, state, delEvent, calData };
+    return { isOpen, hide, show, modalPut, state, delEvent, calData };
   },
   data() {
     return {

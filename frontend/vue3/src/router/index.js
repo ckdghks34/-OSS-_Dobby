@@ -10,6 +10,7 @@ import Calendar from '@/views/calendar/Calendar'
 import Schedule from '@/views/schedule/Schedule'
 import sideBar from '@/views/sidebar/sideBar'
 import Chart from '@/views/chart/chart'
+import PutSchedule from '@/views/calendar/PutSchedule'
 
 const routes = [
   {
@@ -75,6 +76,11 @@ const routes = [
     path: '/chart',
     name: 'Chart',
     component: Chart,
+  },
+  {
+    path: '/calendar/putSchedule',
+    name: 'PutSchedule',
+    component: PutSchedule,
   },
 ]
 
