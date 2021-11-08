@@ -72,6 +72,7 @@ async function getCalendar(req, res, next) {
           for (let doc of calendar.docs) {
             calendarList.push({
               title: doc.data().title,
+              category: doc.data().category,
               content: doc.data().content,
               startDate: doc.data().startDate,
               endDate: doc.data().endDate,
@@ -146,6 +147,7 @@ async function createCalendar(req, res, next) {
       if (writer) {
         const list = {
           title: req.body.title,
+          category: req.body.category,
           content: req.body.content,
           startDate: req.body.startDate,
           endDate: req.body.endDate,
@@ -220,6 +222,7 @@ async function updateCalendar(req, res, next) {
       if (calendar.data().creator == uid) {
         const list = {
           title: req.body.title,
+          category: req.body.category,
           content: req.body.content,
           startDate: req.body.startDate,
           endDate: req.body.endDate,
