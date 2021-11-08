@@ -52,15 +52,23 @@ async function getGroup(req, res, next) {
   const group = await groupsRef.get();
 
   if (!group.empty) {
-    const adminRef = await groupsRef
-      .collection("members")
-      .where("admin", "==", true)
-      .get();
+    const adminRef = await groupsRef.collection("members").where("admin", "==", true).get();
     const admin = adminRef.docs[0].data();
+
+    const groupmemberRef = groupsRef.collection("members");
+    const groupmembers = await groupmemberRef.get();
+
+    const groupmembersList = [];
+    groupmembers.forEach((doc) => {
+      groupmembersList.push({
+        ...doc.data(),
+      });
+    });
 
     const groupdata = {
       admin: admin.email,
       ...group.data(),
+      members: groupmembersList,
     };
 
     res.json({
@@ -205,16 +213,10 @@ async function deleteGroup(req, res, next) {
       msg: "존재하지 않는 그룹입니다.",
     });
   } else {
-    const groupMemberRef = admin
-      .collection("groups")
-      .doc(gid)
-      .collection("members");
+    const groupMemberRef = admin.collection("groups").doc(gid).collection("members");
     const groupMembers = await groupMemberRef.get();
 
-    const groupCalendarRef = admin
-      .collection("groups")
-      .doc(gid)
-      .collection("calendar");
+    const groupCalendarRef = admin.collection("groups").doc(gid).collection("calendar");
     const groupCalendars = await groupCalendarRef.get();
 
     if (!groupMembers.empty) {
@@ -288,107 +290,152 @@ async function addMember(req, res, next) {
       msg: "존재하지 않는 그룹입니다.",
     });
   } else {
-    const members = new Set(req.body.members);
-    new Promise(async (resolve, reject) => {
-      for (let data of members) {
-        const groupmemberRef = await groupRef
-          .collection("members")
-          .where("email", "==", data)
-          .get();
+    const userRef = admin.collection("users").where("email", "==", req.body.email);
+    const user = await userRef.get();
 
-        if (groupmemberRef.empty) {
-          const userRef = await admin
-            .collection("users")
-            .where("email", "==", data)
-            .get();
-          const member = userRef.docs[0].data();
-
-          groupRef
-            .collection("members")
-            .add({
-              gid: gid,
-              name: member.name,
-              email: member.email,
-              uid: member.uid,
-              nickname: member.nickname,
-              admin: false,
-              writer: false,
-            })
-            .then(() => {
-              console.log(
-                "Group Member updated successfully for group: " + gid
-              );
-            })
-            .catch((error) => {
-              console.log("Error Member updating group : ", error);
-            });
-        } else {
-          console.log("User already in group");
-        }
-      }
-      resolve();
-    })
-      .then(() => {
-        res.json({
-          msg: "멤버 업데이트 성공",
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        res.status(401).json({
-          msg: "멤버 추가에 문제가 발생하였습니다.",
-        });
+    if (user.empty) {
+      return res.status(401).json({
+        msg: "존재하지 않는 유저입니다.",
       });
-    //   try {
-    //     members.forEach(async (data) => {
-    //       const groupmemberRef = await groupRef
-    //         .collection("members")
-    //         .where("email", "==", data)
-    //         .get();
+    } else {
+      const userdata = user.docs[0].data();
+      const groupMemberRef = admin.collection("groups").doc(gid).collection("members");
+      const groupMember = await groupMemberRef.where("uid", "==", userdata.uid).get();
 
-    //       if (groupmemberRef.empty) {
-    //         const userRef = await admin
-    //           .collection("users")
-    //           .where("email", "==", data)
-    //           .get();
-    //         const member = userRef.docs[0].data();
-
-    //         groupRef
-    //           .collection("members")
-    //           .add({
-    //             gid: gid,
-    //             name: member.name,
-    //             email: member.email,
-    //             uid: member.uid,
-    //             nickname: member.nickname,
-    //             admin: false,
-    //             writer: false,
-    //           })
-    //           .then(() => {
-    //             console.log(
-    //               "Group Member updated successfully for group: " + gid
-    //             );
-    //           })
-    //           .catch((error) => {
-    //             console.log("Error Member updating group : ", error);
-    //           });
-    //       } else {
-    //         console.log("User already in group");
-    //       }
-    //     });
-    //   } catch (error) {
-    //     console.log(error);
-    //     res.status(401).json({
-    //       msg: "멤버 추가에 문제가 발생하였습니다.",
-    //     });
-    //   } finally {
-    //     res.json({
-    //       msg: "멤버 업데이트 성공",
-    //     });
-    //   }
-    // }
+      if (groupMember.empty) {
+        groupMemberRef
+          .add({
+            gid: gid,
+            uid: userdata.uid,
+            name: userdata.name,
+            email: userdata.email,
+            nickname: userdata.nickname,
+            admin: false,
+            writer: false,
+          })
+          .then(() => {
+            console.log("Group Member updated successfully for group: " + gid);
+            return res.json({
+              msg: "그룹 멤버 추가 성공",
+            });
+          })
+          .catch((error) => {
+            console.log("Error Member updating group : ", error);
+            return res.status(401).json({
+              error: "그룹 멤버 추가 실패",
+            });
+          });
+      } else {
+        console.log("User already in group");
+        return res.status(401).json({
+          msg: "이미 존재하는 유저입니다.",
+        });
+      }
+    }
   }
+
+  // List all users
+  // if (group.empty) {
+  //   return res.status(401).json({
+  //     msg: "존재하지 않는 그룹입니다.",
+  //   });
+  // } else {
+  //   const members = new Set(req.body.members);
+  //   new Promise(async (resolve, reject) => {
+  //     for (let data of members) {
+  //       const groupmemberRef = await groupRef
+  //         .collection("members")
+  //         .where("email", "==", data)
+  //         .get();
+
+  //       if (groupmemberRef.empty) {
+  //         const userRef = await admin.collection("users").where("email", "==", data).get();
+  //         const member = userRef.docs[0].data();
+
+  //         groupRef
+  //           .collection("members")
+  //           .add({
+  //             gid: gid,
+  //             name: member.name,
+  //             email: member.email,
+  //             uid: member.uid,
+  //             nickname: member.nickname,
+  //             admin: false,
+  //             writer: false,
+  //           })
+  //           .then(() => {
+  //             console.log("Group Member updated successfully for group: " + gid);
+  //           })
+  //           .catch((error) => {
+  //             console.log("Error Member updating group : ", error);
+  //           });
+  //       } else {
+  //         console.log("User already in group");
+  //       }
+  //     }
+  //     resolve();
+  //   })
+  //     .then(() => {
+  //       res.json({
+  //         msg: "멤버 업데이트 성공",
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       res.status(401).json({
+  //         msg: "멤버 추가에 문제가 발생하였습니다.",
+  //       });
+  //     });
+  //   try {
+  //     members.forEach(async (data) => {
+  //       const groupmemberRef = await groupRef
+  //         .collection("members")
+  //         .where("email", "==", data)
+  //         .get();
+
+  //       if (groupmemberRef.empty) {
+  //         const userRef = await admin
+  //           .collection("users")
+  //           .where("email", "==", data)
+  //           .get();
+  //         const member = userRef.docs[0].data();
+
+  //         groupRef
+  //           .collection("members")
+  //           .add({
+  //             gid: gid,
+  //             name: member.name,
+  //             email: member.email,
+  //             uid: member.uid,
+  //             nickname: member.nickname,
+  //             admin: false,
+  //             writer: false,
+  //           })
+  //           .then(() => {
+  //             console.log(
+  //               "Group Member updated successfully for group: " + gid
+  //             );
+  //           })
+  //           .catch((error) => {
+  //             console.log("Error Member updating group : ", error);
+  //           });
+  //       } else {
+  //         console.log("User already in group");
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(401).json({
+  //       msg: "멤버 추가에 문제가 발생하였습니다.",
+  //     });
+  //   } finally {
+  //     res.json({
+  //       msg: "멤버 업데이트 성공",
+  //     });
+  //   }
+  // }
 }
+
 async function leaveMember(req, res, next) {
   const gid = req.body.gid;
   const groupRef = admin.collection("groups").doc(gid);
@@ -405,10 +452,7 @@ async function leaveMember(req, res, next) {
       .get();
     const user = userRef.docs[0].data();
 
-    const memberRef = await groupRef
-      .collection("members")
-      .where("uid", "==", user.uid)
-      .get();
+    const memberRef = await groupRef.collection("members").where("uid", "==", user.uid).get();
 
     if (memberRef.empty) {
       return res.status(401).json({
@@ -455,10 +499,7 @@ async function joinGroup(req, res, next) {
         msg: "존재하지 않는 유저입니다.",
       });
     } else {
-      const groupmemberRef = await groupRef
-        .collection("members")
-        .where("uid", "==", uid)
-        .get();
+      const groupmemberRef = await groupRef.collection("members").where("uid", "==", uid).get();
 
       if (groupmemberRef.empty) {
         groupRef
@@ -506,9 +547,7 @@ async function updateWriterAuth(req, res, next) {
     });
   } else {
     const memberRef = groupRef.collection("members");
-    const member = await memberRef
-      .where("nickname", "==", req.body.nickname)
-      .get();
+    const member = await memberRef.where("nickname", "==", req.body.nickname).get();
 
     if (member.empty) {
       res.json({
@@ -528,9 +567,7 @@ async function updateWriterAuth(req, res, next) {
           .doc(mid)
           .get()
           .then((doc) => {
-            console.log(
-              "Writer Auth change successfully for members : " + doc.id
-            );
+            console.log("Writer Auth change successfully for members : " + doc.id);
             res.json({
               memberNickname: doc.data().nickname,
               msg: "멤버 업데이트 성공",
