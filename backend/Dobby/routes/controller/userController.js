@@ -1,6 +1,7 @@
 const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 const { signInWithEmailAndPassword } = require("firebase/auth");
 
+const Auth = require("./authController");
 const { query } = require("express");
 /**
  * 회원가입
@@ -227,78 +228,102 @@ async function checkDuplicateEmail(req, res, next) {
  * 회원탈퇴
  */
 async function withdrawUser(req, res, next) {
-  const uid = req.body.uid;
-  adminauth
-    .deleteUser(uid)
-    .then(() => {
-      const userCalendarRef = admin.collection("users").doc(uid).collection("calendar");
-      const userCalendar = userCalendarRef.get();
+  const valid = Auth.verifyToken(req.headers.authorization);
 
-      if (!userCalendar.empty) {
-        userCalendar.forEach((doc) => {
-          userCalendarRef.doc(doc.id).delete();
+  if (valid) {
+    const uid = req.body.uid;
+    adminauth
+      .deleteUser(uid)
+      .then(() => {
+        const userCalendarRef = admin.collection("users").doc(uid).collection("calendar");
+        const userCalendar = userCalendarRef.get();
+
+        if (!userCalendar.empty) {
+          userCalendar.forEach((doc) => {
+            userCalendarRef.doc(doc.id).delete();
+          });
+        }
+
+        admin.collection("users").doc(uid).delete();
+
+        console.log("회원 탈퇴 성공!");
+        return res.json({
+          msg: "회원 탈퇴 되었습니다.",
+          withdraw: true,
         });
-      }
-
-      admin.collection("users").doc(uid).delete();
-
-      console.log("회원 탈퇴 성공!");
-      return res.json({
-        msg: "회원 탈퇴 되었습니다.",
-        withdraw: true,
+      })
+      .catch((error) => {
+        console.log(error);
+        return res.status(401).json({
+          msg: "등록된 회원정보가 없습니다.",
+          withdraw: false,
+        });
       });
-    })
-    .catch((error) => {
-      console.log(error);
-      return res.status(401).json({
-        msg: "등록된 회원정보가 없습니다.",
-        withdraw: false,
-      });
+  } else {
+    res.status(403).json({
+      error: "Token is not vaild",
     });
+  }
 }
 
 async function authSignout(req, res, next) {
   var idToken = req.body.idToken;
-  adminauth.verifyIdToken(idToken).then((decodedToken) => {
-    const uid = decodedToken.uid;
-    console.log("uid : " + uid);
-    adminauth
-      .revokeRefreshTokens(uid)
-      .then((revokeRes) => {
-        console.log("토큰 리브 성공");
-        console.log(revokeRes);
-        return res.json({
-          msg: "로그아웃 성공!",
-          valid: true,
+  adminauth
+    .verifyIdToken(idToken)
+    .then((decodedToken) => {
+      const uid = decodedToken.uid;
+      console.log("uid : " + uid);
+      adminauth
+        .revokeRefreshTokens(uid)
+        .then((revokeRes) => {
+          console.log("토큰 리브 성공");
+          console.log(revokeRes);
+          return res.json({
+            msg: "로그아웃 성공!",
+            valid: true,
+          });
+        })
+        .catch((error) => {
+          console.log("토큰 리브 실패");
+          console.log(error);
+          return res.status(401).json({
+            msg: "로그아웃 실패!",
+            valid: false,
+          });
         });
-      })
-      .catch((error) => {
-        console.log("토큰 리브 실패");
-        console.log(error);
-        return res.status(401).json({
-          msg: "로그아웃 실패!",
-          valid: false,
-        });
+    })
+    .catch((error) => {
+      console.log("Firebase Id token has expired");
+      res.status(403).json({
+        error: "Id token has expired",
       });
-  });
+    });
 }
 
 async function getUserInfo(req, res, next) {
-  const uid = req.query.uid;
+  const valid = Auth.verifyToken(req.headers.authorization);
 
-  const docRef = admin.collection("users").doc(uid);
-  const user = await docRef.get();
+  if (valid) {
+    const uid = req.query.uid;
 
-  if (user.empty) {
-    return res.status(401).json({
-      error: "등록된 회원 정보가 없습니다.",
-    });
+    const docRef = admin.collection("users").doc(uid);
+    const user = await docRef.get();
+
+    if (user.empty) {
+      return res.status(401).json({
+        error: "등록된 회원 정보가 없습니다.",
+      });
+    } else {
+      const userdata = user.data();
+
+      return res.json({
+        user: userdata,
+        valid: true,
+      });
+    }
   } else {
-    const userdata = user.data();
-
-    return res.json({
-      user: userdata,
-      valid: true,
+    res.status(403).json({
+      error: "Token is not vaild",
     });
   }
 }
