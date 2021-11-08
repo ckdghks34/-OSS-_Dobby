@@ -1,13 +1,13 @@
 <template>
-  <el-space wrap>
+  <el-space wrap class="todoitem-card-wrap">
     <el-card class="box-card todoitem-card">
       <el-row :gutter="10">
-        <el-col :span="13" :offset="1" class="todoitem-card-header-title">
+        <el-col :span="18" :offset="1" class="todoitem-card-header-title">
           <span>
             {{ todayItem.title }}
           </span>
         </el-col>
-        <el-col :span="10" class="todoitem-card-header-time">
+        <el-col :span="5" class="todoitem-card-header-time">
           <span>
             {{ 
               ((todayItem.start.toString().split(' ')[4].substring(3, 5) === '00') ? (`${todayItem.start.toString().split(' ')[4].substring(0, 2)}시`) : `${todayItem.start.toString().split(' ')[4].substring(0, 2)}시 ${todayItem.start.toString().split(' ')[4].substring(3, 5)}분`)   
@@ -24,6 +24,7 @@
             </span>
           </el-col>
         </el-row>
+        <el-divider></el-divider>
         <el-row>
           <el-col :span="22" :offset="1" class="todoitem-card-body-content">
             <span>
@@ -56,6 +57,9 @@ export default {
 </script>
 
 <style>
+  .todoitem-card-wrap .el-space__item {
+    margin-right: 0 !important;
+  }
 
   @media screen and (min-width: 1200px) {
     .todoitem-card {
@@ -109,19 +113,22 @@ export default {
 
   @media screen and (max-width: 992px) and (min-width: 768px) {
     .todoitem-card {
-      width: 272px;
+      /* width: 272px; */
+      width: 500px;
+      margin-bottom: 1rem;
     }
   }
 
   @media screen and (max-width: 767px) and (min-width: 500px) {
     .todoitem-card {
-      width: 188px;
-      height: 460px;
+      width: 350px;
+      margin-bottom: 1rem;
     }
   }
-    /* @media screen and (max-width: 499px) {
+    @media screen and (max-width: 499px) {
     .todoitem-card {
-      width: 300px;
+      width: 250px;
+      margin-bottom: 1rem;
     }
-  } */
+  }
 </style>

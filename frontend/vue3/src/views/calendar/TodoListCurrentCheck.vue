@@ -2,12 +2,12 @@
   <el-space wrap>
     <el-card class="box-card todoitem-card" v-if="state.isTodoItem && state.toDo">
       <el-row :gutter="10">
-        <el-col :span="13" :offset="1" class="todoitem-card-header-title">
+        <el-col :span="18" :offset="1" class="todoitem-card-header-title">
           <span>
             {{ state.toDo.title }}
           </span>
         </el-col>
-        <el-col :span="10" class="todoitem-card-header-time">
+        <el-col :span="5" class="todoitem-card-header-time">
           <span>
             {{ 
               ((state.toDo.start.toString().split(' ')[4].substring(3, 5) === '00') ? (`${state.toDo.start.toString().split(' ')[4].substring(0, 2)}시`) : `${state.toDo.start.toString().split(' ')[4].substring(0, 2)}시 ${state.toDo.start.toString().split(' ')[4].substring(3, 5)}분`)   
@@ -24,6 +24,7 @@
             </span>
           </el-col>
         </el-row>
+        <el-divider></el-divider>
         <el-row>
           <el-col :span="22" :offset="1" class="todoitem-card-body-content">
             <span>

@@ -27,6 +27,9 @@ export default createStore({
       if ( state.calendarData.length )
       state.isData = true
     },
+    CHECKEMPTYCALENDARDATA ( state ) {
+      state.isData = true
+    },
     setModalData ( state, payload ) {
       state.modalData = payload
     },
@@ -53,12 +56,17 @@ export default createStore({
   },
   actions: {
     getCalendarData( {commit} ) {
-      // console.log('store axios')
+      console.log('store axios')
       
       axios.
-        post(`${BASE_URL}calendar/getCalendar`,{
-        // post(`${BASE_URL}get`,{
+        post(`${BASE_URL}calendar/getCalendar`,
+        {
           uid: localStorage.getItem('uid')
+        },
+        {
+          headers: {
+            authorization: localStorage.getItem('token')
+          }
         })
         .then( response => {
           const res = response.data.calendar.map((r) => {
@@ -79,10 +87,15 @@ export default createStore({
           })
           commit('setCalendarData', res)
           commit('checkCalendarData')
-        }
-        )
+        })
         .catch( error => {
-          console.log(error)
+          if (error.response.status == 401 && error.response.data.msg === "일정 정보가 없습니다.") {
+            commit('setCalendarData', [])
+            commit('CHECKEMPTYCALENDARDATA')
+          }
+          else {
+            console.log(error.response)
+          }
         })
     },
     setModal( { commit }, payload ) {
@@ -102,7 +115,7 @@ export default createStore({
     },
     deleteCalendarData ( { commit }, payload) {
       commit('DELETECALENDARDATA', payload)
-    }
+    },
   },
   modules: {},
   getters: {

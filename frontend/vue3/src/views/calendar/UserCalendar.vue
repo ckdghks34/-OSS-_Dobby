@@ -1,7 +1,9 @@
 <template>
-  <div class=calendar-main>
-    <div class="calendar-header">
-      
+  <div class="calendar-main">
+    <div class="calendar-headerwrap">
+      <CalendarButton ref="calButton">
+        {{ state.currentMonth }}
+      </CalendarButton>
     </div>
     <div class='calendar-calwrap'>
       <FullCalendar
@@ -10,10 +12,9 @@
         :options="calendarOptions" />
     </div>
     <div class='calendar-todowrap'>
-      <TodoList 
+      <TodoList
         class="calendar-todolist"/>
     </div>
-
   </div>
   <teleport to="#destination">
     <CalendarModal ref="modal">
@@ -23,8 +24,9 @@
 
 <script>
 // vue
-import { computed, onMounted, ref } from "vue";
-import {  useStore } from "vuex" 
+import { computed, onMounted, reactive, ref } from "vue";
+import { useStore } from "vuex"
+import { useRouter } from 'vue-router';
 
 // Calendar
 import '@fullcalendar/core/vdom' // solves problem with Vite
@@ -35,43 +37,53 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 
-// Component
+// views
 import TodoList from '@/views/calendar/TodoList'
 
-// modal
+//components
 import CalendarModal from '@/components/teleport/CalendarModal'
+import CalendarButton from '@/components/calendar/CalendarButton'
+
+//utils
+import dayjs from 'dayjs'
 
 // 연분홍 #E67C73
 // 연파랑 #029BE5
 // 라벤더 #7986CB
-
 
 export default {
   name: "UserCalendar",
   components: {
     FullCalendar, // make the <FullCalendar> tag available
     TodoList,
-    CalendarModal
+    CalendarButton,
+    CalendarModal,
   },
 
   setup() {
     const store = useStore()
     const cData = computed(() => store.state.calendarData)
+    const router = useRouter()
 
     const fullCalendar = ref(null);
-
     const modal = ref(null);
+    const calButton = ref(null);
+
     function showModal() {
       // VMmodal.vue에 접근하여 show 함수 실행
       modal.value.show();
-      modal.value.calData(fullCalendar);
     }
 
-    const handleClickDate =  function (arg) {
-      alert('check your schedule!' + arg.dateStr)
+    const handleClickDate =  function () {
+      if ( confirm('일정을 추가하시겠습니까?') ) {
+        router.push({name: 'Schedule'})
+      }
     }
 
     const handleEventClick = (clickInfo) => {
+
+      calButton.value.sss()
+
       // vuex 상태전환
       store.dispatch('setModal', clickInfo.event)
       // modal open
@@ -79,7 +91,7 @@ export default {
     }
 
     const initData = function () {
-      console.log('init data')
+      // console.log('init data')
       let calendarApi = fullCalendar.value.getApi()
       const data = calendarApi.getEvents()
 
@@ -98,8 +110,64 @@ export default {
       store.dispatch('refreshCalendarData', calendarApi.getEvents())
     }
 
-    // calendar Button
-    
+    const handleViewTitle = () => {
+      let calendarApi = fullCalendar.value.getApi()
+
+      const title = calendarApi.getDate().toString().split(' ')
+      if (state.calendarView === '월') {
+        state.currentMonth = `${title[3]}년 ${changeMonthFormat(title[1])}월`
+      }
+      // else if (state.calendarView === '주') {
+      else {
+        let today = dayjs(calendarApi.getDate().toString())
+        let start = today.day(1).toString().split(' ')
+        let end = today.endOf('week').toString().split(' ')
+
+        // 다를 경우 -1 1년 -2 1개월만
+        if (start[3] === end[3]) {
+          // 같은 년도
+          if (start[2] === end[2]) {
+            // 같은 달
+            state.currentMonth = `${changeMonthFormat(start[2])}월 ${start[1]} - ${end[1]}일 ${start[3]}년`
+          } else {
+            // 다른 달
+            state.currentMonth = `${changeMonthFormat(start[2])}월 ${start[1]}일 - ${changeMonthFormat(end[2])}월 ${end[1]}일, ${start[3]}년`
+          }
+        } else {
+          // 다른 년도
+          state.currentMonth = `${start[3]}년 ${changeMonthFormat(start[2])}월 ${start[1]}일 -  ${end[3]}년 ${changeMonthFormat(end[2])}월 ${end[1]}일`
+        }
+      }
+    }
+
+    const changeMonthFormat = (month) => {
+      switch(month) {
+        case 'Jan':
+          return '1';
+        case 'Feb':
+          return '2';
+        case 'Mar':
+          return '3';
+        case 'Apr':
+          return '4';
+        case 'May':
+          return '5';
+        case 'Jun':
+          return '6';
+        case 'Jul':
+          return '7';
+        case 'Aug':
+          return '8';
+        case 'Sep':
+          return '9';
+        case 'Oct':
+          return '10';
+        case 'Nov':
+          return '11';
+        case 'Dec':
+          return '12';
+      }
+    }
 
     const calendarOptions = {
         plugins: [ 
@@ -109,11 +177,9 @@ export default {
           listPlugin
         ],
         headerToolbar: {
-          // left: 'today prev,next',
-          left: 'prev,next',
-          center: 'title',
-          right: 'today'
-          // right: 'dayGridMonth timeGridWeek timeGridDay listWeek'
+          left: '',
+          center: '',
+          right: ''
         },
         initialView: 'dayGridMonth',
         dateClick: handleClickDate,
@@ -126,23 +192,38 @@ export default {
     }
 
     onMounted(() => {
+      handleViewTitle()
       store.dispatch('setCalendarApi', fullCalendar.value)
       initData()
     })
 
+    const state = reactive({
+      calendarView: '월',
+      currentMonth: '',
+      // currentTitle: computed(() => handleViewTitle()),
+    })
+
     return {
-      // disableTeleport,
       modal,
+      state,
       showModal,
       cData,
       fullCalendar,
-      calendarOptions
+      calendarOptions,
+      handleViewTitle
     };
   },
 }
 </script>
 
 <style>
+  .calendar-main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 
   /* calendar 크기는 width 를 통해서 조절한다. %, px 둘 다 된다.*/
   .calendar-calwrap {
@@ -159,6 +240,7 @@ export default {
   }
 
   @media screen and (min-width: 1200px) {
+
     .calendar-calendar {
       width: 1000px;
     }

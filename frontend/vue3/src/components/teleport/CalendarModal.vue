@@ -95,7 +95,12 @@ export default {
             data: {
               uid: localStorage.getItem('uid'),
               cid: state.mData.ModalDate.extendedProps.cid
-          }
+            }
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token')
+            }
           })
           .then(() => {
             state.mData.ModalDate.remove()

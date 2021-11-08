@@ -37,14 +37,13 @@
       </div>
       <div>
           <button @click="handleCancle">취소</button>
-          <button type="button" @click="addSchedule">추가</button>
+          <button type="button" @click="putSchedule">수정</button>
       </div>
   </div>
 </template>
 
 <script>
   import axios from 'axios';
-  // import { useRouter } from 'vue-router';
   import { computed, reactive } from 'vue'
   import { useStore } from 'vuex';
   import { useRouter } from 'vue-router';
@@ -79,9 +78,10 @@
           endTime: initData.value.ModalDate.end.toString().split(' ')[4].substring(0,5),
           completed: false,
       })
-      const addSchedule = function() {
+      const putSchedule = function() {
         axios
-          .put(`https://k5d105.p.ssafy.io:3030/calendar/updateCalendar`, {
+          .put(`https://k5d105.p.ssafy.io:3030/calendar/updateCalendar`,
+          {
             cid: state.cid,
             uid: localStorage.getItem('uid'),
             title : state.title,
@@ -96,6 +96,11 @@
             allDay: false,
             color: state.color,
             completed: false,
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token')
+            }
           })
           .then( () => {  
             store.dispatch('deleteCalendarData', initData.value.ModalDate.extendedProps.cid)
@@ -116,13 +121,13 @@
             router.push({name: 'Calendar'})
             }
           )
-          .catch( error => {
+          .catch( (error) => {
             console.log(error)
           })
       }
         return {
             state,
-            addSchedule,
+            putSchedule,
             handleCancle,
             initData,
         }
