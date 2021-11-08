@@ -1,9 +1,9 @@
 const { adminauth } = require("./../../firebase/fbconfig");
 
-function verifyToken(reqtoken) {
+async function verifyToken(reqtoken) {
   const token = reqtoken;
   let valid = false;
-  adminauth
+  await adminauth
     .verifyIdToken(token)
     .then(() => {
       console.log("Token is valid" + token);
