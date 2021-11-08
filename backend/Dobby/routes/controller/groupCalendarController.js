@@ -1,212 +1,353 @@
 const { async } = require("@firebase/util");
 const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
-
+const Auth = require("./authController");
 
 async function getGroup(req, res, next) {
-  const uid = req.query.uid;
-  const user = admin.collection("users").doc(uid).get();
+  const valid = Auth.verifyToken(req.headers.authorization);
 
-  if (!user.empty) {
-    const groupRef = admin.collectionGroup("members").where('uid', '==', uid);
-    const group = await groupRef.get();
-    
-    if (!group.empty) {
-      var groupList = [];
-      new Promise(async (resolve, reject) => {
-        for(let doc of group.docs){
-          var temRef = admin.collection("groups").doc(doc.data().gid);
-          var tem = await temRef.get();
+  if (valid) {
+    const uid = req.query.uid;
+    const user = admin.collection("users").doc(uid).get();
 
-          if(!tem.empty){
-            groupList.push({
-              name: tem.data().name,
-              gid: tem.data().gid,
-            });
+    if (!user.empty) {
+      const groupRef = admin.collectionGroup("members").where("uid", "==", uid);
+      const group = await groupRef.get();
+
+      if (!group.empty) {
+        var groupList = [];
+        new Promise(async (resolve, reject) => {
+          for (let doc of group.docs) {
+            var temRef = admin.collection("groups").doc(doc.data().gid);
+            var tem = await temRef.get();
+
+            if (!tem.empty) {
+              groupList.push({
+                name: tem.data().name,
+                gid: tem.data().gid,
+              });
+            }
           }
-        }
-        resolve();
-      }) .then(() =>{
-        res.json({
-          group: groupList,
-          msg: "그룹 조회 성공",
+          resolve();
+        }).then(() => {
+          res.json({
+            group: groupList,
+            msg: "그룹 조회 성공",
+          });
         });
-      }) 
+      } else {
+        res.status(401).json({
+          error: "그룹이 없습니다.",
+        });
+      }
     } else {
-      res.json({
-        error: "그룹이 없습니다.",
+      res.status(401).json({
+        msg: "등록된 회원 정보가 없습니다.",
       });
     }
   } else {
-    res.status(401).json({
-      msg: "등록된 회원 정보가 없습니다.",
+    res.status(403).json({
+      error: "Token is not vaild",
     });
   }
 }
 
-
 async function getCalendar(req, res, next) {
+  const valid = Auth.verifyToken(req.headers.authorization);
+
+  if (valid) {
     const gid = req.query.gid;
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
 
     if (!group.empty) {
-        const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-        const calendar = await calendarRef.get();
-        const calendarList = [];
-        
-        if (!calendar.empty) {
-          new Promise(async (resolve, reject) => {
-            for(let doc of calendar.docs){
-              calendarList.push({
-                title : doc.data().title,
-                content: doc.data().content,
-                startDate: doc.data().startDate,
-                endDate: doc.data().endDate,
-                startTime: doc.data().startTime,
-                endTime: doc.data().endTime,
-                placeName: doc.data().placeName,
-                placeLat: doc.data().placeLat,
-                placeLng: doc.data().placeLng,
-                allDay: doc.data().allDay,
-                color: doc.data().color,
-                participant: doc.data().participant,
-                creator: doc.data().creator,
-                createdAt: doc.data().createdAt,
-              });
-            }
-            resolve();
-          }) .then(() =>{
-            res.json({
-              calendar: calendarList,
-              msg: "그룹 일정 조회 성공",
+      const calendarRef = admin
+        .collection("groups")
+        .doc(gid)
+        .collection("groupcalendar");
+      const calendar = await calendarRef.get();
+      const calendarList = [];
+
+      if (!calendar.empty) {
+        new Promise(async (resolve, reject) => {
+          for (let doc of calendar.docs) {
+            calendarList.push({
+              title: doc.data().title,
+              content: doc.data().content,
+              startDate: doc.data().startDate,
+              endDate: doc.data().endDate,
+              startTime: doc.data().startTime,
+              endTime: doc.data().endTime,
+              placeName: doc.data().placeName,
+              placeLat: doc.data().placeLat,
+              placeLng: doc.data().placeLng,
+              allDay: doc.data().allDay,
+              color: doc.data().color,
+              participant: doc.data().participant,
+              creator: doc.data().creator,
+              createdAt: doc.data().createdAt,
             });
-          }) 
-        } else {
+          }
+          resolve();
+        }).then(() => {
           res.json({
-            error: "그룹 캘린더가 없습니다.",
+            calendar: calendarList,
+            msg: "그룹 일정 조회 성공",
           });
-        }
+        });
       } else {
         res.status(401).json({
-          msg: "등록된 그룹 정보가 없습니다.",
+          error: "그룹 캘린더가 없습니다.",
         });
       }
-}
-
-
-async function createCalendar(req, res, next) {
-  const gid = req.body.gid;
-  const uid = req.body.uid;
-  const time = new Date(+new Date() + 3240 * 10000)
-    .toISOString()
-    .replace("T", " ")
-    .replace(/\..*/, "");
-
-  const groupRef = admin.collection("groups").doc(gid);
-  const group = await groupRef.get();
-  const memberRef = admin.collection("groups").doc(gid).collection("members");
-  const member = await memberRef.get();
-  var writer = false;
-
-  if (!group.empty) {
-    const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-
-    new Promise(async (resolve, reject) => {
-      for(let doc of member.docs){
-        if(doc.data().uid == uid && doc.data().writer == true){
-          writer = true;
-        }
-      }
-      resolve();
-    })
-
-    if(writer){
-      const list = {
-        title: req.body.title,
-        content: req.body.content,
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
-        startTime: req.body.startTime,
-        endTime: req.body.endTime,
-        placeName: req.body.placeName,
-        placeLat: req.body.placeLat,
-        placeLng: req.body.placeLng,
-        allDay: req.body.allDay,
-        color: req.body.color,
-        participant: req.body.participant,
-        creator: uid,
-        createdAt: time,
-      };
-
-      const calendar = await calendarRef.add(list);
-      calendarRef
-        .doc(calendar.id)
-        .update({ cid: calendar.id })
-        .then(() => {
-          calendarRef
-            .doc(calendar.id)
-            .get()
-            .then((doc) => {
-              res.json({
-                calendar: doc.data(),
-                msg: "그룹 일정 생성 성공",
-              });
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(401).json({
-            msg: "그룹 일정 생성 실패",
-          });
-        });
-    }
-    else{
+    } else {
       res.status(401).json({
-        msg: "작성 권한이 없습니다.",
+        msg: "등록된 그룹 정보가 없습니다.",
       });
     }
-  } 
-  else {
-    res.status(401).json({
-      msg: "그룹 정보가 없습니다.",
+  } else {
+    res.status(403).json({
+      error: "Token is not vaild",
     });
   }
 }
 
+async function createCalendar(req, res, next) {
+  const valid = Auth.verifyToken(req.headers.authorization);
+
+  if (valid) {
+    const gid = req.body.gid;
+    const uid = req.body.uid;
+    const time = new Date(+new Date() + 3240 * 10000)
+      .toISOString()
+      .replace("T", " ")
+      .replace(/\..*/, "");
+
+    const groupRef = admin.collection("groups").doc(gid);
+    const group = await groupRef.get();
+    const memberRef = admin.collection("groups").doc(gid).collection("members");
+    const member = await memberRef.get();
+    var writer = false;
+
+    if (!group.empty) {
+      const calendarRef = admin
+        .collection("groups")
+        .doc(gid)
+        .collection("groupcalendar");
+
+      new Promise(async (resolve, reject) => {
+        for (let doc of member.docs) {
+          if (doc.data().uid == uid && doc.data().writer == true) {
+            writer = true;
+          }
+        }
+        resolve();
+      });
+
+      if (writer) {
+        const list = {
+          title: req.body.title,
+          content: req.body.content,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
+          startTime: req.body.startTime,
+          endTime: req.body.endTime,
+          placeName: req.body.placeName,
+          placeLat: req.body.placeLat,
+          placeLng: req.body.placeLng,
+          allDay: req.body.allDay,
+          color: req.body.color,
+          participant: req.body.participant,
+          creator: uid,
+          createdAt: time,
+        };
+
+        const calendar = await calendarRef.add(list);
+        calendarRef
+          .doc(calendar.id)
+          .update({ cid: calendar.id })
+          .then(() => {
+            calendarRef
+              .doc(calendar.id)
+              .get()
+              .then((doc) => {
+                res.json({
+                  calendar: doc.data(),
+                  msg: "그룹 일정 생성 성공",
+                });
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(401).json({
+              msg: "그룹 일정 생성 실패",
+            });
+          });
+      } else {
+        res.status(401).json({
+          msg: "작성 권한이 없습니다.",
+        });
+      }
+    } else {
+      res.status(401).json({
+        msg: "그룹 정보가 없습니다.",
+      });
+    }
+  } else {
+    res.status(403).json({
+      error: "Token is not vaild",
+    });
+  }
+}
 
 async function updateCalendar(req, res, next) {
-  const gid = req.body.gid;
-  const uid = req.body.uid;
-  const cid = req.body.cid;
-  const time = new Date(+new Date() + 3240 * 10000)
-    .toISOString()
-    .replace("T", " ")
-    .replace(/\..*/, "");
-  const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-  const calendar = await calendarRef.doc(cid).get();
+  const valid = Auth.verifyToken(req.headers.authorization);
 
-  if (!calendar.empty) {
-    if(calendar.data().creator == uid){
-      const list = {
-        title: req.body.title,
-        content: req.body.content,
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
-        startTime: req.body.startTime,
-        endTime: req.body.endTime,
-        placeName: req.body.placeName,
-        placeLat: req.body.placeLat,
-        placeLng: req.body.placeLng,
-        allDay: req.body.allDay,
-        color: req.body.color,
-        participant: req.body.participant,
-        creator: req.body.creator,
-        createdAt: time,
-      };
+  if (valid) {
+    const gid = req.body.gid;
+    const uid = req.body.uid;
+    const cid = req.body.cid;
+    const time = new Date(+new Date() + 3240 * 10000)
+      .toISOString()
+      .replace("T", " ")
+      .replace(/\..*/, "");
+    const calendarRef = admin
+      .collection("groups")
+      .doc(gid)
+      .collection("groupcalendar");
+    const calendar = await calendarRef.doc(cid).get();
 
+    if (!calendar.empty) {
+      if (calendar.data().creator == uid) {
+        const list = {
+          title: req.body.title,
+          content: req.body.content,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
+          startTime: req.body.startTime,
+          endTime: req.body.endTime,
+          placeName: req.body.placeName,
+          placeLat: req.body.placeLat,
+          placeLng: req.body.placeLng,
+          allDay: req.body.allDay,
+          color: req.body.color,
+          participant: req.body.participant,
+          creator: req.body.creator,
+          createdAt: time,
+        };
+
+        calendarRef
+          .doc(cid)
+          .update(list)
+          .then(() => {
+            calendarRef
+              .doc(cid)
+              .get()
+              .then((doc) => {
+                res.json({
+                  calendar: doc.data(),
+                  msg: "그룹 일정 수정 성공",
+                });
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(401).json({
+              msg: "그룹 일정 수정 실패",
+            });
+          });
+      } else {
+        res.status(401).json({
+          msg: "그룹 일정은 생성자만 수정할 수 있습니다.",
+        });
+      }
+    } else {
+      res.status(401).json({
+        msg: "그룹 일정 정보가 없습니다.",
+      });
+    }
+  } else {
+    res.status(403).json({
+      error: "Token is not vaild",
+    });
+  }
+}
+
+async function deleteCalendar(req, res, next) {
+  const valid = Auth.verifyToken(req.headers.authorization);
+
+  if (valid) {
+    const gid = req.body.gid;
+    const cid = req.body.cid;
+    const uid = req.body.uid;
+
+    const calendarRef = admin
+      .collection("groups")
+      .doc(gid)
+      .collection("groupcalendar");
+    const calendar = await calendarRef.doc(cid).get();
+
+    if (!calendar.empty) {
+      if (calendar.data().creator == uid) {
+        calendarRef
+          .doc(cid)
+          .delete()
+          .then(() => {
+            res.json({
+              msg: "그룹 일정 삭제 성공",
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(401).json({
+              msg: "그룹 일정 삭제 실패",
+            });
+          });
+      } else {
+        res.status(401).json({
+          msg: "그룹 일정은 생성자만 삭제할 수 있습니다.",
+        });
+      }
+    } else {
+      res.status(401).json({
+        msg: "그룹 일정 정보가 없습니다.",
+      });
+    }
+  } else {
+    res.status(403).json({
+      error: "Token is not vaild",
+    });
+  }
+}
+
+async function checkCalendar(req, res, next) {
+  const valid = Auth.verifyToken(req.headers.authorization);
+
+  if (valid) {
+    const gid = req.body.gid;
+    const uid = req.body.uid;
+    const cid = req.body.cid;
+
+    const calendarRef = admin
+      .collection("groups")
+      .doc(gid)
+      .collection("groupcalendar");
+    const calendar = await calendarRef.doc(cid).get();
+
+    var participant = calendar.data().participant;
+    for (let doc of participant) {
+      if (doc.uid == uid) {
+        if (doc.completed) {
+          doc.completed = false;
+        } else {
+          doc.completed = true;
+        }
+      }
+    }
+
+    if (!calendar.empty) {
       calendarRef
         .doc(cid)
-        .update(list)
+        .update({ participant: participant })
         .then(() => {
           calendarRef
             .doc(cid)
@@ -214,117 +355,27 @@ async function updateCalendar(req, res, next) {
             .then((doc) => {
               res.json({
                 calendar: doc.data(),
-                msg: "그룹 일정 수정 성공",
+                msg: "그룹 일정 완료여부 변경 성공",
               });
             });
         })
         .catch((err) => {
           console.log(err);
           res.status(401).json({
-            msg: "그룹 일정 수정 실패",
+            msg: "그룹 일정 완료여부 변경 실패",
           });
         });
     } else {
       res.status(401).json({
-        msg: "그룹 일정은 생성자만 수정할 수 있습니다.",
+        msg: "그룹 일정 정보가 없습니다.",
       });
     }
   } else {
-    res.status(401).json({
-      msg: "그룹 일정 정보가 없습니다.",
+    res.status(403).json({
+      error: "Token is not vaild",
     });
   }
 }
-
-
-async function deleteCalendar(req, res, next) {
-  const gid = req.body.gid;
-  const cid = req.body.cid;
-  const uid = req.body.uid;
-
-  const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-  const calendar = await calendarRef.doc(cid).get();
-
-  if (!calendar.empty) {
-    if(calendar.data().creator == uid){
-      calendarRef
-        .doc(cid)
-        .delete()
-        .then(() => {
-          res.json({
-            msg: "그룹 일정 삭제 성공",
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(401).json({
-            msg: "그룹 일정 삭제 실패",
-          });
-        });
-    }
-    else{
-      res.status(401).json({
-        msg: "그룹 일정은 생성자만 삭제할 수 있습니다.",
-      });
-    }
-  } else {
-    res.status(401).json({
-      msg: "그룹 일정 정보가 없습니다.",
-    });
-  }
-}
-
-
-async function checkCalendar(req, res, next) {
-  const gid = req.body.gid;
-  const uid = req.body.uid;
-  const cid = req.body.cid;
-
-  const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-  const calendar = await calendarRef.doc(cid).get();
-
-  var participant = calendar.data().participant;
-  for(let doc of participant)
-  {
-    if(doc.uid == uid)
-    {
-      if(doc.completed){
-        doc.completed = false;
-      }
-      else{
-        doc.completed = true;
-      }
-    }
-  }
-
-  if (!calendar.empty) {
-    calendarRef
-      .doc(cid)
-      .update({ participant: participant })
-      .then(() => {
-        calendarRef
-          .doc(cid)
-          .get()
-          .then((doc) => {
-            res.json({
-              calendar: doc.data(),
-              msg: "그룹 일정 완료여부 변경 성공",
-            });
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(401).json({
-          msg: "그룹 일정 완료여부 변경 실패",
-        });
-      });
-  } else {
-    res.status(401).json({
-      msg: "그룹 일정 정보가 없습니다.",
-    });
-  }
-}
-
 
 module.exports = {
   getGroup,
