@@ -29,7 +29,7 @@
         <img src="@/assets/naver.png" alt="" />
         <span>네이버 로그인</span>
       </div>
-      <div class="mainSocialRight g-signin2" data-onsuccess="onSignIn"></div>
+      <div class="mainSocialRight g-signin2" @click="onSignIn"></div>
       <router-link to="/selectsignup"
         ><button class="mainSign blueBtn">회원가입</button></router-link
       >
@@ -114,10 +114,12 @@ export default {
           const credential = GoogleAuthProvider.credentialFromResult(result)
           const token = credential.accessToken
           // The signed-in user info.
-          const user = result.user
+          const uid = result.user.uid
+          localStorage.setItem('token', token)
+          localStorage.setItem('uid', uid)
           console.log('result: ' + JSON.stringify(result))
           console.log('token: ' + token)
-          console.log('user: ' + user)
+          console.log('uid: ' + uid)
         })
         .catch((error) => {
           // Handle Errors here.
