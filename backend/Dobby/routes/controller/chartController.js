@@ -102,6 +102,7 @@ async function getGroup(req, res, next) {
   if (valid) {
       const uid = req.body.uid;
       const gid = req.body.gid;
+      
     } 
     else {
         res.status(403).json({
