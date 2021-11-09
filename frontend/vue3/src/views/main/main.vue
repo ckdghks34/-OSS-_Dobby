@@ -93,10 +93,9 @@ import './main.css'
 
 export default {
   name: 'main',
-  // created() {
-  //   // window.onSignIn = this.onSignIn
-
-  // },
+  created() {
+    window.onSignIn = this.onSignIn
+  },
   methods: {
     onSignIn() {
       console.log('signin')
@@ -108,12 +107,9 @@ export default {
       // console.log('Name: ' + profile.getName())
       // console.log('Image URL: ' + profile.getImageUrl())
       // console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
-      console.log('provider: ' + JSON.stringify(provider))
-      console.log('auth: ' + JSON.stringify(auth))
-      signInWithPopup(provider, auth)
+      signInWithPopup(auth, provider)
         .then((result) => {
           // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = GoogleAuthProvider.credentialFromResult(result)
