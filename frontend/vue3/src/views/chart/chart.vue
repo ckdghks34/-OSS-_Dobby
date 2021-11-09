@@ -4,7 +4,7 @@
       <img
         src="@/assets/dobby.png"
         alt="Dobby logo"
-        style="width: 50%; margin-bottom: 5%;"
+        style="width: 40%; margin: 5% 0;"
       />
       <div class="demo-date-picker" style="margin-bottom:5%;">
         <div class="block">

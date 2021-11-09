@@ -16,7 +16,10 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="비공개" prop="private" style="text-align:left;">
-          <el-switch v-model="state.form.private"></el-switch>
+          <el-switch
+            v-model="state.form.private"
+            @change="state.form.password = ''"
+          ></el-switch>
         </el-form-item>
         <el-form-item
           v-if="state.form.private"
@@ -40,7 +43,7 @@
         </el-form-item>
       </el-form>
       <router-link to="/main"><button class="redBtn">취소</button></router-link>
-      <button class="blueBtn" type="button" @click="clickNewGroupBtn">
+      <button class="blueBtn" type="button" @click="createNewGroup">
         생성
       </button>
     </div>
@@ -49,11 +52,13 @@
 
 <script>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 export default {
   name: 'new-group',
   setup() {
+    const router = useRouter()
     const newGroupForm = ref(null)
 
     const state = reactive({
@@ -79,20 +84,38 @@ export default {
       },
     })
 
-    const clickNewGroupBtn = function() {
+    const createNewGroup = function() {
       newGroupForm.value.validate((valid) => {
         if (valid) {
-          axios.post('http://localhost:8080/group', {
-            groupTitle: state.form.groupTitle,
-            info: state.form.info,
-          })
-          console.log(valid)
-        } else {
-          console.log(valid)
+          axios
+            .post(
+              'https://k5d105.p.ssafy.io:3030/group/createGroup',
+              {
+                uid: localStorage.getItem('uid'),
+                name: state.form.groupTitle,
+                description: state.form.info,
+                private: state.form.private,
+                password: state.form.password,
+              },
+              {
+                headers: {
+                  authorization: localStorage.getItem('token'),
+                },
+              }
+            )
+            .then(() => router.push({ name: 'Calendar' }))
+            .catch((err) => {
+              if (err.response.status === 403) {
+                alert('로그인이 만료되었습니다')
+                router.push({ name: 'main' })
+                localStorage.removeItem('token')
+                localStorage.removeItem('uid')
+              }
+            })
         }
       })
     }
-    return { state, newGroupForm, clickNewGroupBtn }
+    return { state, newGroupForm, createNewGroup }
   },
 }
 </script>

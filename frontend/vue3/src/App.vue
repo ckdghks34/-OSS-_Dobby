@@ -71,6 +71,7 @@ export default {
       userId: '',
       size: true,
       groupLists: [],
+      gid: 'PqoDELK06r3jKL9wP5ts',
     })
     
     onBeforeMount(() => {
@@ -125,17 +126,42 @@ export default {
 // 로그아웃
     const logout = function() {
       axios
-        .post('https://k5d105.p.ssafy.io:3030/users/logout', {
-          idToken: localStorage.getItem('token'),
-        })
-        .then(() => {
+        .post(
+          'https://k5d105.p.ssafy.io:3030/users/logout',
+          {
+            idToken: localStorage.getItem('token'),
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res)
           localStorage.removeItem('token')
           localStorage.removeItem('uid')
           router.push({ name: 'main' })
         })
+        .catch((err) => {
+          console.log(err.response.status)
+          if (err.response.status === 403) {
+            alert('로그인이 만료되었습니다')
+            router.push({ name: 'main' })
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
     }
-    return { logout ,info}
 
+    const toGroup = function() {
+      console.log(info.email)
+      router.push({
+        name: 'GroupInfo',
+        params: { gid: info.gid },
+      })
+    }
+    return { info, logout, toGroup }
   },
 }
 </script>

@@ -1,15 +1,34 @@
 <template>
   <div class="groupInfo" style="margin: 5% 0;">
+    <el-dialog v-model="info.dialogVisible">
+      <span>{{ info.message }}</span>
+    </el-dialog>
+    <el-dialog v-model="info.inviteDia" title="초대하기" width="30%">
+      <p style="margin: 0 0 3% 0">초대할 멤버의 이메일을 입력하세요</p>
+      <el-input
+        v-model="info.inviteEmail"
+        type="email"
+        @keyup.enter="inviteMem"
+      ></el-input>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button class="redBtn" @click="info.inviteDia = false"
+            >취소</el-button
+          >
+          <el-button class="blueBtn" @click="inviteMem">초대</el-button>
+        </span>
+      </template>
+    </el-dialog>
     <div class="groupInfoDiv">
       <div class="groupInfoTop">
         <img src="@/assets/dobby.png" alt="" />
         <div>
           <el-input
             v-if="info.admin"
-            v-model="info.groupTitle"
+            v-model="info.name"
             style="margin-bottom:2%"
           ></el-input>
-          <h3 v-else style="margin-top:0;">그룹 이름</h3>
+          <h3 v-else style="margin-top:0;">{{ info.name }}</h3>
           <span>비공개 여부</span>
           <el-switch
             v-model="info.private"
@@ -26,7 +45,7 @@
       <div class="groupInfoMid textarea">
         <p>상세 설명</p>
         <el-input
-          v-model="info.info"
+          v-model="info.description"
           type="textarea"
           :disabled="!info.admin"
         ></el-input>
@@ -34,13 +53,16 @@
           정보 수정
         </button>
         <div class="groupMember">
-          <div v-for="t in test" :key="t">
-            <p style="display:inline-block; margin: 4px 0;">{{ t }}</p>
+          <div v-for="(t, index) in info.member" :key="index">
+            <p style="display:inline-block; margin: 4px 0;">
+              {{ t.nickname }}
+            </p>
             <span
-              v-if="info.admin"
+              v-if="info.admin && t.nickname != info.userNick"
               style="float: right; margin:1% 2% 0 0; cursor: pointer;"
-              @click="deleteMem(t)"
-              >X</span
+              @click="deleteMem(t.nickname)"
+            >
+              X</span
             >
           </div>
         </div>
@@ -51,10 +73,19 @@
             </button></router-link
           >
 
-          <button class="blueBtn" style="width: 48%;" @click="inviteMem">
+          <button
+            class="blueBtn"
+            style="width: 48%;"
+            @click="info.inviteDia = true"
+          >
             초대하기
           </button>
-          <button class="redBtn" @click="deleteGroup">{group} is free!</button>
+          <button v-if="info.admin" class="redBtn" @click="deleteGroup">
+            {{ info.name }} is free!
+          </button>
+          <button v-else class="redBtn" @click="deleteGroupMem">
+            {{ info.userNick }} is free!
+          </button>
         </div>
       </div>
     </div>
@@ -63,53 +94,199 @@
 
 <script>
 import { reactive } from '@vue/reactivity'
-// import axios from 'axios'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+import { onBeforeMount } from '@vue/runtime-core'
 
 export default {
   name: 'groupInfo',
-  setup() {
+  props: ['gid'],
+  setup(props) {
+    const router = useRouter()
     const info = reactive({
+      userEmail: '',
+      userNick: '',
       admin: false,
       private: false,
-      password: '1234',
-      groupTitle: '그룹 이름',
-      info: 'sssss',
+      password: '',
+      name: '',
+      description: '',
+      dialogVisible: false,
+      message: '',
+      inviteDia: false,
+      inviteEmail: '',
+      member: [],
     })
-    const test = [
-      '어피치',
-      '라이언',
-      '무지',
-      '미니언즈',
-      '포돌이',
-      '포순이',
-      '뚱이',
-    ]
+    onBeforeMount(() => {
+      axios
+        .get(
+          'https://k5d105.p.ssafy.io:3030/users/getUserInfo',
+          {
+            params: { uid: localStorage.getItem('uid') },
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .then((res) => {
+          info.userEmail = res.data.user.email
+          info.userNick = res.data.user.nickname
+          axios
+            .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
+              params: { gid: props.gid },
+            })
+            .then((res) => {
+              console.log(res)
+              info.name = res.data.group.name
+              info.description = res.data.group.description
+              info.private = res.data.group.private
+              info.password = res.data.group.password
+              info.member = res.data.group.members
+              if (res.data.group.admin === info.userEmail) {
+                info.admin = true
+              } else {
+                info.admin = false
+              }
+              console.log(info.member)
+            })
+        })
+        .catch((err) => {
+          if (err.response.status === 403) {
+            alert('로그인이 만료되었습니다')
+            router.push({ name: 'main' })
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
+    })
 
     const changeInfo = function() {
-      alert('정보 수정')
-      //! 임시
-      // axios.put('http://k5d105.p.ssafy.io:9090/group', {
-      //   private: info.private,
-      //   password: info.password,
-      //   groupTitle: info.groupTitle
-      // })
+      axios
+        .put('https://k5d105.p.ssafy.io:3030/group/updateGroup', {
+          private: info.private,
+          password: info.password,
+          name: info.name,
+          description: info.description,
+          gid: props.gid,
+        })
+        .then(() => {
+          info.dialogVisible = true
+          info.message = '정보가 수정되었습니다'
+        })
     }
 
     const deleteMem = function(e) {
-      alert(e + ' 삭제')
-      // axios.delete('http://k5d105.p.ssafy.io:9090/group/member/exile')
+      axios
+        .delete('https://k5d105.p.ssafy.io:3030/group/leaveMember', {
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+          data: { gid: props.gid, nickname: e },
+        })
+        .then(() => {
+          info.dialogVisible = true
+          info.message = '회원을 추방했습니다'
+          axios
+            .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
+              params: { gid: props.gid },
+            })
+            .then((res) => {
+              info.member = res.data.group.members
+            })
+        })
+        .catch((err) => {
+          if (err.response.status === 403) {
+            alert('로그인이 만료되었습니다')
+            router.push({ name: 'main' })
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
     }
 
     const inviteMem = function() {
-      alert('초대')
-      // axios.post('http://k5d105.p.ssafy.io:9090/group/member/exile')
+      if (info.inviteEmail) {
+        axios
+          .put('https://k5d105.p.ssafy.io:3030/group/addMember', {
+            gid: props.gid,
+            email: info.inviteEmail,
+          })
+          .then(() => {
+            info.dialogVisible = true
+            info.message = '회원을 초대했습니다'
+            info.inviteDia = false
+            axios
+              .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
+                params: { gid: props.gid },
+              })
+              .then((res) => {
+                info.member = res.data.group.members
+                console.log(info.member)
+              })
+          })
+          .catch(() => {
+            info.dialogVisible = true
+            info.message = '이메일을 확인해 주세요'
+          })
+      }
     }
 
     const deleteGroup = function() {
-      alert('그룹 삭제')
-      // axios.delete('http://k5d105.p.ssafy.io:9090/group')
+      axios
+        .delete('https://k5d105.p.ssafy.io:3030/group/deleteGroup', {
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+          data: {
+            gid: props.gid,
+          },
+        })
+        .then(() => {
+          alert('그룹이 삭제되었습니다')
+          router.push({ name: 'Calendar' })
+        })
+        .catch((err) => {
+          if (err.response.status === 403) {
+            alert('로그인이 만료되었습니다')
+            router.push({ name: 'main' })
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
     }
-    return { info, test, changeInfo, deleteMem, inviteMem, deleteGroup }
+
+    const deleteGroupMem = function() {
+      axios
+        .delete('https://k5d105.p.ssafy.io:3030/group/leaveMember', {
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+          data: { gid: props.gid, nickname: info.userNick },
+        })
+        .then(() => {
+          alert(`${info.name}에서 탈퇴했습니다`)
+          router.push({ name: 'Calendar' })
+        })
+        .catch((err) => {
+          if (err.response.status === 403) {
+            alert('로그인이 만료되었습니다')
+            router.push({ name: 'main' })
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
+    }
+
+    return {
+      info,
+      changeInfo,
+      deleteMem,
+      inviteMem,
+      deleteGroup,
+      deleteGroupMem,
+    }
   },
 }
 </script>
@@ -120,6 +297,16 @@ export default {
   min-width: 260px;
   max-width: 500px;
   margin: 0 auto;
+}
+
+.groupInfo .el-dialog {
+  width: 30%;
+  top: 20%;
+  max-width: 400px;
+}
+
+.groupInfo .el-dialog__body {
+  word-break: keep-all;
 }
 
 .groupInfoTop img {
@@ -163,7 +350,7 @@ export default {
 
 .groupInfoMid .el-textarea.is-disabled .el-textarea__inner,
 .groupInfoTop .el-input.is-disabled .el-input__inner {
-  background-color: #fff;
+  background-color: rgba(245, 245, 245, 0.582);
   border-color: #a9c9de;
   color: black;
   cursor: auto;
@@ -218,6 +405,21 @@ export default {
     clear: both;
     margin: 5% 0 2% 0;
     text-align: left;
+  }
+}
+
+@media screen and (max-width: 950px) {
+  .groupInfo .el-dialog {
+    width: 40%;
+    top: 20%;
+    word-break: keep-all;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .groupInfo .el-dialog {
+    width: 80%;
+    top: 20%;
   }
 }
 </style>
