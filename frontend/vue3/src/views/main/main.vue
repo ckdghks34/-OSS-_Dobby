@@ -111,9 +111,9 @@ export default {
 
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
-      console.log('provider: ' + provider)
-      console.log('auth: ' + auth)
-      signInWithPopup(auth)
+      console.log('provider: ' + JSON.stringify(provider))
+      console.log('auth: ' + JSON.stringify(auth))
+      signInWithPopup(provider)
         .then((result) => {
           // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = GoogleAuthProvider.credentialFromResult(result)
