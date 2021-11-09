@@ -10,6 +10,8 @@ import Calendar from '@/views/calendar/Calendar'
 import Schedule from '@/views/schedule/Schedule'
 import sideBar from '@/views/sidebar/sideBar'
 import Chart from '@/views/chart/chart'
+import PutSchedule from '@/views/calendar/PutSchedule'
+import GroupCalendar from '@/views/groupCalendar/GroupCalendar'
 
 const routes = [
   {
@@ -77,6 +79,16 @@ const routes = [
     name: 'Chart',
     component: Chart,
   },
+  {
+    path: '/calendar/putSchedule',
+    name: 'PutSchedule',
+    component: PutSchedule,
+  },
+  {
+    path:'/groupCalendar',
+    name: 'GroupCalendar',
+    component: GroupCalendar,
+  }
 ]
 
 const router = createRouter({

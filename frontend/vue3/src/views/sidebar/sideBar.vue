@@ -7,7 +7,6 @@
         <router-link to="/calendar">Calendar</router-link> 
         <router-link to="/schedule">Schedule</router-link>
         <router-link to="/group">Group</router-link> 
-       
         <router-view />
     </div>
 </template>
