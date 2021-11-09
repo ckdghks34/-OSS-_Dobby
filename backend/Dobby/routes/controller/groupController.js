@@ -576,7 +576,7 @@ async function joinGroup(req, res, next) {
       const userRef = admin.collection("users").doc(uid);
       const user = await userRef.get();
 
-      if (user.empty) {
+      if (!user.exists) {
         return res.status(401).json({
           msg: "존재하지 않는 유저입니다.",
         });
@@ -588,10 +588,10 @@ async function joinGroup(req, res, next) {
             .collection("members")
             .add({
               gid: gid,
-              name: user.docs[0].data().name,
-              email: user.docs[0].data().email,
-              uid: user.docs[0].data().uid,
-              nickname: user.docs[0].data().nickname,
+              name: user.data().name,
+              email: user.data().email,
+              uid: user.data().uid,
+              nickname: user.data().nickname,
               admin: false,
               writer: false,
             })
