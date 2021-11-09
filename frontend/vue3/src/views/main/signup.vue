@@ -62,9 +62,23 @@
           <el-input v-model="state.form.checkPw" type="password"></el-input>
         </el-form-item>
         <el-form-item label="주소" prop="address">
-          <el-input v-model="state.form.address" type="email"></el-input>
+          <el-input
+            class="duplInput"
+            v-model="state.form.address"
+            type="text"
+            @click="findAddress"
+            :disabled="info.addressInput"
+          ></el-input
+          ><button
+            class="checkDuplBtn blueBtn"
+            @click="findAddress"
+            type="button"
+          >
+            주소 검색
+          </button>
         </el-form-item>
       </el-form>
+
       <router-link to="/main"
         ><button class="signupCancel redBtn">취소</button></router-link
       >
@@ -91,6 +105,7 @@ export default {
       dialogVisible: false,
       checkNick: false,
       checkEmail: false,
+      addressInput: false,
     })
 
     const state = reactive({
@@ -109,7 +124,7 @@ export default {
         userPhone: [
           { required: true, message: '필수 입력 항목입니다' },
           {
-            pattern: /^01[0-1]{1}[0-9]{3,4}[0-9]{4}/,
+            pattern: /^01[0-1]{1}[0-9]{4}[0-9]{4}/,
             message: '유효하지 않은 전화번호입니다',
           },
         ],
@@ -192,6 +207,15 @@ export default {
       }
     }
 
+    const findAddress = function() {
+      new window.daum.Postcode({
+        oncomplete: function(data) {
+          state.form.address = data.address
+          info.addressInput = true
+        },
+      }).open()
+    }
+
     const clickSignup = function() {
       signupForm.value.validate((valid) => {
         if (valid) {
@@ -224,6 +248,7 @@ export default {
       state,
       checkEmailDupl,
       checkNickDupl,
+      findAddress,
       clickSignup,
     }
   },
@@ -240,6 +265,13 @@ export default {
 .signupDiv > div > div > .el-dialog {
   width: 20%;
   top: 20%;
+}
+
+.signupDiv .el-input.is-disabled .el-input__inner {
+  color: #606266;
+  background-color: rgb(247, 247, 247);
+  border-color: #a9c9de;
+  cursor: auto;
 }
 
 .signup {
