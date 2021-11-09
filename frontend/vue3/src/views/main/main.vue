@@ -98,6 +98,7 @@ export default {
   },
   methods: {
     onSignIn() {
+      console.log('signin')
       firebase.initializeApp(firebaseConfig)
       // onSignIn(googleUser) {
       // var profile = googleUser.getBasicProfile()
@@ -120,6 +121,12 @@ export default {
           console.log('result: ' + JSON.stringify(result))
           console.log('token: ' + token)
           console.log('uid: ' + uid)
+          axios
+            .post('https://k5d105.p.ssafy.io:3030/users/checkSignupGoogle', {
+              uid: uid,
+            })
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
         })
         .catch((error) => {
           // Handle Errors here.
