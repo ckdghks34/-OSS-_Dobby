@@ -338,6 +338,7 @@ async function checkDataWithGoogle(req, res, next) {
     adminauth
       .getUser(uid)
       .then(async (userRecord) => {
+        console.log(userRecord);
         await admin
           .collection("users")
           .doc(uid)
@@ -363,6 +364,7 @@ async function checkDataWithGoogle(req, res, next) {
         });
       });
   } else {
+    console.log("firestore에 이미 저장되어있습니다.");
     res.status(203).json({
       msg: "이미 등록된 회원입니다.",
     });
