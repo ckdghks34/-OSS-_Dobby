@@ -139,6 +139,7 @@ async function createCalendar(req, res, next) {
         for (let doc of member.docs) {
           if (doc.data().uid == uid && doc.data().writer == true) {
             writer = true;
+            break;
           }
         }
         resolve();
@@ -341,8 +342,10 @@ async function checkCalendar(req, res, next) {
       if (doc.uid == uid) {
         if (doc.completed) {
           doc.completed = false;
+          break;
         } else {
           doc.completed = true;
+          break;
         }
       }
     }
