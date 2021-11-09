@@ -330,10 +330,11 @@ async function getUserInfo(req, res, next) {
 
 async function checkDataWithGoogle(req, res, next) {
   const uid = req.body.uid;
-
+  console.log("uid : " + uid);
   const userRef = admin.collection("users").doc(uid);
   const user = await userRef.get();
 
+  console.log(user.data());
   if (user.empty) {
     adminauth
       .getUser(uid)
