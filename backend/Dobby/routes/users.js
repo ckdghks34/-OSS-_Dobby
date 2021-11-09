@@ -19,6 +19,6 @@ router.get("/checkDuplicateEmail", userController.checkDuplicateEmail);
 router.delete("/withdraw", userController.withdrawUser);
 router.post("/logout", userController.authSignout);
 router.get("/getUserInfo", userController.getUserInfo);
-router.get("/checkSignupGoogle", userController.checkDataWithGoogle);
+router.post("/checkSignupGoogle", userController.checkDataWithGoogle);
 
 module.exports = router;
