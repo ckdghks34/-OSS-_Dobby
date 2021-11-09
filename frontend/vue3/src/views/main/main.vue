@@ -29,7 +29,11 @@
         <img src="@/assets/naver.png" alt="" />
         <span>네이버 로그인</span>
       </div>
-      <div class="mainSocialRight g-signin2" @click="onSignIn"></div>
+      <div class="mainSocialRight">
+        <img src="@/assets/google.png" alt="" />
+        <div class="g-signin2" @click="onSignIn"><span>구글 로그인</span></div>
+      </div>
+
       <router-link to="/selectsignup"
         ><button class="mainSign blueBtn">회원가입</button></router-link
       >
@@ -69,7 +73,12 @@
           <img src="@/assets/naver.png" alt="" /><span>네이버 로그인</span>
         </div>
         <br />
-        <div class="g-signin2" @click="onSignIn"></div>
+        <div>
+          <img src="@/assets/google.png" alt="" />
+          <div class="g-signin2" @click="onSignIn">
+            <span>구글 로그인</span>
+          </div>
+        </div>
       </div>
       <div class="mainMobSign">
         <h3>아직 회원이 아니신가요?</h3>
@@ -98,21 +107,12 @@ export default {
     onSignIn() {
       console.log('signin')
       firebase.initializeApp(firebaseConfig)
-      // onSignIn(googleUser) {
-      // var profile = googleUser.getBasicProfile()
-      // console.log('ID Token: ' + googleUser.getAuthResponse().id_token)
-      // console.log('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-      // console.log('Name: ' + profile.getName())
-      // console.log('Image URL: ' + profile.getImageUrl())
-      // console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
       signInWithPopup(auth, provider)
         .then((result) => {
-          // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = GoogleAuthProvider.credentialFromResult(result)
           const token = credential.accessToken
-          // The signed-in user info.
           const uid = result.user.uid
           localStorage.setItem('token', token)
           localStorage.setItem('uid', uid)
@@ -127,12 +127,9 @@ export default {
             .catch((err) => console.log(err))
         })
         .catch((error) => {
-          // Handle Errors here.
           const errorCode = error.code
           const errorMessage = error.message
-          // The email of the user's account used.
           const email = error.email
-          // The AuthCredential type that was used.
           const credential = GoogleAuthProvider.credentialFromError(error)
           console.log('errorCode: ' + errorCode)
           console.log('errorMessage: ' + errorMessage)
@@ -240,8 +237,8 @@ export default {
 }
 
 .mainSocialLeft:hover,
-.mainSocialRight .abcRioButton:hover,
-.mainMobSocialLogin > div:nth-child(1):hover {
+.mainSocialRight:hover,
+.mainMobSocialLogin > div:hover {
   box-shadow: 0 0 10px #a9c9de;
 }
 
@@ -284,20 +281,20 @@ export default {
 .mainSocialRight {
   display: inline-block;
   cursor: pointer;
-}
-
-.mainSocialLeft {
   width: 210px;
   height: 35px;
   margin-top: 17px;
   text-align: center;
   padding: 5px;
-  margin-left: 40px;
-  margin-right: 13px;
   background-color: white;
   border: 1px solid #a9c9de;
   border-radius: 2px;
   box-shadow: 0 2px 4px 0 rgb(0 0 0 / 25%);
+}
+
+.mainSocialLeft {
+  margin-left: 40px;
+  margin-right: 13px;
 }
 
 .mainSocialLeft > img,
@@ -308,12 +305,17 @@ export default {
 }
 
 .mainSocialLeft > span,
-.mainSocialRight > span {
+.mainSocialRight > div > span {
   line-height: 2;
 }
 
 .mainSocialRight > span {
   margin-left: 7px;
+}
+
+.mainSocialRight .g-signin2 {
+  width: 100%;
+  height: 100%;
 }
 
 .g-signin2 > div {
@@ -361,7 +363,7 @@ export default {
   margin: 10px 0 20px 0;
 }
 
-.mainMobSocialLogin > div:nth-child(1) {
+.mainMobSocialLogin > div {
   display: inline-block;
   width: 45%;
   height: 25px;
@@ -372,14 +374,17 @@ export default {
   border: 1px solid #a9c9de;
 }
 
-.mainMobSocialLogin > div > img {
+.mainMobSocialLogin > div > img,
+.g-signin2 > img {
   float: left;
-  width: 25px;
+  width: 15%;
+  max-width: 24px;
 }
 
 .mainMobSocialLogin .g-signin2 {
   display: inline-block;
-  width: 45%;
+  width: 85%;
+
   height: 25px;
 }
 
