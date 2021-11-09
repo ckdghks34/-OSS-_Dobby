@@ -29,34 +29,28 @@ export default {
     })
     
     onBeforeMount(() => {
-      axios.get('http://k5d105.p.ssafy.io:3000/users/getUserInfo',{params: {
+      axios.get('https://k5d105.p.ssafy.io:3030/users/getUserInfo',{params: {
           uid : localStorage.getItem('uid')
       } })
-        .then(response =>
-            this.userId = response.uid)
-        .error(error => console.log(error))
+        .then((response) => {
+            info.userId = response.data.user.nickname
+            })
+        .catch((error) => {console.log(error)})
+      
+      axios.get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {params: {
+          uid :localStorage.getItem('uid')
+      } })
+        .then((response) => {
+            console.log(response)
+        })
+        .catch((error) => {console.log(error)})
     })
+
+    
     return {
       info
     }
-  
-
-  },
-
-  
-        // axios.
-        // post(`${BASE_URL}get`,{
-        //     uid: localStorage.getItem('uid')
-        // })
-        // .then( response => {
-        //     console.log('getCalendar Response')
-        //     console.log(response)
-        
-        // })
-        // .catch( error => {
-        //     console.log(error)
-        // })
-
+  }
 }
 </script>
 
@@ -66,9 +60,8 @@ export default {
     height: 100%;
     width: 200px;
     background-color: #A9C9DE;
-    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-    /*z-index: 1;*/ /* Stay on top */
-    top: 0; /* Stay at the top */
+    position: fixed; 
+    top: 0; 
     left: 0;
     overflow-x: hidden; /* Disable horizontal scroll */
     padding-top: 0;
@@ -81,7 +74,6 @@ export default {
     transition: all 0.3s ease;
     color: white;
     font-size: 20px;
-
     }
 
     .icon-bar a:hover {
