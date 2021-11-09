@@ -25,8 +25,8 @@
               </div>
             </el-col>
           </el-row>
-        
         </div>
+
         <div v-if="!state.isBig">
           <el-row class="modal-content-body-contents-row">
             <div class="modal-content-header" style="width: 100%">

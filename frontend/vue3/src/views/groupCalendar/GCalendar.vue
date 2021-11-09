@@ -1,9 +1,9 @@
 <template>
   <div class="calendar-main">
     <div class="calendar-headerwrap">
-      <!-- <CalendarButton ref="calButton">
+      <GroupCalendarButton ref="calButton">
         {{ state.currentMonth }}
-      </CalendarButton> -->
+      </GroupCalendarButton>
     </div>
     <div class='calendar-calwrap'>
       <FullCalendar
@@ -12,13 +12,10 @@
             :options="calendarOptions" />
     </div>
     <div class='calendar-todowrap'>
-      <!-- <TodoList
-        class="calendar-todolist"/> -->
+      <GroupTodoList class="calendar-todolist"/>
     </div>
   </div>
   <teleport to="#destination">
-    <!-- <CalendarModal ref="modal">
-    </CalendarModal> -->
     <GroupCalendarModal ref="groupModal" />
   </teleport>
 </template>
@@ -27,7 +24,6 @@
 
 // Calendar
 import '@fullcalendar/core/vdom' // solves problem with Vite
-// import FullCalendar, { CalendarOptions, EventApi, DateSelectArg, EventClickArg } from '@fullcalendar/vue3'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -35,16 +31,23 @@ import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 
-// modal
+// component
 import GroupCalendarModal from '@/components/teleport/GroupCalendarModal'
+import GroupCalendarButton from '@/components/calendar/GroupCalendarButton'
+import GroupTodoList from '@/views/groupCalendar/GroupTodoList'
+
+//utils
+import dayjs from 'dayjs'
 
 export default {
   name: 'GCalendar',
   components: {
     FullCalendar,
     GroupCalendarModal,
+    GroupCalendarButton,
+    GroupTodoList,
   },
 
   setup() {
@@ -61,6 +64,7 @@ export default {
     }
 
     onMounted(() => {
+      handleViewTitle()
       store.dispatch('setGroupCalendarApi', groupfullCalendar.value)
       initData()
     })
@@ -119,8 +123,68 @@ export default {
           }
         })
       })
-      // store.dispatch('refreshCalendarData', calendarApi.getEvents())
+      store.dispatch('refreshGroupCalendarData', calendarApi.getEvents())
     }
+
+    const handleViewTitle = () => {
+      let calendarApi = groupfullCalendar.value.getApi()
+
+      const title = calendarApi.getDate().toString().split(' ')
+      if (state.calendarView === '월') {
+        state.currentMonth = `${title[3]}년 ${changeMonthFormat(title[1])}월`
+      }
+      // else if (state.calendarView === '주') {
+      else {
+        let today = dayjs(calendarApi.getDate().toString())
+        let start = today.day(1).toString().split(' ')
+        let end = today.endOf('week').toString().split(' ')
+
+        // 다를 경우 -1 1년 -2 1개월만
+        if (start[3] === end[3]) {
+          // 같은 년도
+          if (start[2] === end[2]) {
+            // 같은 달
+            state.currentMonth = `${changeMonthFormat(start[2])}월 ${start[1]} - ${end[1]}일 ${start[3]}년`
+          } else {
+            // 다른 달
+            state.currentMonth = `${changeMonthFormat(start[2])}월 ${start[1]}일 - ${changeMonthFormat(end[2])}월 ${end[1]}일, ${start[3]}년`
+          }
+        } else {
+          // 다른 년도
+          state.currentMonth = `${start[3]}년 ${changeMonthFormat(start[2])}월 ${start[1]}일 -  ${end[3]}년 ${changeMonthFormat(end[2])}월 ${end[1]}일`
+        }
+      }
+    }
+
+    const changeMonthFormat = (month) => {
+      switch(month) {
+        case 'Jan':
+          return '1';
+        case 'Feb':
+          return '2';
+        case 'Mar':
+          return '3';
+        case 'Apr':
+          return '4';
+        case 'May':
+          return '5';
+        case 'Jun':
+          return '6';
+        case 'Jul':
+          return '7';
+        case 'Aug':
+          return '8';
+        case 'Sep':
+          return '9';
+        case 'Oct':
+          return '10';
+        case 'Nov':
+          return '11';
+        case 'Dec':
+          return '12';
+      }
+    }
+
 
     const calendarOptions = {
         plugins: [ 
@@ -144,12 +208,19 @@ export default {
         height: "auto", // height
     }
 
+    const state = reactive({
+      calendarView: '월',
+      currentMonth: '',
+    })
+
     return {
+      state,
       calendarOptions,
       gCData,
       groupfullCalendar,
       groupModal,
       showGroupModal,
+      handleViewTitle,
     }
   }
 }

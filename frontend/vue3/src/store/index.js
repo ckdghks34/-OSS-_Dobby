@@ -19,9 +19,12 @@ export default createStore({
     calAPI: {},
     // group calendar
     isGroupData: false,
+    isGroupTodoItem: false,
     groupCalendarData: [],
     groupModalData: {},
+    groupRefreshData: [],
     groupCalAPI: {},
+    groupToDo: {},
   },
   mutations: {
     setCalendarData( state, payload ) {
@@ -79,6 +82,13 @@ export default createStore({
     },
     PUSHGROUPCALENDARDATA ( state, payload ) {
       state.groupCalendarData.push(payload)
+    },
+    REFRESHGROUPCALENDARDATA ( state, payload ) {
+      state.groupRefreshData = payload
+    },
+    SETGROUPTODO ( state, payload) {
+      state.groupToDo = payload
+      state.isGroupTodoItem = true
     }
   },
   actions: {
@@ -255,6 +265,12 @@ export default createStore({
     },
     pushGroupCalendarData ( { commit }, payload ) {
       commit('PUSHGROUPCALENDARDATA', payload)
+    },
+    refreshGroupCalendarData ( { commit }, payload ) {
+      commit('REFRESHGROUPCALENDARDATA', payload)
+    },
+    setGroupTodo ( { commit }, payload ) {
+      commit('SETGROUPTODO', payload)
     }
   },
   modules: {},
@@ -336,7 +352,36 @@ export default createStore({
         'startDay' : startDay,
         'endDay' : endDay
       }
-    }
+    },
+    getGroupTodayToDoList ( state ) {
+
+      const calData =  state.groupRefreshData
+      let date = dayjs()
+      dayjs.extend(isBetween)
+
+      const todayList = calData.filter((day) => {
+        /* 
+          today 조건
+          1. 오늘이 시작과 끝 사이다
+          2. 끝나는 날이 오늘이다
+          3. 시작하는 날이 오늘이다
+          ( allday )
+          4. 종일일정이 오늘이다1
+          5. 하루 시작과 끝이 오늘이다.
+        */
+        if (date.isBetween(day.startStr, day.endStr)) {
+          return day
+        }
+        if (date.isSame(day.startStr, 'day')) {
+          return day
+        }
+        if (date.isSame(day.endStr, 'day')) {
+          return day
+        }
+      })
+
+      return todayList.sort(daySort)
+    },
   }
 })
 

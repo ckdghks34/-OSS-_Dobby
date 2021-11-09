@@ -30,7 +30,6 @@ import { useRouter } from 'vue-router';
 
 // Calendar
 import '@fullcalendar/core/vdom' // solves problem with Vite
-// import FullCalendar, { CalendarOptions, EventApi, DateSelectArg, EventClickArg } from '@fullcalendar/vue3'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -68,16 +67,16 @@ export default {
     const fullCalendar = ref(null);
     const modal = ref(null);
 
-    function showModal() {
-      // VMmodal.vue에 접근하여 show 함수 실행
-      modal.value.show();
-    }
-
     onMounted(() => {
       handleViewTitle()
       store.dispatch('setCalendarApi', fullCalendar.value)
       initData()
     })
+
+    function showModal() {
+      // VMmodal.vue에 접근하여 show 함수 실행
+      modal.value.show();
+    }
 
     const handleClickDate =  function () {
       if ( confirm('일정을 추가하시겠습니까?') ) {
@@ -104,9 +103,6 @@ export default {
         )
       }
       // state 와 동기화 해주기
-
-      console.log(cData)
-
       calendarApi.batchRendering(function() {
         cData.value.map(
         (c) => {
@@ -219,7 +215,6 @@ export default {
     const state = reactive({
       calendarView: '월',
       currentMonth: '',
-      // currentTitle: computed(() => handleViewTitle()),
     })
 
     return {
