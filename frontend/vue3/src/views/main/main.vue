@@ -93,9 +93,9 @@ import './main.css'
 
 export default {
   name: 'main',
-  // created() {
-  //   window.onSignIn = this.onSignIn
-  // },
+  created() {
+    window.onSignIn = this.onSignIn
+  },
   methods: {
     onSignIn() {
       console.log('signin')
