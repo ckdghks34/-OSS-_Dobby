@@ -71,6 +71,7 @@ async function getCalendar(req, res, next) {
         new Promise(async (resolve, reject) => {
           for (let doc of calendar.docs) {
             calendarList.push({
+              cid: doc.data().cid,
               title: doc.data().title,
               category: doc.data().category,
               content: doc.data().content,
@@ -222,6 +223,7 @@ async function updateCalendar(req, res, next) {
     if (!calendar.empty) {
       if (calendar.data().creator == uid) {
         const list = {
+          cid: req.body.cid,
           title: req.body.title,
           category: req.body.category,
           content: req.body.content,
