@@ -1,8 +1,8 @@
 .blueBtn {
-  background-color: #a9c9de;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  background-color: #a9c9de !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
 }
 
 .blueBtn:hover {
@@ -10,10 +10,10 @@
 }
 
 .redBtn {
-  background-color: rgb(255, 155, 155);
-  color: white;
-  border: none;
-  border-radius: 4px;
+  background-color: rgb(255, 155, 155) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
 }
 
 .redBtn:hover {

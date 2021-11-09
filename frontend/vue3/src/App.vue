@@ -3,7 +3,8 @@
     <router-link to="/main">main</router-link> |
     <router-link to="/about">About</router-link> |
     <router-link to="/newgroup">newGroup</router-link> |
-    <router-link to="/group">Group</router-link> |
+    <!-- <router-link to="/group">Group</router-link> | -->
+    <button @click="toGroup">Group</button> |
     <router-link to="/calendar">Calendar</router-link> |
     <router-link to="/schedule">Schedule</router-link> |
     <router-link to="/chart">chart</router-link> |
@@ -22,6 +23,7 @@
 import teleportExample from '@/components/teleport/teleportExample'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { reactive } from '@vue/reactivity'
 
 export default {
   components: {
@@ -30,18 +32,48 @@ export default {
   setup() {
     const router = useRouter()
 
+    const info = reactive({
+      gid: 'PqoDELK06r3jKL9wP5ts',
+    })
+
     const logout = function() {
       axios
-        .post('https://k5d105.p.ssafy.io:3030/users/logout', {
-          idToken: localStorage.getItem('token'),
-        })
-        .then(() => {
+        .post(
+          'https://k5d105.p.ssafy.io:3030/users/logout',
+          {
+            idToken: localStorage.getItem('token'),
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res)
           localStorage.removeItem('token')
           localStorage.removeItem('uid')
           router.push({ name: 'main' })
         })
+        .catch((err) => {
+          console.log(err.response.status)
+          if (err.response.status === 403) {
+            alert('로그인이 만료되었습니다')
+            router.push({ name: 'main' })
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
     }
-    return { logout }
+
+    const toGroup = function() {
+      console.log(info.email)
+      router.push({
+        name: 'GroupInfo',
+        params: { gid: info.gid },
+      })
+    }
+    return { info, logout, toGroup }
   },
 }
 </script>

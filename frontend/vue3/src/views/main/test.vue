@@ -8,20 +8,20 @@
         src="https://cdn.notefolio.net/img/4a/68/4a68c7b7158baee7602cedc5aef9c2fe42a5f680689f55b250107789f7c531b6_v1.jpg"
         alt="logo"
       />
-      <button class="mainLogin blueBtn" style="float: right" @click="login">
+      <button class="mainLogin" style="float: right" @click="login">
         로그인
       </button>
       <div class="mainLoginDiv">
         <div>
-          <span>Email</span>
-          <input class="input" type="text" v-model="info.userEmail" />
+          <span>ID</span>
+          <input type="text" v-model="info.userId" />
         </div>
         <div>
           <span>PW</span>
-          <input class="input" type="password" v-model="info.userPw" />
+          <input type="password" v-model="info.userPw" />
           <br />
           <router-link class="mainFind" to="/find"
-            ><span>이메일/비밀번호 찾기</span></router-link
+            ><span>아이디/비밀번호 찾기</span></router-link
           >
         </div>
       </div>
@@ -29,9 +29,18 @@
         <img src="@/assets/naver.png" alt="" />
         <span>네이버 로그인</span>
       </div>
-      <div class="mainSocialRight g-signin2" data-onsuccess="onSignIn"></div>
+      <div class="mainSocialRight">
+        <div
+          img
+          src="@/assets/google.png"
+          alt=""
+          class="g-signin2"
+          id="google-signin-btn"
+          data-onsuccess="onSignIn"
+        />
+      </div>
       <router-link to="/selectsignup"
-        ><button class="mainSign blueBtn">회원가입</button></router-link
+        ><button class="mainSign">회원가입</button></router-link
       >
     </div>
 
@@ -42,27 +51,15 @@
         alt="logo"
       />
       <div class="mainMobLogin">
-        <input
-          class="input"
-          type="text"
-          placeholder="Email"
-          v-model="info.userEmail"
-          @keyup.enter="login"
-        />
+        <input type="text" placeholder="ID" v-model="info.userId" />
         <br />
-        <input
-          class="input"
-          type="password"
-          placeholder="PW"
-          v-model="info.userPw"
-          @keyup.enter="login"
-        />
+        <input type="password" placeholder="PW" v-model="info.userPw" />
         <br />
         <div class="mainMobFind">
-          <router-link to="/find"><p>이메일/비밀번호 찾기</p></router-link>
+          <router-link to="/find"><p>아이디/비밀번호 찾기</p></router-link>
         </div>
         <br />
-        <button class="blueBtn" @click="login">로그인</button>
+        <button @click="login">로그인</button>
       </div>
       <div class="mainMobSocialLogin">
         <div>
@@ -85,16 +82,27 @@
 import { reactive } from '@vue/reactivity'
 import { onBeforeMount } from '@vue/runtime-core'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
-import './main.css'
 
 export default {
   name: 'main',
+  created() {
+    window.onSignIn = this.onSignIn
+  },
+  methods: {
+    onSignIn(googleUser) {
+      var profile = googleUser.getBasicProfile()
+      console.log('ID Token: ' + googleUser.getAuthResponse().id_token)
+      console.log('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
+      console.log('Name: ' + profile.getName())
+      console.log('Image URL: ' + profile.getImageUrl())
+      console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
+    },
+  },
   setup() {
-    const router = useRouter()
+    // const router = useRouter()
     const info = reactive({
       size: true,
-      userEmail: '',
+      userId: '',
       userPw: '',
       dialogVisible: false,
       message: '',
@@ -117,39 +125,34 @@ export default {
     )
 
     const login = function() {
-      if (info.userEmail && info.userPw) {
+      if (info.userId && info.userPw) {
         axios
           .post('https://k5d105.p.ssafy.io:3030/users/login', {
-            email: info.userEmail,
+            id: info.userId,
             password: info.userPw,
           })
           .then((res) => {
             console.log(res)
-            localStorage.setItem('token', res.data.token.accessToken)
-            localStorage.setItem('uid', res.data.user.uid)
-            router.push({ name: 'Calendar' })
           })
           .catch(() => {
             info.dialogVisible = true
-            info.message = '이메일 또는 비밀번호가 잘못 되었습니다'
+            info.message = '아이디 또는 비밀번호가 잘못 되었습니다'
           })
       }
     }
 
-    const onSignIn = function(googleUser) {
-      var profile = googleUser.getBasicProfile()
-      console.log('ID Token: ' + googleUser.getAuthResponse().id_token)
-      console.log('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-      console.log('Name: ' + profile.getName())
-      console.log('Image URL: ' + profile.getImageUrl())
-      console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-    }
-    return { info, login, onSignIn }
+    return { info, login }
   },
 }
 </script>
 
 <style>
+.main {
+  display: flex;
+  height: 85vh;
+  align-items: center;
+}
+
 .main .el-dialog {
   width: 30%;
   top: 20%;
@@ -182,6 +185,11 @@ export default {
 .mainDiv > button,
 .mainSign,
 .mainMobLogin > button {
+  color: white;
+  background-color: #a9c9de;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Gowun Batang', serif !important;
   font-size: 17px;
 }
 
@@ -196,8 +204,11 @@ export default {
   margin-top: 20px;
 }
 
+.mainDiv > button:hover,
+.mainSign:hover,
 .mainSocialLeft:hover,
-.mainSocialRight .abcRioButton:hover,
+.mainSocialRight:hover,
+.mainMobLogin > button:hover,
 .mainMobSocialLogin > div:hover {
   box-shadow: 0 0 10px #a9c9de;
 }
@@ -211,10 +222,15 @@ export default {
   height: 40px;
   width: 230px;
   padding-left: 10px;
+  border: 2px solid #a9c9de;
+  border-radius: 4px;
 }
 
 .mainLoginDiv > div > input:focus,
 .mainMobLogin > input:focus {
+  outline: none;
+  border: 2px solid #a9c9de;
+  box-shadow: 0 0 5px #a9c9de;
   margin-bottom: 0;
 }
 
@@ -227,7 +243,7 @@ export default {
 }
 
 .mainLoginDiv > div:nth-child(2) > span:nth-child(1) {
-  margin-right: 39px;
+  margin-right: 10px;
 }
 
 .mainFind {
@@ -240,21 +256,21 @@ export default {
 .mainSocialLeft,
 .mainSocialRight {
   display: inline-block;
+  width: 210px;
+  height: 35px;
+  text-align: left;
+  margin-top: 17px;
+  padding: 5px;
+  text-align: center;
+  background-color: white;
+  border: 1px solid #a9c9de;
+  border-radius: 2px;
   cursor: pointer;
 }
 
 .mainSocialLeft {
-  width: 210px;
-  height: 35px;
-  margin-top: 17px;
-  text-align: center;
-  padding: 5px;
   margin-left: 40px;
   margin-right: 13px;
-  background-color: white;
-  border: 1px solid #a9c9de;
-  border-radius: 2px;
-  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 25%);
 }
 
 .mainSocialLeft > img,
@@ -271,22 +287,6 @@ export default {
 
 .mainSocialRight > span {
   margin-left: 7px;
-}
-
-.g-signin2 > div {
-  height: 45px !important;
-  width: 210px !important;
-  top: 16px;
-  border: 1px solid #a9c9de;
-  border-radius: 2px;
-}
-
-.g-signin2 .abcRioButtonIcon {
-  padding: 14px !important;
-}
-
-.g-signin2 .abcRioButtonContents span:nth-child(1) {
-  line-height: 3.5 !important;
 }
 
 .mainMobLogin > input {
