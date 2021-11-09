@@ -93,14 +93,14 @@ import './main.css'
 
 export default {
   name: 'main',
-  created() {
-    // window.onSignIn = this.onSignIn
-    firebase.initializeApp(firebaseConfig)
-  },
+  // created() {
+  //   // window.onSignIn = this.onSignIn
+
+  // },
   methods: {
     onSignIn() {
       console.log('signin')
-
+      firebase.initializeApp(firebaseConfig)
       // onSignIn(googleUser) {
       // var profile = googleUser.getBasicProfile()
       // console.log('ID Token: ' + googleUser.getAuthResponse().id_token)
