@@ -145,29 +145,27 @@ async function getGroup(req, res, next) {
               }
             }
             for (let docum of doc.data().participant) {
-              if (docum.uid == uid) {
-                if (docum.completed == true) {
-                  checkNum += 1;
-                  if (checkCategory.empty) {
+              if (docum.uid == uid && docum.completed == true) {
+                checkNum += 1;
+                if (checkCategory.empty) {
+                  checkCategory.push({
+                    category: doc.category,
+                    Num: 1,
+                  });
+                } else {
+                  let check = false;
+                  for (let docu of checkCategory) {
+                    if (docu.category == doc.category) {
+                      docu.Num += 1;
+                      check = true;
+                      break;
+                    }
+                  }
+                  if (!check) {
                     checkCategory.push({
                       category: doc.category,
                       Num: 1,
                     });
-                  } else {
-                    let check = false;
-                    for (let docu of checkCategory) {
-                      if (docu.category == doc.category) {
-                        docu.Num += 1;
-                        check = true;
-                        break;
-                      }
-                    }
-                    if (!check) {
-                      checkCategory.push({
-                        category: doc.category,
-                        Num: 1,
-                      });
-                    }
                   }
                 }
               }
@@ -186,7 +184,7 @@ async function getGroup(req, res, next) {
       });
     } else {
       res.status(401).json({
-        msg: "등록된 일정 정보가 없습니다.",
+        msg: "등록된 그룹 일정 정보가 없습니다.",
       });
     }
   } else {
