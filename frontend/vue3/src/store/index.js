@@ -52,11 +52,15 @@ export default createStore({
       state.calendarData = state.calendarData.filter((c) => {
         return c.cid != payload
       })
+    },
+    // 그룹 캘린더
+    SETGROUPCALENDARDATA (state, payload) {
+      state.groupCalendarData = payload
     }
   },
   actions: {
     getCalendarData( {commit} ) {
-      console.log('store axios')
+      // console.log('store axios')
       
       axios.
         post(`${BASE_URL}calendar/getCalendar`,
@@ -116,6 +120,33 @@ export default createStore({
     deleteCalendarData ( { commit }, payload) {
       commit('DELETECALENDARDATA', payload)
     },
+    getGroupCalendarData ( { commit }, payload ) {
+      axios.
+        get(`${BASE_URL}groupCalendar/getCalendar`,
+        {
+          // uid: localStorage.getItem('uid'),
+          params: {
+            gid: payload,
+          }
+        },
+        {
+          headers: {
+            authorization: localStorage.getItem('token')
+          }
+        })
+        .then((res) => {
+          console.log(res)
+          commit('SETGROUPCALENDARDATA', res)
+        })
+        .catch((error) => {
+          if (error.response.status == 401 && error.response.data.msg === "일정 정보가 없습니다.") {
+            commit('SETGROUPCALENDARDATA', [])
+            // commit('CHECKEMPTYCALENDARDATA')
+          }
+        
+        })
+
+    }
   },
   modules: {},
   getters: {

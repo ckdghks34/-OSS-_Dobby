@@ -67,7 +67,6 @@ export default {
 
     const fullCalendar = ref(null);
     const modal = ref(null);
-    const calButton = ref(null);
 
     function showModal() {
       // VMmodal.vue에 접근하여 show 함수 실행
@@ -81,9 +80,6 @@ export default {
     }
 
     const handleEventClick = (clickInfo) => {
-
-      calButton.value.sss()
-
       // vuex 상태전환
       store.dispatch('setModal', clickInfo.event)
       // modal open
