@@ -86,7 +86,9 @@ import { reactive } from '@vue/reactivity'
 import { onBeforeMount } from '@vue/runtime-core'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import firebase from 'firebase/compat/app'
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import firebaseConfig from '../../../firebaseConfig'
 import './main.css'
 
 export default {
@@ -96,6 +98,7 @@ export default {
   },
   methods: {
     onSignIn() {
+      firebase.initializeApp(firebaseConfig)
       // onSignIn(googleUser) {
       // var profile = googleUser.getBasicProfile()
       // console.log('ID Token: ' + googleUser.getAuthResponse().id_token)
