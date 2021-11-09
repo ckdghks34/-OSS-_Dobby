@@ -7,8 +7,8 @@ async function getPersonal(req, res, next) {
 
   if (valid) {
     const uid = req.body.uid;
-    const startDate = req.body.startDate;
-    const endDate = req.body.endDate;
+    const startDate = parseInt(req.body.startDate);
+    const endDate = parseInt(req.body.endDate);
     const calendarRef = admin
       .collection("users")
       .doc(uid)
@@ -102,12 +102,12 @@ async function getGroup(req, res, next) {
   if (valid) {
       const uid = req.body.uid;
       const gid = req.body.gid;
-      const 
-  } else {
-    res.status(403).json({
-      error: "Token is not vaild",
-    });
-  }
+    } 
+    else {
+        res.status(403).json({
+            error: "Token is not vaild",
+        });
+    }
 }
 
 module.exports = {
