@@ -23,8 +23,8 @@ async function getPersonal(req, res, next) {
       new Promise(async (resolve, reject) => {
         for (let doc of calendar.docs) {
           if (
-            doc.data().startDate >= startDate &&
-            doc.data().endDate <= endDate
+            parseInt(doc.data().startDate) >= startDate &&
+            parseInt(doc.data().endDate) <= endDate
           ) {
             totalNum += 1;
             if (totalCategory.empty) {
