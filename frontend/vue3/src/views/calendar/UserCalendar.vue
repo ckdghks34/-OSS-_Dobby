@@ -73,6 +73,12 @@ export default {
       modal.value.show();
     }
 
+    onMounted(() => {
+      handleViewTitle()
+      store.dispatch('setCalendarApi', fullCalendar.value)
+      initData()
+    })
+
     const handleClickDate =  function () {
       if ( confirm('일정을 추가하시겠습니까?') ) {
         router.push({name: 'Schedule'})
@@ -98,11 +104,33 @@ export default {
         )
       }
       // state 와 동기화 해주기
-      cData.value.map(
+
+      calendarApi.batchRendering(function() {
+        cData.value.map(
         (c) => {
-          calendarApi.addEvent(c)
+          if (c.completed) {
+            calendarApi.addEvent({
+              cid: c.cid,
+              completed: c.completed,
+              title: c.title,
+              content: c.content,
+              start: c.start,
+              end: c.end,
+              color: c.color,
+              placeName: c.placeName,
+              placeLat: c.placeLat,
+              placeLng: c.placeLng,
+              startDate: c.startDate,
+              endDate: c.endDate,
+              classNames: ['calendar-done']
+            })
+          }
+          else {
+            calendarApi.addEvent(c)
+          }
         })
-        
+      })
+      console.log(calendarApi.getEvents())
       store.dispatch('refreshCalendarData', calendarApi.getEvents())
     }
 
@@ -181,17 +209,11 @@ export default {
         dateClick: handleClickDate,
         eventClick: handleEventClick,
         events: [],
-        eventColor: 'red', // color default?
+        eventColor: 'orange', // color default?
         timeZone: "local", // local default
         display: 'list-item',
-        height: "auto", // height
+        height: "auto", // height,
     }
-
-    onMounted(() => {
-      handleViewTitle()
-      store.dispatch('setCalendarApi', fullCalendar.value)
-      initData()
-    })
 
     const state = reactive({
       calendarView: '월',
@@ -213,6 +235,16 @@ export default {
 </script>
 
 <style>
+  .calendar-done {
+    color: #ECECEC !important;
+    text-decoration: line-through !important;
+  }
+
+  .calendar-done .fc-event-title {
+    color: #ECECEC !important;
+    text-decoration: line-through !important;
+  }
+
   .calendar-main {
     width: 100%;
     display: flex;

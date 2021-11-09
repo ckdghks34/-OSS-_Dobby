@@ -74,6 +74,23 @@ export default createStore({
         })
         .then( response => {
           const res = response.data.calendar.map((r) => {
+            if ( r.completed) {
+              return {
+                cid: r.cid,
+                completed: r.completed,
+                title: r.title,
+                content: r.content,
+                start: r.startDate+'T'+r.startTime,
+                end: r.endDate+'T'+r.endTime,
+                color: r.color,
+                placeName: r.placeName,
+                placeLat: r.placeLat,
+                placeLng: r.placeLng,
+                startDate: r.startDate,
+                endDate: r.endDate,
+                classNames: ['calendar-done']
+              }
+            }
             return {
               cid: r.cid,
               completed: r.completed,
@@ -86,7 +103,7 @@ export default createStore({
               placeLat: r.placeLat,
               placeLng: r.placeLng,
               startDate: r.startDate,
-              endDate: r.endDate
+              endDate: r.endDate,
             }
           })
           commit('setCalendarData', res)

@@ -5,6 +5,8 @@
         <span v-if="state.mData.ModalDate.title.length <= 10" style="fontSize: 2rem">{{ state.mData.ModalDate.title }}</span>
         <span v-else style="fontSize: 1.5rem">{{ state.mData.ModalDate.title }}</span>
         <div>
+          <i v-if="state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
+          <i v-if="!state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
           <i class="el-icon-edit modalIcon" @click="modalPut"></i>
           <i class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
           <i class="el-icon-close modalIcon" @click="hide"></i>
@@ -42,9 +44,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="state.dialogVisible = false">취소</el-button>
-          <el-button type="danger" @click="delEvent" 
-            >삭제</el-button
-          >
+          <el-button type="danger" @click="delEvent" >삭제</el-button>
         </span>
       </template>
     </el-dialog>
@@ -109,13 +109,81 @@ export default {
           .catch((error) => {
             console.log(error)
           })
-      
     }
+
+    const modalSuccess = function () {
+      axios.
+        put('https://k5d105.p.ssafy.io:3030/calendar/checkCalendar',
+        {
+          uid: localStorage.getItem('uid'),
+          cid: state.mData.ModalDate.extendedProps.cid,
+        },
+        {
+          headers: {
+            authorization: localStorage.getItem('token')
+          }
+        })
+        .then((response) => {
+          let calendarApi = state.calendar.getApi()
+
+          store.dispatch('deleteCalendarData', state.mData.ModalDate.extendedProps.cid)
+          state.mData.ModalDate.remove()
+          const r = response.data.calendar
+          if ( r.completed ) {
+            const cal = {
+              cid: r.cid,
+              completed: r.completed,
+              title: r.title,
+              content: r.content,
+              start: r.startDate+'T'+r.startTime,
+              end: r.endDate+'T'+r.endTime,
+              color: r.color,
+              placeName: r.placeName,
+              placeLat: r.placeLat,
+              placeLng: r.placeLng,
+              startDate: r.startDate,
+              endDate: r.endDate,
+              classNames: ['calendar-done']
+            }
+            store.dispatch('pushCalendarData', cal)
+            calendarApi.batchRendering(function() {
+              calendarApi.addEvent(cal)
+            })
+          } else {
+            const cal = {
+              cid: r.cid,
+              completed: r.completed,
+              title: r.title,
+              content: r.content,
+              start: r.startDate+'T'+r.startTime,
+              end: r.endDate+'T'+r.endTime,
+              color: r.color,
+              placeName: r.placeName,
+              placeLat: r.placeLat,
+              placeLng: r.placeLng,
+              startDate: r.startDate,
+              endDate: r.endDate
+            }
+            store.dispatch('pushCalendarData', cal)
+
+            calendarApi.batchRendering(function() {
+              calendarApi.addEvent(cal)
+            })
+          }
+          isOpen.value = false
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+
+
     const state = reactive({
       mData: computed(() => store.getters.getModalDataFormat),
-      dialogVisible: ref(false)
+      calendar: computed(() => store.state.calAPI),
+      dialogVisible: ref(false),
     })
-    return { isOpen, hide, show, modalPut, state, delEvent, calData };
+    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess };
   },
   data() {
     return {

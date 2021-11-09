@@ -2,12 +2,12 @@
   <el-space wrap class="todoitem-card-wrap">
     <el-card class="box-card todoitem-card">
       <el-row :gutter="10">
-        <el-col :span="18" :offset="1" class="todoitem-card-header-title">
+        <el-col :span="16" :offset="1" class="todoitem-card-header-title">
           <span>
             {{ todayItem.title }}
           </span>
         </el-col>
-        <el-col :span="5" class="todoitem-card-header-time">
+        <el-col :span="7" class="todoitem-card-header-time">
           <span>
             {{ 
               ((todayItem.start.toString().split(' ')[4].substring(3, 5) === '00') ? (`${todayItem.start.toString().split(' ')[4].substring(0, 2)}시`) : `${todayItem.start.toString().split(' ')[4].substring(0, 2)}시 ${todayItem.start.toString().split(' ')[4].substring(3, 5)}분`)   
@@ -61,29 +61,32 @@ export default {
     margin-right: 0 !important;
   }
 
-  @media screen and (min-width: 1200px) {
-    .todoitem-card {
-      width: 460px;
-      height: 460px;
-    }
-    .todoitem-card-header-title {
+  .todoitem-card-header-title {
       /* el-col 기본속성 무시 */
       display: flex !important; 
       justify-content: flex-start;
       align-items: center;
     }
 
-    /* 제목 */
-    .todoitem-card-header-title > span {
-      font-size: 2rem;
-    }
-
-    .todoitem-card-header-time {
+  .todoitem-card-header-time {
       display: flex !important;
       justify-content: flex-start;
       align-items: flex-end;
     }
 
+  @media screen and (min-width: 1200px) {
+    .todoitem-card {
+      width: 460px;
+      height: 460px;
+    }
+    
+
+    /* 제목 */
+    .todoitem-card-header-title > span {
+      font-size: 2rem;
+    }
+
+    
     .todoitem-card-body-place {
       margin-bottom: 10px;
     }
