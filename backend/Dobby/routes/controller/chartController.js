@@ -72,18 +72,29 @@ async function getPersonal(req, res, next) {
                 }
               }
             }
+          } else {
+            reject();
           }
         }
+        if (totalNum == 0) {
+          reject();
+        }
         resolve();
-      }).then(() => {
-        res.json({
-          totalNum: totalNum,
-          totalCategory: totalCategory,
-          checkNum: checkNum,
-          checkCategory: checkCategory,
-          msg: "개인 일정 차트 조회 성공",
+      })
+        .then(() => {
+          res.json({
+            totalNum: totalNum,
+            totalCategory: totalCategory,
+            checkNum: checkNum,
+            checkCategory: checkCategory,
+            msg: "개인 일정 차트 조회 성공",
+          });
+        })
+        .catch(() => {
+          res.status(401).json({
+            msg: "해당 기간 안에 일정 정보가 없습니다.",
+          });
         });
-      });
     } else {
       res.status(401).json({
         msg: "등록된 일정 정보가 없습니다.",
@@ -122,39 +133,17 @@ async function getGroup(req, res, next) {
             parseInt(doc.data().startDate.replace(/\-/g, "")) >= startDate &&
             parseInt(doc.data().endDate.replace(/\-/g, "")) <= endDate
           ) {
-            totalNum += 1;
-            if (totalCategory.empty) {
-              totalCategory.push({
-                category: doc.category,
-                Num: 1,
-              });
-            } else {
-              let check = false;
-              for (let docu of totalCategory) {
-                if (docu.category == doc.category) {
-                  docu.Num += 1;
-                  check = true;
-                  break;
-                }
-              }
-              if (!check) {
-                totalCategory.push({
-                  category: doc.category,
-                  Num: 1,
-                });
-              }
-            }
             for (let docum of doc.data().participant) {
-              if (docum.uid == uid && docum.completed == true) {
-                checkNum += 1;
-                if (checkCategory.empty) {
-                  checkCategory.push({
+              if (docum.uid == uid) {
+                totalNum += 1;
+                if (totalCategory.empty) {
+                  totalCategory.push({
                     category: doc.category,
                     Num: 1,
                   });
                 } else {
                   let check = false;
-                  for (let docu of checkCategory) {
+                  for (let docu of totalCategory) {
                     if (docu.category == doc.category) {
                       docu.Num += 1;
                       check = true;
@@ -162,26 +151,61 @@ async function getGroup(req, res, next) {
                     }
                   }
                   if (!check) {
-                    checkCategory.push({
+                    totalCategory.push({
                       category: doc.category,
                       Num: 1,
                     });
                   }
                 }
+                if (docum.uid == uid && docum.completed == true) {
+                  checkNum += 1;
+                  if (checkCategory.empty) {
+                    checkCategory.push({
+                      category: doc.category,
+                      Num: 1,
+                    });
+                  } else {
+                    let check = false;
+                    for (let docu of checkCategory) {
+                      if (docu.category == doc.category) {
+                        docu.Num += 1;
+                        check = true;
+                        break;
+                      }
+                    }
+                    if (!check) {
+                      checkCategory.push({
+                        category: doc.category,
+                        Num: 1,
+                      });
+                    }
+                  }
+                }
               }
             }
+          } else {
+            reject();
           }
         }
+        if (totalNum == 0) {
+          reject();
+        }
         resolve();
-      }).then(() => {
-        res.json({
-          totalNum: totalNum,
-          totalCategory: totalCategory,
-          checkNum: checkNum,
-          checkCategory: checkCategory,
-          msg: "그룹 일정 차트 조회 성공",
+      })
+        .then(() => {
+          res.json({
+            totalNum: totalNum,
+            totalCategory: totalCategory,
+            checkNum: checkNum,
+            checkCategory: checkCategory,
+            msg: "그룹 일정 차트 조회 성공",
+          });
+        })
+        .catch(() => {
+          res.status(401).json({
+            msg: "해당 기간 안에 참여자로 지정 된 그룹 일정 정보가 없습니다.",
+          });
         });
-      });
     } else {
       res.status(401).json({
         msg: "등록된 그룹 일정 정보가 없습니다.",
