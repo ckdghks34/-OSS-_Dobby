@@ -29,7 +29,7 @@
         <img src="@/assets/naver.png" alt="" />
         <span>네이버 로그인</span>
       </div>
-      <div class="mainSocialRight g-signin2" data-onsuccess="onSignIn"></div>
+      <div class="mainSocialRight g-signin2" @click="onSignIn"></div>
       <router-link to="/selectsignup"
         ><button class="mainSign blueBtn">회원가입</button></router-link
       >
@@ -69,9 +69,7 @@
           <img src="@/assets/naver.png" alt="" /><span>네이버 로그인</span>
         </div>
         <br />
-        <div>
-          <img src="@/assets/google.png" alt="" /><span>구글 로그인</span>
-        </div>
+        <div class="g-signin2" @click="onSignIn"></div>
       </div>
       <div class="mainMobSign">
         <h3>아직 회원이 아니신가요?</h3>
@@ -87,7 +85,7 @@ import { onBeforeMount } from '@vue/runtime-core'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import firebase from 'firebase/compat/app'
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import { getAuth, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import './main.css'
 
@@ -109,7 +107,7 @@ export default {
       // console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
-      signInWithPopup(auth, provider)
+      signInWithRedirect(auth, provider)
         .then((result) => {
           // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = GoogleAuthProvider.credentialFromResult(result)
@@ -243,7 +241,7 @@ export default {
 
 .mainSocialLeft:hover,
 .mainSocialRight .abcRioButton:hover,
-.mainMobSocialLogin > div:hover {
+.mainMobSocialLogin > div:nth-child(1):hover {
   box-shadow: 0 0 10px #a9c9de;
 }
 
@@ -363,7 +361,7 @@ export default {
   margin: 10px 0 20px 0;
 }
 
-.mainMobSocialLogin > div {
+.mainMobSocialLogin > div:nth-child(1) {
   display: inline-block;
   width: 45%;
   height: 25px;
@@ -377,6 +375,19 @@ export default {
 .mainMobSocialLogin > div > img {
   float: left;
   width: 25px;
+}
+
+.mainMobSocialLogin .g-signin2 {
+  display: inline-block;
+  width: 45%;
+  height: 25px;
+}
+
+.mainMobSocialLogin .g-signin2 > div {
+  height: 45px !important;
+  width: 100% !important;
+  border: 1px solid #a9c9de;
+  border-radius: 2px;
 }
 
 .mainMobSign {
