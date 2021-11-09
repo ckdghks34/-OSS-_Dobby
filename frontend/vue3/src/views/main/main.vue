@@ -87,19 +87,20 @@ import { onBeforeMount } from '@vue/runtime-core'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import firebase from 'firebase/compat/app'
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+// import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import './main.css'
 
 export default {
   name: 'main',
-  // created() {
-  //   window.onSignIn = this.onSignIn
-  // },
+  created() {
+    // window.onSignIn = this.onSignIn
+    firebase.initializeApp(firebaseConfig)
+  },
   methods: {
     onSignIn() {
       console.log('signin')
-      firebase.initializeApp(firebaseConfig)
+
       // onSignIn(googleUser) {
       // var profile = googleUser.getBasicProfile()
       // console.log('ID Token: ' + googleUser.getAuthResponse().id_token)
@@ -107,40 +108,49 @@ export default {
       // console.log('Name: ' + profile.getName())
       // console.log('Image URL: ' + profile.getImageUrl())
       // console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-      const provider = new GoogleAuthProvider()
-      const auth = getAuth()
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          // This gives you a Google Access Token. You can use it to access the Google API.
-          const credential = GoogleAuthProvider.credentialFromResult(result)
-          const token = credential.accessToken
-          // The signed-in user info.
-          const uid = result.user.uid
-          localStorage.setItem('token', token)
-          localStorage.setItem('uid', uid)
-          console.log('result: ' + JSON.stringify(result))
-          console.log('token: ' + token)
-          console.log('uid: ' + uid)
-          axios
-            .post('https://k5d105.p.ssafy.io:3030/users/checkSignupGoogle', {
-              uid: uid,
-            })
-            .then((res) => console.log(res))
-            .catch((err) => console.log(err))
-        })
-        .catch((error) => {
-          // Handle Errors here.
-          const errorCode = error.code
-          const errorMessage = error.message
-          // The email of the user's account used.
-          const email = error.email
-          // The AuthCredential type that was used.
-          const credential = GoogleAuthProvider.credentialFromError(error)
-          console.log('errorCode: ' + errorCode)
-          console.log('errorMessage: ' + errorMessage)
-          console.log('email: ' + email)
-          console.log('credential: ' + credential)
-        })
+
+      // const provider = new GoogleAuthProvider()
+      // const auth = getAuth()
+      // signInWithPopup(auth, provider)
+      //   .then((result) => {
+      //     // This gives you a Google Access Token. You can use it to access the Google API.
+      //     const credential = GoogleAuthProvider.credentialFromResult(result)
+      //     const token = credential.accessToken
+      //     // The signed-in user info.
+      //     const uid = result.user.uid
+      //     localStorage.setItem('token', token)
+      //     localStorage.setItem('uid', uid)
+      //     console.log('result: ' + JSON.stringify(result))
+      //     console.log('token: ' + token)
+      //     console.log('uid: ' + uid)
+      //     axios
+      //       .post('https://k5d105.p.ssafy.io:3030/users/checkSignupGoogle', {
+      //         uid: uid,
+      //       })
+      //       .then((res) => console.log(res))
+      //       .catch((err) => console.log(err))
+      //   })
+      //   .catch((error) => {
+      //     // Handle Errors here.
+      //     const errorCode = error.code
+      //     const errorMessage = error.message
+      //     // The email of the user's account used.
+      //     const email = error.email
+      //     // The AuthCredential type that was used.
+      //     const credential = GoogleAuthProvider.credentialFromError(error)
+      //     console.log('errorCode: ' + errorCode)
+      //     console.log('errorMessage: ' + errorMessage)
+      //     console.log('email: ' + email)
+      //     console.log('credential: ' + credential)
+      //   })
+
+      console.log('login')
+      const provider = new firebase.auth.GoogleAuthProvider()
+      provider.setCustomParameters({
+        prompt: 'select_account',
+      })
+      const profile = firebase.auth().signInWithPopup(provider)
+      console.log(profile)
     },
   },
   setup() {
