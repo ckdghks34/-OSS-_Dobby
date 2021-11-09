@@ -105,6 +105,8 @@ export default {
       }
       // state 와 동기화 해주기
 
+      console.log(cData)
+
       calendarApi.batchRendering(function() {
         cData.value.map(
         (c) => {
@@ -130,7 +132,6 @@ export default {
           }
         })
       })
-      console.log(calendarApi.getEvents())
       store.dispatch('refreshCalendarData', calendarApi.getEvents())
     }
 

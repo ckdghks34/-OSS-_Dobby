@@ -1,6 +1,6 @@
 <template>
   <div class="modal" v-if="isOpen">
-    <el-card class="box-card modal-content">
+        <el-card class="box-card modal-content">
       <template #header>
         <div v-if="state.isBig">
           <el-row>
@@ -89,8 +89,6 @@
         </el-row>
       </div>
     </el-card>
-
-
     <el-dialog
       v-model="state.dialogVisible"
       width="30%">
@@ -116,53 +114,47 @@ import { Calendar, Location, Document } from '@element-plus/icons'
 
 
 export default {
-  props: {
-    curModal : { type: Object }
-  },
   components: {
     Calendar,
     Location,
     Document
   },
+
   setup() {
     const store = useStore()
     const router = useRouter()
 
+    const fullCalendar = ref(null)
     const isOpen = ref(false);
+
+    onBeforeMount(() => {
+      window.addEventListener('resize', handleGroupModalWindowSize)
+      handleGroupModalWindowSize()
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleGroupModalWindowSize)
+    })
 
     const hide = () => {
       isOpen.value = false;
     };
-
     const show = () => {
       isOpen.value = true;
     };
-
-    const fullCalendar = ref(null)
-
-    onBeforeMount(() => {
-      window.addEventListener('resize', handleModalWindowSize)
-      handleModalWindowSize()
-    })
-
-    onUnmounted(() => {
-      window.removeEventListener('resize', handleModalWindowSize)
-    })
-
 
     const calData = function (cal) {
       fullCalendar.value = cal
     }
 
     // windowSize
-    const handleModalWindowSize = () => {
+    const handleGroupModalWindowSize = () => {
       if (window.innerWidth > 767) {
         state.isBig = true
       } else {
         state.isBig = false
       }
     }
-
 
     const modalPut = () => {
       router.push({name: 'PutSchedule'})
@@ -172,11 +164,12 @@ export default {
       state.dialogVisible = false    
       // 삭제 axios 요청
       axios
-        .delete('https://k5d105.p.ssafy.io:3030/calendar/deleteCalendar',
+        .delete('https://k5d105.p.ssafy.io:3030/groupCalendar/deleteCalendar',
           { 
             data: {
               uid: localStorage.getItem('uid'),
-              cid: state.mData.ModalDate.extendedProps.cid
+              cid: state.mData.ModalDate.extendedProps.cid,
+              gid: state.mData.ModalDate.extendedProps.gid,
             }
           },
           {
@@ -195,10 +188,11 @@ export default {
 
     const modalSuccess = function () {
       axios.
-        put('https://k5d105.p.ssafy.io:3030/calendar/checkCalendar',
+        put('https://k5d105.p.ssafy.io:3030/groupCalendar/checkCalendar',
         {
           uid: localStorage.getItem('uid'),
           cid: state.mData.ModalDate.extendedProps.cid,
+          gid: state.mData.ModalDate.extendedProps.gid,
         },
         {
           headers: {
@@ -207,14 +201,23 @@ export default {
         })
         .then((response) => {
           let calendarApi = state.calendar.getApi()
-
-          store.dispatch('deleteCalendarData', state.mData.ModalDate.extendedProps.cid)
+          store.dispatch('deleteGroupCalendarData', state.mData.ModalDate.extendedProps.cid)
           state.mData.ModalDate.remove()
           const r = response.data.calendar
-          if ( r.completed ) {
+          let checkCompleted = false
+          for ( let par of r.participant ) {
+            if ( par.uid === localStorage.getItem('uid') ) {
+              if ( par.completed ) {
+                checkCompleted = true
+              }
+              break;
+            }
+          } 
+          if ( checkCompleted ) {
             const cal = {
               cid: r.cid,
-              completed: r.completed,
+              gid: r.gid,
+              completed: true,
               title: r.title,
               content: r.content,
               start: r.startDate+'T'+r.startTime,
@@ -225,16 +228,19 @@ export default {
               placeLng: r.placeLng,
               startDate: r.startDate,
               endDate: r.endDate,
-              classNames: ['calendar-done']
+              classNames: ['calendar-done'],
+              participant: r.participant,
+              creator: r.creator
             }
-            store.dispatch('pushCalendarData', cal)
+            store.dispatch('pushGroupCalendarData', cal)
             calendarApi.batchRendering(function() {
               calendarApi.addEvent(cal)
             })
           } else {
             const cal = {
               cid: r.cid,
-              completed: r.completed,
+              gid: r.gid,
+              completed: false,
               title: r.title,
               content: r.content,
               start: r.startDate+'T'+r.startTime,
@@ -244,9 +250,11 @@ export default {
               placeLat: r.placeLat,
               placeLng: r.placeLng,
               startDate: r.startDate,
-              endDate: r.endDate
+              endDate: r.endDate,
+              participant: r.participant,
+              creator: r.creator
             }
-            store.dispatch('pushCalendarData', cal)
+            store.dispatch('pushGroupCalendarData', cal)
 
             calendarApi.batchRendering(function() {
               calendarApi.addEvent(cal)
@@ -261,10 +269,10 @@ export default {
 
 
     const state = reactive({
-      mData: computed(() => store.getters.getModalDataFormat),
-      calendar: computed(() => store.state.calAPI),
+      mData: computed(() => store.getters.getGroupModalDataFormat),
+      calendar: computed(() => store.state.groupCalAPI),
       dialogVisible: ref(false),
-      isBig: true,
+      isAuthority: computed(() => localStorage.getItem('uid') === state.mData.ModalDate.extendedProps.creator)
     })
     return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess };
   },
@@ -276,109 +284,5 @@ export default {
 </script>
 
 <style>
-.modal {
-  position: absolute;
-  z-index: 999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 1000vh;
-  background-color: rgba(0, 0, 0, 0.7);
-}
 
-.modal-content {
-  background-color: #ffffff;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-}
-
-.modal-content-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-content-color {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content-body > span {
-  color:#7E8183;
-}
-
-.modal-content-color-box {
-  display: block;
-  width: 30px;
-  height: 30px;
-  border-radius: 20%;
-}
-
-.modal-content-body-contents-row {
-  margin-bottom: 1rem;
-}
-
-.modal-content-body-contents-row-icon-wrap {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content-body-contents-document-icon-wrap {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.modal-content-small-color-box {
-  height: 30px;
-  width: 100%;
-  border-radius: 0.5rem;
-}
-
-.modalIcon {
-  padding: 10px;
-  cursor: pointer;
-  color: #aaa;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-  @media screen and (min-width: 1200px) {
-    .modal-content {
-      width: 900px;
-    }
-  }
-
-  @media screen and (max-width: 1199px) and (min-width: 993px) {
-    .modal-content {
-      width: 900px;
-    }
-  }
-
-  @media screen and (max-width: 992px) and (min-width: 768px) {
-    .modal-content {
-      width: 700px;
-    }
-  }
-
-  @media screen and (max-width: 767px) and (min-width: 500px) {
-    .modal-content {
-      width: 450px;
-    }
-  }
-
-  @media screen and (max-width: 499px) {
-    .modal-content {
-      width: 380px;
-    }
-  }
 </style>
