@@ -115,7 +115,7 @@ export default {
           const token = credential.accessToken
           // The signed-in user info.
           const user = result.user
-          console.log('result: ' + result)
+          console.log('result: ' + JSON.stringify(result))
           console.log('token: ' + token)
           console.log('user: ' + user)
         })
