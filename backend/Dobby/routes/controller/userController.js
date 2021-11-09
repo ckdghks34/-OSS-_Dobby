@@ -327,6 +327,47 @@ async function getUserInfo(req, res, next) {
     });
   }
 }
+
+async function checkDataWithGoogle(req, res, next) {
+  const uid = req.body.uid;
+
+  const userRef = admin.collection("users").doc(uid);
+  const user = await userRef.get();
+
+  if (user.empty) {
+    adminauth
+      .getUser(uid)
+      .then(async (userRecord) => {
+        await admin
+          .collection("users")
+          .doc(uid)
+          .set({
+            uid: uid,
+            email: userRecord.email,
+            name: userRecord.displayName,
+            nickname: userRecord.email,
+            phone: "",
+            address: "",
+          })
+          .then((user) => {
+            return res.json({
+              msg: "회원 등록이 완료되었습니다.",
+              user: user,
+            });
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+        return res.status(203).json({
+          error: "이미 등록된 회원입니다.",
+        });
+      });
+  } else {
+    res.status(203).json({
+      msg: "이미 등록된 회원입니다.",
+    });
+  }
+}
 module.exports = {
   signUp,
   login,
@@ -339,4 +380,5 @@ module.exports = {
   withdrawUser,
   authSignout,
   getUserInfo,
+  checkDataWithGoogle,
 };
