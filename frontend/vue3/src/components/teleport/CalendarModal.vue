@@ -2,10 +2,11 @@
   <div class="modal" v-if="isOpen">
     <div class="modal-content">
       <div class="modal-content-header">
-        <span style="fontSize: 2rem">{{ state.mData.title }}</span>
+        <span v-if="state.mData.ModalDate.title.length <= 10" style="fontSize: 2rem">{{ state.mData.ModalDate.title }}</span>
+        <span v-else style="fontSize: 1.5rem">{{ state.mData.ModalDate.title }}</span>
         <div>
-          <i class="el-icon-edit modalIcon"></i>
-          <i class="el-icon-delete modalIcon" @click="delEvent"></i>
+          <i class="el-icon-edit modalIcon" @click="modalPut"></i>
+          <i class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
           <i class="el-icon-close modalIcon" @click="hide"></i>
         </div>
       </div>
@@ -34,11 +35,23 @@
         </div>
       </div>
     </div>
+    <el-dialog
+      v-model="state.dialogVisible"
+      width="30%">
+      <span>일정을 삭제할까요?</span>  
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="state.dialogVisible = false">취소</el-button>
+          <el-button type="danger" @click="delEvent" 
+            >삭제</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-
 import { computed, reactive, ref } from "vue";
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -54,43 +67,60 @@ export default {
     const router = useRouter()
 
     const isOpen = ref(false);
+
     const hide = () => {
       isOpen.value = false;
     };
+
     const show = () => {
       isOpen.value = true;
     };
 
-    const delEvent = () => {
-      if (confirm(" 해당 일정을 정말로 삭제하시겠습니까? ")) {
-        console.log('삭제')
+    const fullCalendar = ref(null)
 
-        // 삭제 axios 요청
-        axios
-          .delete('https://k5d105.p.ssafy.io:3030/calendar/deleteCalendar',
-            {
+    const calData = function (cal) {
+      fullCalendar.value = cal
+    }
+
+    const modalPut = () => {
+      router.push({name: 'PutSchedule'})
+    }
+
+    const delEvent = () => {
+      state.dialogVisible = false    
+      // 삭제 axios 요청
+      axios
+        .delete('https://k5d105.p.ssafy.io:3030/calendar/deleteCalendar',
+          { 
+            data: {
               uid: localStorage.getItem('uid'),
-              cid: 'ccc'
-            })
-            .then(() => {
-              router.go(router.currentRoute)
-            })
-      } else {
-        console.log('x')
-      }
+              cid: state.mData.ModalDate.extendedProps.cid
+            }
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token')
+            }
+          })
+          .then(() => {
+            state.mData.ModalDate.remove()
+            isOpen.value = false;
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      
     }
     const state = reactive({
       mData: computed(() => store.getters.getModalDataFormat),
+      dialogVisible: ref(false)
     })
-    return { isOpen, hide, show, state, delEvent };
+    return { isOpen, hide, show, modalPut, state, delEvent, calData };
   },
   data() {
     return {
     }
   },
-  
-  method: {
-  }
 };
 </script>
 
