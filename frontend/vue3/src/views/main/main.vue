@@ -93,9 +93,9 @@ import './main.css'
 
 export default {
   name: 'main',
-  created() {
-    window.onSignIn = this.onSignIn
-  },
+  // created() {
+  //   window.onSignIn = this.onSignIn
+  // },
   methods: {
     onSignIn() {
       firebase.initializeApp(firebaseConfig)
@@ -115,6 +115,7 @@ export default {
           const token = credential.accessToken
           // The signed-in user info.
           const user = result.user
+          console.log('result: ' + result)
           console.log('token: ' + token)
           console.log('user: ' + user)
         })
