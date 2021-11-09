@@ -7,8 +7,8 @@ async function getPersonal(req, res, next) {
 
   if (valid) {
     const uid = req.body.uid;
-    const startDate = parseInt(req.body.startDate);
-    const endDate = parseInt(req.body.endDate);
+    const startDate = parseInt(req.body.startDate.replace(/\-/g,''));
+    const endDate = parseInt(req.body.endDate.replace(/\-/g,''));
     const calendarRef = admin
       .collection("users")
       .doc(uid)
@@ -23,8 +23,8 @@ async function getPersonal(req, res, next) {
       new Promise(async (resolve, reject) => {
         for (let doc of calendar.docs) {
           if (
-            parseInt(doc.data().startDate) >= startDate &&
-            parseInt(doc.data().endDate) <= endDate
+            parseInt(doc.data().startDate.replace(/\-/g,'')) >= startDate &&
+            parseInt(doc.data().endDate.replace(/\-/g,'')) <= endDate
           ) {
             totalNum += 1;
             if (totalCategory.empty) {
@@ -102,7 +102,7 @@ async function getGroup(req, res, next) {
   if (valid) {
       const uid = req.body.uid;
       const gid = req.body.gid;
-      
+
     } 
     else {
         res.status(403).json({
