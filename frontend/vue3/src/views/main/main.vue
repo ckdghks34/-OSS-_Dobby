@@ -109,7 +109,8 @@ export default {
       // console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
-      signInWithPopup(auth, provider)
+      console.log(provider, auth)
+      signInWithPopup()
         .then((result) => {
           // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = GoogleAuthProvider.credentialFromResult(result)
