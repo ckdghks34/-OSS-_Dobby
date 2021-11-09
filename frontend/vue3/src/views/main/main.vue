@@ -85,7 +85,7 @@ import { onBeforeMount } from '@vue/runtime-core'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import firebase from 'firebase/compat/app'
-import { getAuth, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth'
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import './main.css'
 
@@ -107,7 +107,7 @@ export default {
       // console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
-      signInWithRedirect(auth, provider)
+      signInWithPopup(auth, provider)
         .then((result) => {
           // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = GoogleAuthProvider.credentialFromResult(result)
