@@ -29,7 +29,7 @@
         <img src="@/assets/naver.png" alt="" />
         <span>네이버 로그인</span>
       </div>
-      <div class="mainSocialRight g-signin2" @click="onSignIn"></div>
+      <div class="mainSocialRight g-signin2" data-onsuccess="onSignIn"></div>
       <router-link to="/selectsignup"
         ><button class="mainSign blueBtn">회원가입</button></router-link
       >
@@ -109,8 +109,7 @@ export default {
       // console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
-      console.log(provider, auth)
-      signInWithPopup()
+      signInWithPopup(auth, provider)
         .then((result) => {
           // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = GoogleAuthProvider.credentialFromResult(result)
