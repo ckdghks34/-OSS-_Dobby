@@ -1,13 +1,27 @@
 <template>
   <el-space wrap class="todoitem-card-wrap">
     <el-card class="box-card todoitem-card">
-      <el-row :gutter="10">
-        <el-col :span="16" :offset="1" class="todoitem-card-header-title">
+
+      <el-row class="todoitem-card-contents-wrap">
+        <el-col :span="2">
+          <div class="todoitem-card-color">
+            <span class="todoitem-card-color-box" v-bind:style="{backgroundColor: todayItem.backgroundColor}"></span>
+          </div>
+        </el-col>
+        <el-col :span="21" :offset="1" class="todoitem-card-header-title">
           <span>
             {{ todayItem.title }}
           </span>
         </el-col>
-        <el-col :span="7" class="todoitem-card-header-time">
+      </el-row>
+
+      <el-row class="todoitem-card-contents-wrap">
+        <el-col :span="2">
+          <el-icon>
+            <Calendar />
+          </el-icon>
+        </el-col>
+        <el-col :span="21" :offset="1" class="todoitem-card-contents-time">
           <span>
             {{ 
               ((todayItem.start.toString().split(' ')[4].substring(3, 5) === '00') ? (`${todayItem.start.toString().split(' ')[4].substring(0, 2)}시`) : `${todayItem.start.toString().split(' ')[4].substring(0, 2)}시 ${todayItem.start.toString().split(' ')[4].substring(3, 5)}분`)   
@@ -15,44 +29,101 @@
           </span>
         </el-col>
       </el-row>
-      <el-divider></el-divider>
-      <div class="todoitem-card-body">
-        <el-row class="todoitem-card-body-place">
-          <el-col :span="10" :offset="1">
-            <span>
+
+      <el-row class="todoitem-card-contents-wrap">
+        <el-col :span="2">
+          <el-icon>
+            <Location />
+          </el-icon>
+        </el-col>
+        <el-col :span="21" :offset="1" class="todoitem-card-contents-place">
+          <span>
               {{ todayItem.extendedProps.placeName }}
             </span>
-          </el-col>
-        </el-row>
-        <el-divider></el-divider>
-        <el-row>
-          <el-col :span="22" :offset="1" class="todoitem-card-body-content">
-            <span>
-              {{ todayItem.extendedProps.content }}
-            </span>
-            <span>
-              {{todayItem}}
-            </span>
-          </el-col>
-        </el-row>
-      </div>
+        </el-col>
+      </el-row>
+
+      <el-row class="todoitem-card-contents-wrap">
+        <el-col :span="2">
+          <el-icon>
+            <User />
+          </el-icon>
+        </el-col>
+        <el-col :span="21" :offset="1" class="group-todoitem-card-participant">
+          <div v-for="par in todayItem.extendedProps.participant" :key="par.uid" class="group-todoitem-card-participant-element">
+            <el-button v-if="par.completed" size="mini" type="info" plain>
+              {{ par.name }}
+            </el-button>
+            <el-button v-if="!par.completed" size="mini">
+              {{ par.name }}
+            </el-button>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-row class="todoitem-card-contents-wrap">
+        <el-col :span="2">
+          <el-icon>
+            <Document />  
+          </el-icon>
+        </el-col>
+        <el-col :span="21" :offset="1" class="todoitem-card-contents-content">
+          {{ todayItem.extendedProps.content }}
+        </el-col>
+      </el-row>
+
     </el-card>
   </el-space>
 </template>
 
 <script>
-import { computed, inject, reactive } from 'vue'
+import { computed, inject, reactive, onBeforeMount, onUnmounted} from 'vue'
 import { useStore } from 'vuex'
+
+//icons
+import { Calendar, Location, Document, User } from '@element-plus/icons'
+
 export default {
   name: "GroupTodoListCurrentInit",
+  components: {
+    Calendar,
+    Location,
+    Document,
+    User,
+  },
   setup() {
     const store = useStore()
     const today = inject('grouptodayData')
     const todayItem = inject('grouptoDoItem')
 
+    onBeforeMount(() => {
+      window.addEventListener('resize', handleGroupTodoListCurrentInfoWindowSize)
+      handleGroupTodoListCurrentInfoWindowSize()
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleGroupTodoListCurrentInfoWindowSize)
+    })
+
+    const handleGroupTodoListCurrentInfoWindowSize = () => {
+      if (window.innerWidth > 1199) {
+        state.winSize = 'xl'
+      } else if (window.innerWidth > 992 && window.innerWidth <= 1199) {
+        state.winSize = 'lg'
+      } else if (window.innerWidth > 767 && window.innerWidth <= 992) {
+        state.winSize = 'md'
+      } else if (window.innerWidth > 499 && window.innerWidth <= 767) {
+        state.winSize = 'sm'
+      } else {
+        state.winSize = 'xs'
+      }
+    }
+
     const state = reactive({
       toDo: computed(() => store.state.groupToDo),
-      isTodoItem: computed(() => store.state.isGroupTodoItem)
+      isTodoItem: computed(() => store.state.isGroupTodoItem),
+      winSize: 'lg',
+
     })
     return { state, today, todayItem }
   }
@@ -76,6 +147,16 @@ export default {
       justify-content: flex-start;
       align-items: flex-end;
     }
+
+  .group-todoitem-card-participant {
+    display: flex;
+    flex-flow: wrap;
+  }
+
+  .group-todoitem-card-participant-element {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
 
   @media screen and (min-width: 1200px) {
     .todoitem-card {

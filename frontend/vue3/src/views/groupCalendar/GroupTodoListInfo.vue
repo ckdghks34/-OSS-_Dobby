@@ -82,7 +82,7 @@ export default {
     }
 
     const changeTodo = function(todo) {
-      store.dispatch('setTodo', todo)
+      store.dispatch('setGroupTodo', todo)
     }
 
     const isToday = function (time) {
@@ -96,7 +96,6 @@ export default {
     } 
 
     const titleFormat = (title) => {
-      console.log(state.winSize)
 
       if (state.winSize === 'xl') {
         // 12

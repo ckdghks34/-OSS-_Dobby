@@ -313,6 +313,7 @@ export default {
 
 .modal-content-body-participant-element {
   margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 </style>

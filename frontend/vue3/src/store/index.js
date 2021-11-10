@@ -17,6 +17,7 @@ export default createStore({
     todayToDoList: [],
     toDo: {},
     calAPI: {},
+    
     // group calendar
     isGroupData: false,
     isGroupTodoItem: false,
