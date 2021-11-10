@@ -54,7 +54,7 @@ const routes = [
     component: NewGroup,
   },
   {
-    path: '/:gid',
+    path: '/groupInfo/:gid',
     name: 'GroupInfo',
     component: GroupInfo,
     props: true,
@@ -85,10 +85,10 @@ const routes = [
     component: PutSchedule,
   },
   {
-    path:'/groupCalendar',
+    path: '/groupCalendar',
     name: 'GroupCalendar',
     component: GroupCalendar,
-  }
+  },
 ]
 
 const router = createRouter({

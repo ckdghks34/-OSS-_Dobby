@@ -19,6 +19,19 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog v-model="info.changeDia" title="그룹장 변경" width="30%">
+      <p style="margin: 0 0 3% 0">
+        {{ info.changeAdmin }} 님께 그룹장을 위임하시겠습니까?
+      </p>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button class="redBtn" @click="info.changeDia = false"
+            >취소</el-button
+          >
+          <el-button class="blueBtn" @click="changeAdmin">변경</el-button>
+        </span>
+      </template>
+    </el-dialog>
     <div class="groupInfoDiv">
       <div class="groupInfoTop">
         <img src="@/assets/dobby.png" alt="" />
@@ -54,7 +67,10 @@
         </button>
         <div class="groupMember">
           <div v-for="(t, index) in info.member" :key="index">
-            <p style="display:inline-block; margin: 4px 0;">
+            <p
+              style="display:inline-block; margin: 4px 0; cursor:pointer"
+              @click="changeAdminBtn(t.nickname)"
+            >
               {{ t.nickname }}
             </p>
             <span
@@ -113,6 +129,8 @@ export default {
       description: '',
       dialogVisible: false,
       message: '',
+      changeDia: false,
+      changeAdmin: '',
       inviteDia: false,
       inviteEmail: '',
       member: [],
@@ -177,6 +195,56 @@ export default {
         })
     }
 
+    const changeAdminBtn = function(e) {
+      if (info.admin && info.userNick != e) {
+        info.changeAdmin = e
+        info.changeDia = true
+      }
+    }
+
+    const changeAdmin = function() {
+      console.log(info.changeAdmin)
+      axios
+        .put(
+          'https://k5d105.p.ssafy.io:3030/group/changeAdmin',
+          {
+            gid: props.gid,
+            currentuid: localStorage.getItem('uid'),
+            changenickname: info.changeAdmin,
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res)
+          alert(`그룹장이 ${info.changeAdmin} 님으로 변경되었습니다`)
+          info.changeDia = false
+          info.changeAdmin = ''
+          axios
+            .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
+              params: { gid: props.gid },
+            })
+            .then((res) => {
+              console.log(res)
+              info.name = res.data.group.name
+              info.description = res.data.group.description
+              info.private = res.data.group.private
+              info.password = res.data.group.password
+              info.member = res.data.group.members
+              if (res.data.group.admin === info.userEmail) {
+                info.admin = true
+              } else {
+                info.admin = false
+              }
+              console.log(info.member)
+            })
+        })
+        .catch((err) => console.log(err))
+    }
+
     const deleteMem = function(e) {
       axios
         .delete('https://k5d105.p.ssafy.io:3030/group/leaveMember', {
@@ -217,6 +285,7 @@ export default {
             info.dialogVisible = true
             info.message = '회원을 초대했습니다'
             info.inviteDia = false
+            info.inviteEmail = ''
             axios
               .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
                 params: { gid: props.gid },
@@ -283,6 +352,8 @@ export default {
       info,
       changeInfo,
       deleteMem,
+      changeAdminBtn,
+      changeAdmin,
       inviteMem,
       deleteGroup,
       deleteGroupMem,
