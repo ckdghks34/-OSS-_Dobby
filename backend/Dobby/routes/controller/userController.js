@@ -328,7 +328,7 @@ async function getUserInfo(req, res, next) {
   }
 }
 
-async function checkDataWithGoogle(req, res, next) {
+async function checkUserWithProvider(req, res, next) {
   const uid = req.body.uid;
 
   const userRef = admin.collection("users").doc(uid);
@@ -369,6 +369,7 @@ async function checkDataWithGoogle(req, res, next) {
     });
   }
 }
+
 module.exports = {
   signUp,
   login,
@@ -381,5 +382,5 @@ module.exports = {
   withdrawUser,
   authSignout,
   getUserInfo,
-  checkDataWithGoogle,
+  checkUserWithProvider,
 };
