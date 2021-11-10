@@ -35,7 +35,7 @@ async function getPersonal(req, res, next) {
             } else {
               let check = false;
               for (let docu of totalCategory) {
-                if (docu.data().category == doc.data().category) {
+                if (docu.category == doc.data().category) {
                   docu.Num += 1;
                   check = true;
                   break;
@@ -58,7 +58,7 @@ async function getPersonal(req, res, next) {
               } else {
                 let check = false;
                 for (let docu of checkCategory) {
-                  if (docu.data().category == doc.data().category) {
+                  if (docu.category == doc.data().category) {
                     docu.Num += 1;
                     check = true;
                     break;
