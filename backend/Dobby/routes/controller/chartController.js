@@ -29,13 +29,13 @@ async function getPersonal(req, res, next) {
             totalNum += 1;
             if (totalCategory.empty) {
               totalCategory.push({
-                category: doc.category,
+                category: doc.data().category,
                 Num: 1,
               });
             } else {
               let check = false;
               for (let docu of totalCategory) {
-                if (docu.category == doc.category) {
+                if (docu.data().category == doc.data().category) {
                   docu.Num += 1;
                   check = true;
                   break;
@@ -43,7 +43,7 @@ async function getPersonal(req, res, next) {
               }
               if (!check) {
                 totalCategory.push({
-                  category: doc.category,
+                  category: doc.data().category,
                   Num: 1,
                 });
               }
@@ -58,7 +58,7 @@ async function getPersonal(req, res, next) {
               } else {
                 let check = false;
                 for (let docu of checkCategory) {
-                  if (docu.category == doc.category) {
+                  if (docu.data().category == doc.data().category) {
                     docu.Num += 1;
                     check = true;
                     break;
@@ -66,7 +66,7 @@ async function getPersonal(req, res, next) {
                 }
                 if (!check) {
                   checkCategory.push({
-                    category: doc.category,
+                    category: doc.data().category,
                     Num: 1,
                   });
                 }
