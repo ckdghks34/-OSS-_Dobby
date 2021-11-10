@@ -53,13 +53,14 @@ async function getPersonal(req, res, next) {
               if (checkCategory.empty) {
                 checkCategory.push({
                   category: doc.data().category,
-                  Num: 1,
+                  check: 1,
+                  total: 0,
                 });
               } else {
                 let check = false;
                 for (let docu of checkCategory) {
                   if (docu.category == doc.data().category) {
-                    docu.Num += 1;
+                    docu.check += 1;
                     check = true;
                     break;
                   }
@@ -67,7 +68,8 @@ async function getPersonal(req, res, next) {
                 if (!check) {
                   checkCategory.push({
                     category: doc.data().category,
-                    Num: 1,
+                    check: 1,
+                    total: 0,
                   });
                 }
               }
@@ -78,6 +80,13 @@ async function getPersonal(req, res, next) {
         }
         if (totalNum == 0) {
           reject();
+        }
+        for (let total of totalCategory) {
+          for (let check of checkCategory) {
+            if (total.category == check.category) {
+              check.total = total.Num;
+            }
+          }
         }
         resolve();
       })
@@ -162,13 +171,14 @@ async function getGroup(req, res, next) {
                   if (checkCategory.empty) {
                     checkCategory.push({
                       category: doc.data().category,
-                      Num: 1,
+                      check: 1,
+                      total: 0,
                     });
                   } else {
                     let check = false;
                     for (let docu of checkCategory) {
                       if (docu.category == doc.data().category) {
-                        docu.Num += 1;
+                        docu.check += 1;
                         check = true;
                         break;
                       }
@@ -176,7 +186,8 @@ async function getGroup(req, res, next) {
                     if (!check) {
                       checkCategory.push({
                         category: doc.data().category,
-                        Num: 1,
+                        check: 1,
+                        total: 0,
                       });
                     }
                   }
@@ -189,6 +200,13 @@ async function getGroup(req, res, next) {
         }
         if (totalNum == 0) {
           reject();
+        }
+        for (let total of totalCategory) {
+          for (let check of checkCategory) {
+            if (total.category == check.category) {
+              check.total = total.Num;
+            }
+          }
         }
         resolve();
       })
