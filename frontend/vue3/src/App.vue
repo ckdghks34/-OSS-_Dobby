@@ -83,7 +83,7 @@ export default {
           uid : localStorage.getItem('uid')
       } })
         .then((response) => {
-            console.log(response)
+            // console.log(response)
             info.userId = response.data.user.nickname        
             })
         .catch((error) => {console.log(error)})
@@ -107,7 +107,7 @@ export default {
       }
       )
         .then((response) => {
-            console.log(response)
+            // console.log(response)
             info.groupLists = response.data.group
         })
         .catch((error) => {console.log(error)})
