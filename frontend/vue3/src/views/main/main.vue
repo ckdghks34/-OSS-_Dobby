@@ -25,13 +25,15 @@
           >
         </div>
       </div>
-      <div class="mainSocialLeft">
-        <img src="@/assets/naver.png" alt="" />
-        <span>네이버 로그인</span>
+      <div class="mainSocialLeft" @click="facebookSignIn">
+        <img src="@/assets/facebook.png" alt="" />
+        <span>페이스북 로그인</span>
       </div>
       <div class="mainSocialRight">
         <img src="@/assets/google.png" alt="" />
-        <div class="g-signin2" @click="onSignIn"><span>구글 로그인</span></div>
+        <div class="g-signin2" @click="googleSignIn">
+          <span>구글 로그인</span>
+        </div>
       </div>
 
       <router-link to="/selectsignup"
@@ -70,13 +72,15 @@
       </div>
       <div class="mainMobSocialLogin">
         <div>
-          <img src="@/assets/naver.png" alt="" /><span>네이버 로그인</span>
+          <img src="@/assets/facebook.png" alt="" /><span style="font-size:15px"
+            >페이스북 로그인</span
+          >
         </div>
         <br />
         <div>
           <img src="@/assets/google.png" alt="" />
           <div class="g-signin2" @click="onSignIn">
-            <span>구글 로그인</span>
+            <span style="font-size:15px">구글 로그인</span>
           </div>
         </div>
       </div>
@@ -94,17 +98,22 @@ import { onBeforeMount } from '@vue/runtime-core'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import firebase from 'firebase/compat/app'
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+} from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import './main.css'
 
 export default {
   name: 'main',
-  created() {
-    window.onSignIn = this.onSignIn
-  },
+  // created() {
+  //   window.onSignIn = this.onSignIn
+  // },
   methods: {
-    onSignIn() {
+    googleSignIn() {
       console.log('signin')
       firebase.initializeApp(firebaseConfig)
       const provider = new GoogleAuthProvider()
@@ -120,10 +129,13 @@ export default {
           console.log('token: ' + token)
           console.log('uid: ' + uid)
           axios
-            .post('https://k5d105.p.ssafy.io:3030/users/checkSignupGoogle', {
+            .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
               uid: uid,
             })
-            .then((res) => console.log(res))
+            .then((res) => {
+              console.log(res)
+              this.$router.push('Calendar')
+            })
             .catch((err) => console.log(err))
         })
         .catch((error) => {
@@ -131,6 +143,45 @@ export default {
           const errorMessage = error.message
           const email = error.email
           const credential = GoogleAuthProvider.credentialFromError(error)
+          console.log('errorCode: ' + errorCode)
+          console.log('errorMessage: ' + errorMessage)
+          console.log('email: ' + email)
+          console.log('credential: ' + credential)
+        })
+    },
+    facebookSignIn() {
+      console.log('facebook')
+      firebase.initializeApp(firebaseConfig)
+      const provider = new FacebookAuthProvider()
+      const auth = getAuth()
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          // The signed-in user info.
+          const user = result.user
+          const uid = result.user.uid
+          // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+          const credential = FacebookAuthProvider.credentialFromResult(result)
+          const token = credential.accessToken
+          localStorage.setItem('token', token)
+          localStorage.setItem('uid', uid)
+          console.log('result: ' + JSON.stringify(result))
+          console.log('user: ' + user)
+          console.log('token: ' + token)
+          axios
+            .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
+              uid: uid,
+            })
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
+        })
+        .catch((error) => {
+          // Handle Errors here.
+          const errorCode = error.code
+          const errorMessage = error.message
+          // The email of the user's account used.
+          const email = error.email
+          // The AuthCredential type that was used.
+          const credential = FacebookAuthProvider.credentialFromError(error)
           console.log('errorCode: ' + errorCode)
           console.log('errorMessage: ' + errorMessage)
           console.log('email: ' + email)
@@ -372,6 +423,7 @@ export default {
   border-radius: 1px;
   background-color: white;
   border: 1px solid #a9c9de;
+  cursor: pointer;
 }
 
 .mainMobSocialLogin > div > img,
