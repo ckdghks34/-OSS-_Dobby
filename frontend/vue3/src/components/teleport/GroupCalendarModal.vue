@@ -1,6 +1,6 @@
 <template>
   <div class="modal" v-if="isOpen">
-        <el-card class="box-card modal-content">
+    <el-card class="box-card modal-content">
       <template #header>
         <div v-if="state.isBig">
           <el-row>
@@ -51,6 +51,7 @@
 
         </div>
       </template>
+
       <div class="modal-content-body">
         <el-row class="modal-content-body-contents-row">
           <el-col :span="1">
@@ -73,6 +74,25 @@
           <el-col :span="22" :offset="1">
             <span>{{ state.mData.ModalDate.extendedProps.placeName }}</span>
           </el-col>
+        </el-row>
+
+        <el-row class="modal-content-body-contents-row">
+          <el-col :span="1">
+            <div class="modal-content-body-contents-row-icon-wrap">
+              <el-icon><User /></el-icon>
+            </div>
+          </el-col>
+          <el-col :span="22" :offset="1" class="modal-content-body-participant">
+            <div v-for="par in state.mData.ModalDate.extendedProps.participant" :key="par.uid" class="modal-content-body-participant-element">
+              <el-button v-if="par.completed" size="mini" type="info" plain>
+                {{ par.name }}
+              </el-button>
+              <el-button v-if="!par.completed" size="mini">
+                {{ par.name }}
+              </el-button>
+            </div>
+          </el-col>
+
         </el-row>
 
         <el-row>
@@ -110,14 +130,15 @@ import { useRouter } from 'vue-router'
 import axios from 'axios';
 
 //icons
-import { Calendar, Location, Document } from '@element-plus/icons'
+import { Calendar, Location, Document, User } from '@element-plus/icons'
 
 
 export default {
   components: {
     Calendar,
     Location,
-    Document
+    Document,
+    User
   },
 
   setup() {
@@ -284,5 +305,14 @@ export default {
 </script>
 
 <style>
+
+.modal-content-body-participant {
+  display: flex;
+  flex-flow: wrap;
+}
+
+.modal-content-body-participant-element {
+  margin-right: 0.5rem;
+}
 
 </style>

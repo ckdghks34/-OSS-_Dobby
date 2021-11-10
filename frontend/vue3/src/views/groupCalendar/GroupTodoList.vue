@@ -14,7 +14,6 @@
       </el-col>
     </el-row>
 
-
     <div v-else>
       <el-row>
         <el-col :span="24">

@@ -30,6 +30,9 @@
             <span>
               {{ todayItem.extendedProps.content }}
             </span>
+            <span>
+              {{todayItem}}
+            </span>
           </el-col>
         </el-row>
       </div>

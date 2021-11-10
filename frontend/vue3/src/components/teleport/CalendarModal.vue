@@ -90,7 +90,7 @@
       </div>
     </el-card>
 
-
+    
     <el-dialog
       v-model="state.dialogVisible"
       width="30%">
@@ -141,12 +141,12 @@ export default {
     const fullCalendar = ref(null)
 
     onBeforeMount(() => {
-      window.addEventListener('resize', handleModalWindowSize)
-      handleModalWindowSize()
+      window.addEventListener('resize', handleGroupModalWindowSize)
+      handleGroupModalWindowSize()
     })
 
     onUnmounted(() => {
-      window.removeEventListener('resize', handleModalWindowSize)
+      window.removeEventListener('resize', handleGroupModalWindowSize)
     })
 
 
@@ -155,7 +155,7 @@ export default {
     }
 
     // windowSize
-    const handleModalWindowSize = () => {
+    const handleGroupModalWindowSize = () => {
       if (window.innerWidth > 767) {
         state.isBig = true
       } else {
