@@ -12,13 +12,13 @@
       </router-link>
       <router-link class="signupRouter" to="/sign">
         <div>
-          <img src="@/assets/naver.png" alt="" />
+          <img src="@/assets/facebook.png" alt="" />
           <br />
-          <p>네이버 회원가입</p>
+          <p>페이스북 회원가입</p>
         </div>
       </router-link>
-      <router-link class="signupRouter" to="/sign">
-        <div>
+      <router-link class="signupRouter" to="/selectsignup">
+        <div @click="googleSignIn">
           <img src="@/assets/google.png" alt="" />
           <br />
           <p>구글 회원가입</p>
@@ -33,8 +33,52 @@
 </template>
 
 <script>
+import firebase from 'firebase/compat/app'
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import firebaseConfig from '../../../firebaseConfig'
+import axios from 'axios'
+
 export default {
   name: 'SelectSignup',
+  methods: {
+    googleSignIn() {
+      console.log('signin')
+      firebase.initializeApp(firebaseConfig)
+      const provider = new GoogleAuthProvider()
+      const auth = getAuth()
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const credential = GoogleAuthProvider.credentialFromResult(result)
+          const token = credential.accessToken
+          const uid = result.user.uid
+          localStorage.setItem('token', token)
+          localStorage.setItem('uid', uid)
+          console.log('result: ' + JSON.stringify(result))
+          console.log('token: ' + token)
+          console.log('uid: ' + uid)
+          axios
+            .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
+              uid: uid,
+            })
+            .then((res) => {
+              console.log(res)
+              alert('Dobby에 오신 걸 환영합니다')
+              this.$router.push('Calendar')
+            })
+            .catch((err) => console.log(err))
+        })
+        .catch((error) => {
+          const errorCode = error.code
+          const errorMessage = error.message
+          const email = error.email
+          const credential = GoogleAuthProvider.credentialFromError(error)
+          console.log('errorCode: ' + errorCode)
+          console.log('errorMessage: ' + errorMessage)
+          console.log('email: ' + email)
+          console.log('credential: ' + credential)
+        })
+    },
+  },
 }
 </script>
 
@@ -74,7 +118,7 @@ export default {
 }
 
 .signupRouter > div:hover {
-  box-shadow: 0 0 10px #719ece;
+  box-shadow: 0 0 10px #a9c9de;
 }
 
 .signupRouter > div > p {

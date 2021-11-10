@@ -25,11 +25,17 @@
           >
         </div>
       </div>
-      <div class="mainSocialLeft">
-        <img src="@/assets/naver.png" alt="" />
-        <span>네이버 로그인</span>
+      <div class="mainSocialLeft" @click="facebookSignIn">
+        <img src="@/assets/facebook.png" alt="" />
+        <span>페이스북 로그인</span>
       </div>
-      <div class="mainSocialRight g-signin2" data-onsuccess="onSignIn"></div>
+      <div class="mainSocialRight">
+        <img src="@/assets/google.png" alt="" />
+        <div class="g-signin2" @click="googleSignIn">
+          <span>구글 로그인</span>
+        </div>
+      </div>
+
       <router-link to="/selectsignup"
         ><button class="mainSign blueBtn">회원가입</button></router-link
       >
@@ -66,11 +72,16 @@
       </div>
       <div class="mainMobSocialLogin">
         <div>
-          <img src="@/assets/naver.png" alt="" /><span>네이버 로그인</span>
+          <img src="@/assets/facebook.png" alt="" /><span style="font-size:15px"
+            >페이스북 로그인</span
+          >
         </div>
         <br />
         <div>
-          <img src="@/assets/google.png" alt="" /><span>구글 로그인</span>
+          <img src="@/assets/google.png" alt="" />
+          <div class="g-signin2" @click="onSignIn">
+            <span style="font-size:15px">구글 로그인</span>
+          </div>
         </div>
       </div>
       <div class="mainMobSign">
@@ -86,21 +97,96 @@ import { reactive } from '@vue/reactivity'
 import { onBeforeMount } from '@vue/runtime-core'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import firebase from 'firebase/compat/app'
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+} from 'firebase/auth'
+import firebaseConfig from '../../../firebaseConfig'
 import './main.css'
 
 export default {
   name: 'main',
-  created() {
-    window.onSignIn = this.onSignIn
-  },
+  // created() {
+  //   window.onSignIn = this.onSignIn
+  // },
   methods: {
-    onSignIn(googleUser) {
-      var profile = googleUser.getBasicProfile()
-      console.log('ID Token: ' + googleUser.getAuthResponse().id_token)
-      console.log('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-      console.log('Name: ' + profile.getName())
-      console.log('Image URL: ' + profile.getImageUrl())
-      console.log('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
+    googleSignIn() {
+      console.log('signin')
+      firebase.initializeApp(firebaseConfig)
+      const provider = new GoogleAuthProvider()
+      const auth = getAuth()
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const credential = GoogleAuthProvider.credentialFromResult(result)
+          const token = credential.accessToken
+          const uid = result.user.uid
+          localStorage.setItem('token', token)
+          localStorage.setItem('uid', uid)
+          console.log('result: ' + JSON.stringify(result))
+          console.log('token: ' + token)
+          console.log('uid: ' + uid)
+          axios
+            .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
+              uid: uid,
+            })
+            .then((res) => {
+              console.log(res)
+              this.$router.push('Calendar')
+            })
+            .catch((err) => console.log(err))
+        })
+        .catch((error) => {
+          const errorCode = error.code
+          const errorMessage = error.message
+          const email = error.email
+          const credential = GoogleAuthProvider.credentialFromError(error)
+          console.log('errorCode: ' + errorCode)
+          console.log('errorMessage: ' + errorMessage)
+          console.log('email: ' + email)
+          console.log('credential: ' + credential)
+        })
+    },
+    facebookSignIn() {
+      console.log('facebook')
+      firebase.initializeApp(firebaseConfig)
+      const provider = new FacebookAuthProvider()
+      const auth = getAuth()
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          // The signed-in user info.
+          const user = result.user
+          const uid = result.user.uid
+          // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+          const credential = FacebookAuthProvider.credentialFromResult(result)
+          const token = credential.accessToken
+          localStorage.setItem('token', token)
+          localStorage.setItem('uid', uid)
+          console.log('result: ' + JSON.stringify(result))
+          console.log('user: ' + user)
+          console.log('token: ' + token)
+          axios
+            .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
+              uid: uid,
+            })
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
+        })
+        .catch((error) => {
+          // Handle Errors here.
+          const errorCode = error.code
+          const errorMessage = error.message
+          // The email of the user's account used.
+          const email = error.email
+          // The AuthCredential type that was used.
+          const credential = FacebookAuthProvider.credentialFromError(error)
+          console.log('errorCode: ' + errorCode)
+          console.log('errorMessage: ' + errorMessage)
+          console.log('email: ' + email)
+          console.log('credential: ' + credential)
+        })
     },
   },
   setup() {
@@ -202,7 +288,7 @@ export default {
 }
 
 .mainSocialLeft:hover,
-.mainSocialRight .abcRioButton:hover,
+.mainSocialRight:hover,
 .mainMobSocialLogin > div:hover {
   box-shadow: 0 0 10px #a9c9de;
 }
@@ -246,20 +332,20 @@ export default {
 .mainSocialRight {
   display: inline-block;
   cursor: pointer;
-}
-
-.mainSocialLeft {
   width: 210px;
   height: 35px;
   margin-top: 17px;
   text-align: center;
   padding: 5px;
-  margin-left: 40px;
-  margin-right: 13px;
   background-color: white;
   border: 1px solid #a9c9de;
   border-radius: 2px;
   box-shadow: 0 2px 4px 0 rgb(0 0 0 / 25%);
+}
+
+.mainSocialLeft {
+  margin-left: 40px;
+  margin-right: 13px;
 }
 
 .mainSocialLeft > img,
@@ -270,12 +356,17 @@ export default {
 }
 
 .mainSocialLeft > span,
-.mainSocialRight > span {
+.mainSocialRight > div > span {
   line-height: 2;
 }
 
 .mainSocialRight > span {
   margin-left: 7px;
+}
+
+.mainSocialRight .g-signin2 {
+  width: 100%;
+  height: 100%;
 }
 
 .g-signin2 > div {
@@ -332,11 +423,28 @@ export default {
   border-radius: 1px;
   background-color: white;
   border: 1px solid #a9c9de;
+  cursor: pointer;
 }
 
-.mainMobSocialLogin > div > img {
+.mainMobSocialLogin > div > img,
+.g-signin2 > img {
   float: left;
-  width: 25px;
+  width: 15%;
+  max-width: 24px;
+}
+
+.mainMobSocialLogin .g-signin2 {
+  display: inline-block;
+  width: 85%;
+
+  height: 25px;
+}
+
+.mainMobSocialLogin .g-signin2 > div {
+  height: 45px !important;
+  width: 100% !important;
+  border: 1px solid #a9c9de;
+  border-radius: 2px;
 }
 
 .mainMobSign {
