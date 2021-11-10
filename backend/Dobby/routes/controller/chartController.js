@@ -138,13 +138,13 @@ async function getGroup(req, res, next) {
                 totalNum += 1;
                 if (totalCategory.empty) {
                   totalCategory.push({
-                    category: doc.category,
+                    category: doc.data().category,
                     Num: 1,
                   });
                 } else {
                   let check = false;
                   for (let docu of totalCategory) {
-                    if (docu.category == doc.category) {
+                    if (docu.category == doc.data().category) {
                       docu.Num += 1;
                       check = true;
                       break;
@@ -152,7 +152,7 @@ async function getGroup(req, res, next) {
                   }
                   if (!check) {
                     totalCategory.push({
-                      category: doc.category,
+                      category: doc.data().category,
                       Num: 1,
                     });
                   }
@@ -161,13 +161,13 @@ async function getGroup(req, res, next) {
                   checkNum += 1;
                   if (checkCategory.empty) {
                     checkCategory.push({
-                      category: doc.category,
+                      category: doc.data().category,
                       Num: 1,
                     });
                   } else {
                     let check = false;
                     for (let docu of checkCategory) {
-                      if (docu.category == doc.category) {
+                      if (docu.category == doc.data().category) {
                         docu.Num += 1;
                         check = true;
                         break;
@@ -175,7 +175,7 @@ async function getGroup(req, res, next) {
                     }
                     if (!check) {
                       checkCategory.push({
-                        category: doc.category,
+                        category: doc.data().category,
                         Num: 1,
                       });
                     }
