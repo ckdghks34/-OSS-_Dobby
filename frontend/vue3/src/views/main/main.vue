@@ -125,6 +125,9 @@ export default {
     }).catch((err) => {
       console.log('An error occurred while retrieving token. ', err)
     });
+    onMessage(messaging, function(payload) {
+      console.log('Message received. ', payload)
+    });
   },
   methods: {
     googleSignIn() {
