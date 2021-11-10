@@ -30,7 +30,6 @@ import { useRouter } from 'vue-router';
 
 // Calendar
 import '@fullcalendar/core/vdom' // solves problem with Vite
-// import FullCalendar, { CalendarOptions, EventApi, DateSelectArg, EventClickArg } from '@fullcalendar/vue3'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -68,6 +67,12 @@ export default {
     const fullCalendar = ref(null);
     const modal = ref(null);
 
+    onMounted(() => {
+      handleViewTitle()
+      store.dispatch('setCalendarApi', fullCalendar.value)
+      initData()
+    })
+
     function showModal() {
       // VMmodal.vue에 접근하여 show 함수 실행
       modal.value.show();
@@ -98,11 +103,31 @@ export default {
         )
       }
       // state 와 동기화 해주기
-      cData.value.map(
+      calendarApi.batchRendering(function() {
+        cData.value.map(
         (c) => {
-          calendarApi.addEvent(c)
+          if (c.completed) {
+            calendarApi.addEvent({
+              cid: c.cid,
+              completed: c.completed,
+              title: c.title,
+              content: c.content,
+              start: c.start,
+              end: c.end,
+              color: c.color,
+              placeName: c.placeName,
+              placeLat: c.placeLat,
+              placeLng: c.placeLng,
+              startDate: c.startDate,
+              endDate: c.endDate,
+              classNames: ['calendar-done']
+            })
+          }
+          else {
+            calendarApi.addEvent(c)
+          }
         })
-        
+      })
       store.dispatch('refreshCalendarData', calendarApi.getEvents())
     }
 
@@ -181,22 +206,15 @@ export default {
         dateClick: handleClickDate,
         eventClick: handleEventClick,
         events: [],
-        eventColor: 'red', // color default?
+        eventColor: 'orange', // color default?
         timeZone: "local", // local default
         display: 'list-item',
-        height: "auto", // height
+        height: "auto", // height,
     }
-
-    onMounted(() => {
-      handleViewTitle()
-      store.dispatch('setCalendarApi', fullCalendar.value)
-      initData()
-    })
 
     const state = reactive({
       calendarView: '월',
       currentMonth: '',
-      // currentTitle: computed(() => handleViewTitle()),
     })
 
     return {
@@ -213,6 +231,16 @@ export default {
 </script>
 
 <style>
+  .calendar-done {
+    color: #ECECEC !important;
+    text-decoration: line-through !important;
+  }
+
+  .calendar-done .fc-event-title {
+    color: #ECECEC !important;
+    text-decoration: line-through !important;
+  }
+
   .calendar-main {
     width: 100%;
     display: flex;
