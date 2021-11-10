@@ -1,11 +1,11 @@
 <template>
   <div>
-    <GCalendar />
+    <GCalendar v-if="isData"/>
   </div>
 </template>
 
 <script>
-import { onBeforeMount } from 'vue'
+import { computed, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -25,12 +25,15 @@ export default {
 
     const { gid } = route.query
 
+    const isData = computed(() => store.state.isGroupData)
+
     onBeforeMount(() => {
       store.dispatch('getGroupCalendarData', gid)
     })
 
-
-
+    return {
+      isData,
+    }
 
   }
 
