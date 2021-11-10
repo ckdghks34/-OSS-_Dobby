@@ -22,20 +22,21 @@
         </div>
       </div>
     </div>
-    <div class="chartBottom">
+    <div v-if="info.totalCount" class="chartBottom">
       <div>
         <p>주로 어떤 계획을 세웠을까?</p>
+        <p style="margin:0 0 3% 0">총 {{ info.totalCount }}개</p>
         <div class="demo-progress">
-          <div v-for="t in test" :key="t">
+          <div v-for="(t, index) in info.totalLi" :key="index">
             <p>
-              {{ t.name }}
+              {{ t.category }}
             </p>
             <el-progress
               class="progress"
               :text-inside="true"
               :stroke-width="20"
-              :percentage="t.per"
-              :color="t.color"
+              :percentage="(t.Num / info.totalCount).toFixed(2) * 100"
+              :color="info.color[index % 2]"
               style="margin-bottom:3%"
             />
           </div>
@@ -43,17 +44,20 @@
       </div>
       <div>
         <p>계획은 얼마나 달성했을까?</p>
+        <p style="margin:0 0 3% 0">
+          평균 {{ (info.doneCount / info.totalCount).toFixed(2) * 100 }}%
+        </p>
         <div class="demo-progress">
-          <div v-for="t in test" :key="t">
+          <div v-for="(t, index) in info.categoryLi" :key="index">
             <p>
-              {{ t.name }}
+              {{ t.category }}
             </p>
             <el-progress
               class="progress"
               :text-inside="true"
               :stroke-width="20"
-              :percentage="t.per"
-              :color="t.color"
+              :percentage="(t.check / t.total).toFixed(2) * 100"
+              :color="info.color[index % 2]"
               style="margin-bottom:3%"
             />
           </div>
@@ -65,9 +69,19 @@
 
 <script>
 import { reactive } from '@vue/reactivity'
+import axios from 'axios'
+
 export default {
   name: 'chart',
   setup() {
+    const info = reactive({
+      totalCount: 0,
+      totalLi: [],
+      doneCount: 0,
+      categoryLi: [],
+      color: ['#a9c9de', '#F4EF50', '#C882D8', '#D2F276', '#5FCEC6'],
+    })
+
     const state = reactive({
       date: '',
     })
@@ -83,8 +97,31 @@ export default {
       let startDate = state.date[0]
       let endDate = state.date[1]
       console.log(startDate, endDate)
+      axios
+        .post(
+          'https://k5d105.p.ssafy.io:3030/chart/getPersonal',
+          {
+            uid: localStorage.getItem('uid'),
+            startDate: startDate,
+            endDate: endDate,
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res)
+          info.totalCount = res.data.totalNum
+          info.totalLi = res.data.totalCategory
+          info.doneCount = res.data.checkNum
+          info.categoryLi = res.data.checkCategory
+          console.log(info.totalLi)
+        })
+        .catch((err) => console.log(err))
     }
-    return { state, test, changeDate }
+    return { info, state, test, changeDate }
   },
 }
 </script>
