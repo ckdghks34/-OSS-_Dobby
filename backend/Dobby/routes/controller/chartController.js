@@ -52,7 +52,7 @@ async function getPersonal(req, res, next) {
               checkNum += 1;
               if (checkCategory.empty) {
                 checkCategory.push({
-                  category: doc.category,
+                  category: doc.data().category,
                   Num: 1,
                 });
               } else {
