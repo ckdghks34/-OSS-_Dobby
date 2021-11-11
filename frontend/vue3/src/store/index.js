@@ -255,6 +255,7 @@ export default createStore({
           commit('CHECKGROUPCALENDARDATA')
         })
         .catch((error) => {
+          console.log(error.response)
           if (error.response.status == 401 && error.response.data.error === "그룹 캘린더가 없습니다.") {
             commit('SETGROUPCALENDARDATA', [])
             commit('CHECKGROUPCALENDARDATA')

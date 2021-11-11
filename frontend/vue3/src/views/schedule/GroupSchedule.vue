@@ -22,6 +22,25 @@
     </div>
     <br>
     <div class="userCalendar-schedule-row">
+      <label class="label" for="participant">참가자</label>
+      <el-select
+        v-model="state.participants"
+        multiple
+        filterable
+        allow-create
+        default-first-option
+        placeholder="참가자를 선택해주세요"
+        class="groupCalendar-schedule-participant">
+        <el-option
+          v-for="member in state.participantsOption"
+          :key="member.value"
+          :label="member.label"
+          :value="member.value">
+        </el-option>
+      </el-select>
+    </div>
+    <br>
+    <div class="userCalendar-schedule-row">
       <label class="label" for="place">장소</label>
       <input class="web-input" type="text" id="place" v-model="state.placeName">
     </div>
@@ -29,7 +48,7 @@
     <div class="userCalendar-schedule-category">
       <label class="label" for="category">분류</label>
       <div class="userCalendar-schedule-category-button-wrap">
-        <el-radio v-model="state.category" label="공부" border size="medium">공부</el-radio>
+        <el-radio v-model="state.category" label="공부" border>공부</el-radio>
         <el-radio v-model="state.category" label="운동" border>운동</el-radio>
         <el-radio v-model="state.category" label="업무" border>업무</el-radio>
         <el-radio v-model="state.category" label="취미" border>취미</el-radio>
@@ -54,7 +73,7 @@
     <br>
     <div>
       <button class="web-button-red" @click="handleCancleSchedule">취소</button> 
-      <button class="web-button-blue" style="margin-left:30px" type="button" @click="addSchedule" v-bind:disabled="title==''">수정</button>
+      <button class="web-button-blue" style="margin-left:30px" type="button" @click="addGroupSchedule" v-bind:disabled="title==''">추가</button>
     </div> 
   </div>
 
@@ -83,6 +102,24 @@
       <input type="checkbox" v-model="state.allDay">
     </div>
     <br>
+    <div class="userCalendar-schedule-row">
+      <label class="label" for="participant">참가자</label>
+      <el-select
+        v-model="state.participants"
+        multiple
+        filterable
+        allow-create
+        default-first-option
+        placeholder="참가자를 선택해주세요">
+        <el-option
+          v-for="member in state.participantsOption"
+          :key="member.value"
+          :label="member.label"
+          :value="member.value">
+        </el-option>
+      </el-select>
+    </div>
+    <br>
     <div>
       <label class="label" for="place">장소</label>
       <input class="input" type="text" id="place" v-model="state.placeName">
@@ -92,10 +129,10 @@
       <label class="label" for="category">분류</label>
       <!-- <span class="label">분류</span> -->
       <div>
-        <el-radio v-model="staet.category" label="공부" border>공부</el-radio>
-        <el-radio v-model="staet.category" label="운동" border>운동</el-radio>
-        <el-radio v-model="staet.category" label="업무" border>업무</el-radio>
-        <el-radio v-model="staet.category" label="취미" border>취미</el-radio>
+        <el-radio v-model="state.category" label="공부" border>공부</el-radio>
+        <el-radio v-model="state.category" label="운동" border>운동</el-radio>
+        <el-radio v-model="state.category" label="업무" border>업무</el-radio>
+        <el-radio v-model="state.category" label="취미" border>취미</el-radio>
       </div>
     </div>
     <br>
@@ -115,7 +152,7 @@
     <br>
     <div>
       <button class="redBtn" @click="handleCancleSchedule">취소</button>
-      <button class="blueBtn" type="button" @click="addSchedule" v-bind:disabled="title==''">추가</button>
+      <button class="blueBtn" type="button" @click="addGroupSchedule" v-bind:disabled="title==''">추가</button>
     </div> 
   </div>
 
@@ -123,161 +160,218 @@
 
 <script>
 import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { reactive, onBeforeMount } from 'vue'
+import { useRouter, useRoute } from 'vue-router';
+import { reactive, onBeforeMount, onUnmounted } from 'vue'
 import { useStore } from 'vuex';
 
 export default {
-    name: 'Schedule',
-    components : {
+  name: 'Schedule',
+  components : {
         
-    },
-    setup() {
-        const router = useRouter()
-        const store = useStore()
+  },
+  setup() {
+    const router = useRouter()
+    const route = useRoute()
+    const store = useStore()
 
-        const state = reactive({
-            uid: localStorage.getItem('uid'),
-            title:'',
-            content:'',
-            startDate:'',
-            endDate:'',
-            startTime:'',
-            endTime:'',
-            placeName: '',
-            placeLat: 38.5000,
-            placeLng: 0.00022,
-            allDay: false,
-            color: '#FF7C7C',
-            category: '',
-            size: true,
-        })
+    const state = reactive({
+      uid: localStorage.getItem('uid'),
+      title:'',
+      content:'',
+      startDate:'',
+      endDate:'',
+      startTime:'',
+      endTime:'',
+      placeName: '',
+      placeLat: 38.5000,
+      placeLng: 0.00022,
+      allDay: false,
+      color: '#FF7C7C',
+      category: '',
+      size: true,
+      participantsOption: [],
+      groupMember: [],
+      participants: [],
+    })
 
-        onBeforeMount(() => {
-            if (window.innerWidth < 730) {
-                state.size = false
-            }
-        })
+    onBeforeMount(() => {
+      window.addEventListener('resize', handleGroupCalendarCreateSchedule)
+      handleGroupCalendarCreateSchedule()
+      findGroupMember()
+    })
 
-        window.addEventListener(
-            'resize',
-            function() {
-                if (window.innerWidth < 730) {
-                state.size = false
-                } else {
-                state.size = true
-                }
-            },
-            true
-        )
+    onUnmounted(() => {
+        window.removeEventListener('resize', handleGroupCalendarCreateSchedule)
+      })
 
-        const handleCancleSchedule = () => {
-            router.push({name: 'Calendar'})
+    const handleGroupCalendarCreateSchedule = () => {
+      if (window.innerWidth < 730) {
+        state.size = false
+        } else {
+        state.size = true
         }
+    }
 
-        const addSchedule = function() {
-            if ( state.allDay ) {
-                const aDay = {
-                        uid : state.uid,
-                        title : state.title,
-                        content : state.content,
-                        startDate : state.startDate,
-                        endDate : state.endDate,
-                        startTime : '00:00',
-                        endTime : '24:00',
-                        placeName : state.placeName,
-                        placeLat : state.placeLat,
-                        placeLng : state.placeLng,
-                        allDay : state.allDay,
-                        color : state.color,
-                        category: state.category,
-                    }            
-                axios
-                    .post(`https://k5d105.p.ssafy.io:3030/calendar/createCalendar`, aDay)
-                    .then( ( response ) => {
-                        
-                        const res = response.data.calendar
+    const handleCancleSchedule = () => {
+        router.push({name: 'Calendar'})
+    }
 
-                        const d = {
-                            cid : res.cid,
-                            completed: res.completed,
-                            title : res.title,
-                            content : res.content,
-                            start: res.startDate+'T'+res.startTime,
-                            end: res.endDate+'T'+res.endTime,
-                            color : res.color,
-                            placeName : res.placeName,
-                            placeLat : res.placeLat,
-                            placeLng : res.placeLng,
-                            startDate : res.startDate,
-                            endDate : res.endDate,
-                            category: res.category,
-                            allDay : res.allDay,
-                        }
-
-                        store.dispatch('pushCalendarData', d)
-                        router.push({name: 'Calendar'})
-                    })
-                    .catch( (error) => {
-                        console.log(error)
-                    })
+    const findGroupMember = () => {
+      axios.post('https://k5d105.p.ssafy.io:3030/group/GetGroupMember',
+      {
+        gid : route.query.gid
+      },
+      {
+        headers: {
+          authorization: localStorage.getItem('token')
+        }
+      })
+        .then( (response) => {
+          const res = response.data.members
+          const userUid = localStorage.getItem('uid')
+          state.groupMember = res
+          state.participantsOption = res.map( (m) => {
+            return {
+              value: m.uid,
+              label: m.nickname,
             }
-            else {
+          })
+          const user = res.filter((r) => {
+            return r.uid === userUid
+          })
+          state.participants.push(user[0].uid) 
+        })
+        .catch( (error) => {
+          console.log(error)
+        })
+      }
+
+    const addGroupSchedule = function() {
+      const parList = state.participants.map((par) => {
+        let parInfo = state.groupMember.find( (p) => {
+          return par === p.uid
+        })
+        if (parInfo) {
+          return {
+            uid: parInfo.uid,
+            name: parInfo.name,
+            completed: false,
+          }
+        }
+      })
+
+      if ( state.allDay ) {
+        const aDay = {
+          uid : state.uid,
+          title : state.title,
+          content : state.content,
+          startDate : state.startDate,
+          endDate : state.endDate,
+          startTime : '00:00',
+          endTime : '24:00',
+          placeName : state.placeName,
+          placeLat : state.placeLat,
+          placeLng : state.placeLng,
+          allDay : state.allDay,
+          color : state.color,
+          category: state.category,
+          participant: parList,
+        }            
+        axios
+          .post(`https://k5d105.p.ssafy.io:3030/groupCalendar/createCalendar`,
+            aDay,
+            {
+              headers: {
+                authorization : localStorage.getItem('token')
+              }
+            })
+            .then( ( response ) => {
+              const res = response.data.calendar
+              const d = {
+                cid : res.cid,
+                gid: route.query.gid,
+                completed: res.completed,
+                title : res.title,
+                content : res.content,
+                start: res.startDate+'T'+res.startTime,
+                end: res.endDate+'T'+res.endTime,
+                color : res.color,
+                placeName : res.placeName,
+                placeLat : res.placeLat,
+                placeLng : res.placeLng,
+                startDate : res.startDate,
+                endDate : res.endDate,
+                category: res.category,
+                allDay : res.allDay,
+                participant : res.participant
+                }
+
+              store.dispatch('pushGroupCalendarData', d)
+              router.push({name: 'GroupCalendar', query : {gid: route.query.gid}})
+            })
+            .catch( (error) => {
+                console.log(error)
+            })
+        }
+        else {
+          const day = {
+            uid : state.uid,
+            gid: route.query.gid,
+            title : state.title,
+            content : state.content,
+            startDate : state.startDate,
+            endDate : state.endDate,
+            startTime : state.startTime,
+            endTime : state.endTime,
+            placeName : state.placeName,
+            placeLat : state.placeLat,
+            placeLng : state.placeLng,
+            allDay : state.allDay,
+            color : state.color,
+            category : state.category,
+            participant: parList,
+          }
+          axios
+            .post(`https://k5d105.p.ssafy.io:3030/groupCalendar/createCalendar`, day)
+            .then( (response) => {
+                const res = response.data.calendar
                 const day = {
-                    uid : state.uid,
-                    title : state.title,
-                    content : state.content,
-                    startDate : state.startDate,
-                    endDate : state.endDate,
-                    startTime : state.startTime,
-                    endTime : state.endTime,
-                    placeName : state.placeName,
-                    placeLat : state.placeLat,
-                    placeLng : state.placeLng,
-                    allDay : state.allDay,
-                    color : state.color,
-                    category : state.category,
-                }
-                axios
-                    .post(`https://k5d105.p.ssafy.io:3030/calendar/createCalendar`, day)
-                    .then( (response) => {
-
-                        const res = response.data.calendar
-
-                        const day = {
-                            cid : res.cid,
-                            completed: res.completed,
-                            title : res.title,
-                            content : res.content,
-                            start: res.startDate+'T'+res.startTime,
-                            end: res.endDate+'T'+res.endTime,
-                            color : res.color,
-                            placeName : res.placeName,
-                            placeLat : res.placeLat,
-                            placeLng : res.placeLng,
-                            startDate : res.startDate,
-                            endDate : res.endDate,
-                            category: res.category,
-                            allDay : res.allDay,
-                        }
-
-                        store.dispatch('pushCalendarData', day)
-                        router.push({name: 'Calendar'})
-                    })
-                    .catch( (error) => {
-                        console.log(error)
-                    })
-            }
+                  cid : res.cid,
+                  completed: res.completed,
+                  title : res.title,
+                  content : res.content,
+                  start: res.startDate+'T'+res.startTime,
+                  end: res.endDate+'T'+res.endTime,
+                  color : res.color,
+                  placeName : res.placeName,
+                  placeLat : res.placeLat,
+                  placeLng : res.placeLng,
+                  startDate : res.startDate,
+                  endDate : res.endDate,
+                  category: res.category,
+                  allDay : res.allDay,
+                  participant : res.participant
+                  }
+                store.dispatch('pushGroupCalendarData', day)
+                router.push({name: 'GroupCalendar', query : {gid: route.query.gid}})
+              })
+              .catch( (error) => {
+                  console.log(error)
+              })
         }
-        return {
-            state,
-            addSchedule,
-            handleCancleSchedule,
-        }
+      }
+
+      return {
+        state,
+        addGroupSchedule,
+        handleCancleSchedule,
+      }
     }
 }
 </script>
 
 <style>
-
+  .groupCalendar-schedule-participant {
+    width: 400px;
+  }
 </style>

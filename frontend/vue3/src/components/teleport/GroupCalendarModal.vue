@@ -144,6 +144,8 @@ export default {
   setup() {
     const store = useStore()
     const router = useRouter()
+    // const route = useRoute()
+
 
     const fullCalendar = ref(null)
     const isOpen = ref(false);
@@ -295,7 +297,8 @@ export default {
       dialogVisible: ref(false),
       isAuthority: computed(() => localStorage.getItem('uid') === state.mData.ModalDate.extendedProps.creator)
     })
-    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess };
+
+    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess};
   },
   data() {
     return {
