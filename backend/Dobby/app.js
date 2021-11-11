@@ -11,6 +11,7 @@ var calendarRouter = require("./routes/calendar");
 var groupRouter = require("./routes/group.js");
 var groupCalendarRouter = require("./routes/groupCalendar.js");
 var chartRouter = require("./routes/chart");
+var tokenRouter = require("./routes/token");
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use("/calendar", calendarRouter);
 app.use("/group", groupRouter);
 app.use("/groupCalendar", groupCalendarRouter);
 app.use("/chart", chartRouter);
+app.use("/token", tokenRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
