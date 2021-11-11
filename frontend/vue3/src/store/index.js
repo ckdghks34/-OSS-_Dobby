@@ -55,7 +55,10 @@ export default createStore({
       state.calAPI = payload
     },
     PUSHCALENDARDATA ( state, payload ) {
+      console.log(111)
+      console.log(state.calendarData)
       state.calendarData.push(payload)
+      console.log(state.calendarData)
     },
     DELETECALENDARDATA ( state, payload ) {
       // console.log(state.calendarData)
@@ -123,6 +126,8 @@ export default createStore({
                 placeLng: r.placeLng,
                 startDate: r.startDate,
                 endDate: r.endDate,
+                category: r.category,
+                allDay: r.allDay,
                 classNames: ['calendar-done']
               }
             }
@@ -139,6 +144,8 @@ export default createStore({
               placeLng: r.placeLng,
               startDate: r.startDate,
               endDate: r.endDate,
+              category: r.category,
+              allDay: r.allDay,
             }
           })
           commit('setCalendarData', res)
@@ -221,7 +228,8 @@ export default createStore({
                 endDate: r.endDate,
                 classNames: ['calendar-done'],
                 participant: r.participant,
-                creator: r.creator
+                creator: r.creator,
+                category: r.category,
               }
             }
             return {
@@ -239,7 +247,8 @@ export default createStore({
               startDate: r.startDate,
               endDate: r.endDate,
               participant: r.participant,
-              creator: r.creator
+              creator: r.creator,
+              category: r.category,
             }
           })
           commit('SETGROUPCALENDARDATA', res)
@@ -282,6 +291,7 @@ export default createStore({
       // 날짜 정리하기
       // Fri Nov 26 2021 18:00:00 GMT+0900 (한국 표준시)
       const ModalDate = state.modalData
+      console.log(ModalDate)
       const start = ModalDate.start.toString().split(' ')
       // 시작하는 날
       const startDay = changeDateFormat(start, ModalDate.allDay)
