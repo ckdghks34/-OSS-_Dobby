@@ -12,6 +12,7 @@ import sideBar from '@/views/sidebar/sideBar'
 import Chart from '@/views/chart/chart'
 import PutSchedule from '@/views/calendar/PutSchedule'
 import GroupCalendar from '@/views/groupCalendar/GroupCalendar'
+import GroupChart from '@/views/chart/group-chart'
 
 const routes = [
   {
@@ -78,6 +79,12 @@ const routes = [
     path: '/chart',
     name: 'Chart',
     component: Chart,
+  },
+  {
+    path: '/groupChart/:gid',
+    name: 'groupChart',
+    component: GroupChart,
+    props: true,
   },
   {
     path: '/calendar/putSchedule',

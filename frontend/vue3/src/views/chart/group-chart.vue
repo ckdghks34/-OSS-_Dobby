@@ -79,7 +79,9 @@ import axios from 'axios'
 
 export default {
   name: 'chart',
-  setup() {
+  props: ['gid'],
+  setup(props) {
+    console.log(props)
     const info = reactive({
       totalCount: 0,
       totalLi: [],
@@ -98,8 +100,9 @@ export default {
       console.log(startDate, endDate)
       axios
         .post(
-          'https://k5d105.p.ssafy.io:3030/chart/getPersonal',
+          'https://k5d105.p.ssafy.io:3030/chart/getGroup',
           {
+            gid: props.gid,
             uid: localStorage.getItem('uid'),
             startDate: startDate,
             endDate: endDate,
