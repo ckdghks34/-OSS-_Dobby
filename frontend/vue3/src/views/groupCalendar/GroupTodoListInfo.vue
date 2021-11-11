@@ -9,7 +9,7 @@
           </el-col>
           <el-col :span="11" class="todoList-card-title">
             <span v-if="state.mData">
-              <!-- {{ day.title }} -->
+              <!-- {{ day.title.toString() }} -->
               {{ titleFormat(day.title) }}
             </span>
           </el-col>
@@ -100,31 +100,31 @@ export default {
       if (state.winSize === 'xl') {
         // 12
         if (title.length > 12) {
-          return `${title.subString(0, 10)}..` 
+          return `${title.substring(0, 10)}..` 
         }
         return title
       } else if ( state.winSize === 'lg' ) {
         // 10
         if (title.length > 10) {
-          return `${title.subString(0, 8)}..` 
+          return `${title.substring(0, 8)}..` 
         }
         return title
       } else if ( state.winSize === 'md' ) {
         // 13
         if (title.length > 13) {
-          return `${title.subString(0, 11)}..` 
+          return `${title.substring(0, 11)}..` 
         }
         return title
       } else if ( state.winSize === 'sm' ) {
         // 9
         if (title.length > 9) {
-          return `${title.subString(0, 7)}..` 
+          return `${title.substring(0, 7)}..` 
         }
         return title
       } else {
         // 6
         if (title.length > 6) {
-          return `${title.suString(0, 4)}`
+          return `${title.substring(0, 4)}`
         } 
         return title
       }

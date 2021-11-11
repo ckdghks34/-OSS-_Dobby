@@ -195,9 +195,9 @@ export default {
     })
 
     onBeforeMount(() => {
-      window.addEventListener('resize', handleGroupCalendarCreateSchedule)
-      handleGroupCalendarCreateSchedule()
       findGroupMember()
+      handleGroupCalendarCreateSchedule()
+      window.addEventListener('resize', handleGroupCalendarCreateSchedule)
     })
 
     onUnmounted(() => {
@@ -332,7 +332,13 @@ export default {
             participant: parList,
           }
           axios
-            .post(`https://k5d105.p.ssafy.io:3030/groupCalendar/createCalendar`, day)
+            .post(`https://k5d105.p.ssafy.io:3030/groupCalendar/createCalendar`,
+              day,
+              {
+                headers: {
+                  authorization : localStorage.getItem('token')
+              }}
+            )
             .then( (response) => {
                 const res = response.data.calendar
                 const day = {

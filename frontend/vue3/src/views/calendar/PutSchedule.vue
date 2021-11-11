@@ -1,45 +1,4 @@
 <template>
-  <!-- <div class="schedule-main">
-      <h1>일정 추가</h1>
-      <div>
-          <span>제목 : </span>
-          <input type="text" v-model="state.title">
-      </div>
-      <br>
-      <div>
-          <span>날짜</span>
-          <div>   
-              <input type="date" v-model="state.startDay"> ~ <input type="date" v-model="state.endDay">
-          </div>         
-      </div>
-      <br>
-      <div>
-          <span>시간: </span>
-          <input type="time" v-model="state.startTime"> ~ <input type="time" v-model="state.endTime">
-      </div>
-      <br>
-      <div>
-          <span>장소 : </span>
-          <input type="text" v-model="state.placeName">
-      </div>
-      <br>
-      <div>
-          <span>중요도</span>
-          <label class="import-label" v-bind:class="{'red':true}"><input type="radio" value="red" v-model="state.color"></label>
-          <label class="import-label" v-bind:class="{'orange':true}"><input type="radio" value="orange" v-model="state.color"></label>
-          <label class="import-label" v-bind:class="{'yellow':true}"><input type="radio" value="yellow" v-model="state.color"></label>
-          <label class="import-label" v-bind:class="{'green':true}"><input type="radio" value="green" v-model="state.color"></label>
-          <label class="import-label" v-bind:class="{'blue':true}"><input type="radio" value="blue" v-model="state.color"></label>
-      </div>
-      <div>
-          <p>메모장</p>
-          <input class="memo" v-bind:class="{'memo-content':true}" type="text" v-model="state.content">
-      </div>
-      <div>
-          <button @click="handleCancle">취소</button>
-          <button type="button" @click="putSchedule">수정</button>
-      </div>
-  </div> -->
   <div class="schedule-info" v-if="state.isBig">
     <h1>Put Schedule</h1>
     <div class="userCalendar-schedule-row">
@@ -132,10 +91,10 @@
         <label class="label" for="category">분류</label>
         <!-- <span class="label">분류</span> -->
         <div>
-            <el-radio v-model="staet.category" label="공부" border>공부</el-radio>
-            <el-radio v-model="staet.category" label="운동" border>운동</el-radio>
-            <el-radio v-model="staet.category" label="업무" border>업무</el-radio>
-            <el-radio v-model="staet.category" label="취미" border>취미</el-radio>
+            <el-radio v-model="state.category" label="공부" border>공부</el-radio>
+            <el-radio v-model="state.category" label="운동" border>운동</el-radio>
+            <el-radio v-model="state.category" label="업무" border>업무</el-radio>
+            <el-radio v-model="state.category" label="취미" border>취미</el-radio>
         </div>
     </div>
     <br>
@@ -199,7 +158,6 @@
       }
 
       const putSchedule = function() {
-        console.log(`color : ${state.color}`)
         axios
           .put(`https://k5d105.p.ssafy.io:3030/calendar/updateCalendar`,
           {

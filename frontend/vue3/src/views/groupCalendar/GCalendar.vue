@@ -86,7 +86,6 @@ export default {
     }
 
     const initData = function () {
-      // console.log('init data')
       let calendarApi = groupfullCalendar.value.getApi()
       const data = calendarApi.getEvents()
 

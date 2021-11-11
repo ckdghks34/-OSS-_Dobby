@@ -55,10 +55,7 @@ export default createStore({
       state.calAPI = payload
     },
     PUSHCALENDARDATA ( state, payload ) {
-      console.log(111)
-      console.log(state.calendarData)
       state.calendarData.push(payload)
-      console.log(state.calendarData)
     },
     DELETECALENDARDATA ( state, payload ) {
       // console.log(state.calendarData)

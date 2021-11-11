@@ -126,7 +126,7 @@
 <script>
 import { computed, reactive, ref, onBeforeMount, onUnmounted } from "vue";
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios';
 
 //icons
@@ -144,7 +144,7 @@ export default {
   setup() {
     const store = useStore()
     const router = useRouter()
-    // const route = useRoute()
+    const route = useRoute()
 
 
     const fullCalendar = ref(null)
@@ -180,7 +180,7 @@ export default {
     }
 
     const modalPut = () => {
-      router.push({name: 'PutSchedule'})
+      router.push({name: 'GroupCalendarPutSchedule', query: { gid: route.query.gid }})
     }
 
     const delEvent = () => {

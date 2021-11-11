@@ -13,6 +13,7 @@ import Chart from '@/views/chart/chart'
 import PutSchedule from '@/views/calendar/PutSchedule'
 import GroupCalendar from '@/views/groupCalendar/GroupCalendar'
 import GroupSchedule from '@/views/schedule/GroupSchedule'
+import PutGroupSchedule from '@/views/groupCalendar/PutGroupSchedule'
 
 const routes = [
   {
@@ -94,6 +95,11 @@ const routes = [
     path: '/groupCalendar/createSchedule',
     name: 'GroupCalendarCreateSchedule',
     component: GroupSchedule,
+  },
+  {
+    path: '/groupCalendar/putSchedule',
+    name: 'GroupCalendarPutSchedule',
+    component: PutGroupSchedule,
   }
 ]
 
