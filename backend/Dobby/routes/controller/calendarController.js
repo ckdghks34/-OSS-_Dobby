@@ -137,6 +137,7 @@ async function updateUserCalendar(req, res, next) {
       placeLng: req.body.placeLng,
       calendar: req.body.calendar,
       allDay: req.body.allDay,
+      color: req.body.color,
       category: req.body.category,
       completed: req.body.completed,
       timeStamp: time,
