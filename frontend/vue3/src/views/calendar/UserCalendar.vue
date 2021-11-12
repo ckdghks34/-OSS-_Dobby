@@ -46,10 +46,6 @@ import CalendarButton from '@/components/calendar/CalendarButton'
 //utils
 import dayjs from 'dayjs'
 
-// 연분홍 #E67C73
-// 연파랑 #029BE5
-// 라벤더 #7986CB
-
 export default {
   name: "UserCalendar",
   components: {
@@ -86,13 +82,14 @@ export default {
 
     const handleEventClick = (clickInfo) => {
       // vuex 상태전환
+      console.log(clickInfo)
       store.dispatch('setModal', clickInfo.event)
       // modal open
       showModal()
     }
 
     const initData = function () {
-      // console.log('init data')
+      console.log('init data')
       let calendarApi = fullCalendar.value.getApi()
       const data = calendarApi.getEvents()
 
@@ -102,12 +99,11 @@ export default {
           d => d.remove()
         )
       }
-      // state 와 동기화 해주기
-      calendarApi.batchRendering(function() {
-        cData.value.map(
+
+      const addE = cData.value.map(
         (c) => {
           if (c.completed) {
-            calendarApi.addEvent({
+            return {
               cid: c.cid,
               completed: c.completed,
               title: c.title,
@@ -120,13 +116,36 @@ export default {
               placeLng: c.placeLng,
               startDate: c.startDate,
               endDate: c.endDate,
-              classNames: ['calendar-done']
-            })
+              category: c.category,
+              classNames: ['calendar-done'],
+              allDay: c.allday
+            }
           }
           else {
-            calendarApi.addEvent(c)
+            return {
+              cid: c.cid,
+              completed: c.completed,
+              title: c.title,
+              content: c.content,
+              start: c.start,
+              end: c.end,
+              color: c.color,
+              placeName: c.placeName,
+              placeLat: c.placeLat,
+              placeLng: c.placeLng,
+              startDate: c.startDate,
+              endDate: c.endDate,
+              category: c.category,
+              allDay: c.allday
+            }
           }
         })
+
+      // state 와 동기화 해주기
+      calendarApi.batchRendering(function() {
+        addE.forEach((e) => {
+          calendarApi.addEvent(e)
+        });
       })
       store.dispatch('refreshCalendarData', calendarApi.getEvents())
     }

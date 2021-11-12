@@ -242,7 +242,7 @@ body,
   padding-top: 0;
 }
 
-.icon-bar a {
+.icon-bar a{
   display: block;
   text-align: center;
   padding: 4px;
