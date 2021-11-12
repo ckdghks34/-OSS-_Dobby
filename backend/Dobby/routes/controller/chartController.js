@@ -73,13 +73,21 @@ async function getPersonal(req, res, next) {
                   });
                 }
               }
-            }
-            else{
-              checkCategory.push({
-                category: doc.data().category,
-                check: 0,
-                total: 0,
-              });
+            } else {
+              let check = false;
+              for (let docu of checkCategory) {
+                if (docu.category == doc.data().category) {
+                  check = true;
+                  break;
+                }
+              }
+              if (!check) {
+                checkCategory.push({
+                  category: doc.data().category,
+                  check: 0,
+                  total: 0,
+                });
+              }
             }
           } else {
             reject();
@@ -199,12 +207,21 @@ async function getGroup(req, res, next) {
                     }
                   }
                 }
-                if(docum.uid == uid && docum.completed == false){
-                  checkCategory.push({
-                    category: doc.data().category,
-                    check: 0,
-                    total: 0,
-                  });
+                if (docum.uid == uid && docum.completed == false) {
+                  let check = false;
+                  for (let docu of checkCategory) {
+                    if (docu.category == doc.data().category) {
+                      check = true;
+                      break;
+                    }
+                  }
+                  if (!check) {
+                    checkCategory.push({
+                      category: doc.data().category,
+                      check: 0,
+                      total: 0,
+                    });
+                  }
                 }
               }
             }
