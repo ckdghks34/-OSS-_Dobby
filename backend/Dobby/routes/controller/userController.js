@@ -230,7 +230,7 @@ async function checkDuplicateEmail(req, res, next) {
  * 회원탈퇴
  */
 async function withdrawUser(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
@@ -306,7 +306,7 @@ async function authSignout(req, res, next) {
 }
 
 async function getUserInfo(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.query.uid;
