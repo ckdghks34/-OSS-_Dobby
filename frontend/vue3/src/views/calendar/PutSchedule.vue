@@ -257,6 +257,7 @@ export default {
           },
           {
             headers: {
+              FCMtoken: localStorage.getItem('FCMtoken'),
               authorization: localStorage.getItem('token'),
             },
           }

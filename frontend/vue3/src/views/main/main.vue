@@ -103,31 +103,31 @@ import {
   FacebookAuthProvider,
 } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
-import { getMessaging, getToken, onMessage } from 'firebase/messaging'
+// import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 import './main.css'
 
 export default {
   name: 'main',
-  created() {
-    const firebaseApp = firebase.initializeApp(firebaseConfig);
-    const messaging = getMessaging(firebaseApp);
+  // created() {
+  //   const firebaseApp = firebase.initializeApp(firebaseConfig);
+  //   const messaging = getMessaging(firebaseApp);
 
-    getToken(messaging,{
-      vapidKey : 'BE5n2nc_3FLKh9U_gkhPTcpe3NMimxEcUBAdriZG1dk3arXlOWRFhg3-6U6sIVa1cVMJbVI236v93OMMKQf0jy0'
-    }).then(currentToken => {
-      if (currentToken) {
-        console.log("currentToken : "+ currentToken)
-      } else {
-        console.log('No Instance ID token available. Request permission to generate one.')
-      }
-    }).catch((err) => {
-      console.log('An error occurred while retrieving token. ', err)
-    });
-    onMessage(messaging, function(payload) {
-      console.log("메세지왔다!");
-      console.log('Message received. ', payload);
-    });
-  },
+  //   getToken(messaging,{
+  //     vapidKey : 'BE5n2nc_3FLKh9U_gkhPTcpe3NMimxEcUBAdriZG1dk3arXlOWRFhg3-6U6sIVa1cVMJbVI236v93OMMKQf0jy0'
+  //   }).then(currentToken => {
+  //     if (currentToken) {
+  //       console.log("currentToken : "+ currentToken)
+  //     } else {
+  //       console.log('No Instance ID token available. Request permission to generate one.')
+  //     }
+  //   }).catch((err) => {
+  //     console.log('An error occurred while retrieving token. ', err)
+  //   });
+  //   onMessage(messaging, function(payload) {
+  //     console.log("메세지왔다!");
+  //     console.log('Message received. ', payload);
+  //   });
+  // },
   methods: {
     googleSignIn() {
       console.log('signin')
@@ -244,10 +244,18 @@ export default {
     const login = function() {
       if (info.userEmail && info.userPw) {
         axios
-          .post('https://k5d105.p.ssafy.io:3030/users/login', {
-            email: info.userEmail,
-            password: info.userPw,
-          })
+          .post(
+            'https://k5d105.p.ssafy.io:3030/users/login',
+            {
+              email: info.userEmail,
+              password: info.userPw,
+            },
+            {
+              headers: {
+                FCMtoken: localStorage.getItem('FCMtoken'),
+              },
+            }
+          )
           .then((res) => {
             console.log(res)
             localStorage.setItem('token', res.data.token.accessToken)

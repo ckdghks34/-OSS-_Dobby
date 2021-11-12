@@ -278,7 +278,13 @@ export default {
           axios
             .post(
               `https://k5d105.p.ssafy.io:3030/calendar/createCalendar`,
-              aDay
+              aDay,
+              {
+                headers: {
+                  FCMtoken: localStorage.getItem('FCMtoken'),
+                  authorization: localStorage.getItem('token'),
+                },
+              }
             )
             .then((response) => {
               const res = response.data.calendar
@@ -335,7 +341,16 @@ export default {
             category: state.category,
           }
           axios
-            .post(`https://k5d105.p.ssafy.io:3030/calendar/createCalendar`, day)
+            .post(
+              `https://k5d105.p.ssafy.io:3030/calendar/createCalendar`,
+              day,
+              {
+                headers: {
+                  FCMtoken: localStorage.getItem('FCMtoken'),
+                  authorization: localStorage.getItem('token'),
+                },
+              }
+            )
             .then((response) => {
               const res = response.data.calendar
 
