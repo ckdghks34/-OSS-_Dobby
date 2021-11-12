@@ -58,7 +58,7 @@ async function login(req, res, next) {
       const tokens = await tokenRef.get();
       var check = false;
       var tokenMessage = "";
-      for (let docu of tokens) {
+      for (let docu of tokens.docs) {
         if (docu.data().token == fcm) {
           check = true;
           break;
@@ -393,7 +393,7 @@ async function checkUserWithProvider(req, res, next) {
             address: "",
           })
           .then(async (user) => {
-            for (let docu of tokens) {
+            for (let docu of tokens.docs) {
               if (docu.data().token == fcm) {
                 check = true;
                 break;
