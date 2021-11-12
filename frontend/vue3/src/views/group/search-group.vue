@@ -49,7 +49,7 @@
         @click="clickGroup(group.gid)"
       >
         <div>
-          <span style="line-height:3">{{ group.name }}</span>
+          <span class="groupName">{{ group.name }}</span>
           <svg
             v-if="group.private"
             class="lock"
@@ -71,7 +71,7 @@
       <el-pagination
         layout="prev, pager, next"
         :total="info.groupLi.length"
-        :page-size="9"
+        :page-size="8"
         @current-change="handleCurrentChange"
         hide-on-single-page
       ></el-pagination>
@@ -114,7 +114,7 @@ export default {
         .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups')
         .then((res) => {
           info.groupLi = res.data.groups
-          info.pageGroup = info.groupLi.slice(0, 9)
+          info.pageGroup = info.groupLi.slice(0, 8)
         })
     })
 
@@ -124,14 +124,14 @@ export default {
           .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups')
           .then((res) => {
             info.groupLi = res.data.groups
-            info.pageGroup = info.groupLi.slice(0, 9)
+            info.pageGroup = info.groupLi.slice(0, 8)
           })
       } else {
         axios
           .get('https://k5d105.p.ssafy.io:3030/group/getPublicGroups')
           .then((res) => {
             info.groupLi = res.data.groups
-            info.pageGroup = info.groupLi.slice(0, 9)
+            info.pageGroup = info.groupLi.slice(0, 8)
           })
       }
     }
@@ -188,7 +188,7 @@ export default {
     }
 
     const handleCurrentChange = function(val) {
-      info.pageGroup = info.groupLi.slice((val - 1) * 9, (val - 1) * 9 + 9)
+      info.pageGroup = info.groupLi.slice((val - 1) * 8, (val - 1) * 8 + 8)
     }
     return { info, search, clickGroup, joinGroup, handleCurrentChange }
   },
@@ -230,7 +230,8 @@ export default {
 
 .groupLi {
   display: inline-block;
-  width: 30%;
+  width: 20%;
+  height: 150px;
   margin: 3% 1% 0 1%;
   border: 1px solid #a9c9de;
   border-radius: 4px;
@@ -243,10 +244,14 @@ export default {
   box-shadow: 0 0 10px #a9c9de;
 }
 
+.groupName {
+  line-height: 9;
+}
+
 .lock {
   width: 20px;
-  float: right;
-  margin: 5% 5% 0 0;
+  /* float: right; */
+  margin-left: 2%;
 }
 
 .searchGroupDiv .el-pagination {
@@ -256,27 +261,29 @@ export default {
 @media screen and (max-width: 835px) {
   .groupLi {
     width: 45%;
+    height: 100px;
   }
 
-  .lock {
-    margin: 6% 6% 0 0;
+  .groupName {
+    line-height: 6;
   }
 }
 
-@media screen and (max-width: 620px) {
+/* @media screen and (max-width: 620px) {
   .lock {
     margin: 7% 7% 0 0;
   }
-}
+} */
 
 @media screen and (max-width: 530px) {
   .groupLi {
-    width: 100%;
-    margin: 4% 0 0 0;
+    width: 95%;
+    height: 50px;
+    margin: 3% 0 0 0;
   }
 
-  .lock {
-    margin: 4% 4% 0 0;
+  .groupName {
+    line-height: 3;
   }
 }
 </style>

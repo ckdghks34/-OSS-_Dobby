@@ -50,7 +50,7 @@
         <p style="margin:0 0 3% 0">
           평균 {{ (info.doneCount / info.totalCount).toFixed(2) * 100 }}%
         </p>
-        <div class="demo-progress">
+        <div class="demo-progress" v-if="info.doneCount">
           <div v-for="(t, index) in info.categoryLi" :key="index">
             <p>
               {{ t.category }}
@@ -60,6 +60,21 @@
               :text-inside="true"
               :stroke-width="20"
               :percentage="Math.floor((t.check / t.total).toFixed(2) * 100)"
+              :color="info.color[index % 2]"
+              style="margin-bottom:3%"
+            />
+          </div>
+        </div>
+        <div class="demo-progress" v-else>
+          <div v-for="(t, index) in info.totalLi" :key="index">
+            <p>
+              {{ t.category }}
+            </p>
+            <el-progress
+              class="progress"
+              :text-inside="true"
+              :stroke-width="20"
+              :percentage="0"
               :color="info.color[index % 2]"
               style="margin-bottom:3%"
             />
