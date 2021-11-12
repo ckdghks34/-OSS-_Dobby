@@ -14,6 +14,8 @@ import PutSchedule from '@/views/calendar/PutSchedule'
 import GroupCalendar from '@/views/groupCalendar/GroupCalendar'
 import GroupChart from '@/views/chart/group-chart'
 import SearchGroup from '@/views/group/search-group'
+import GroupSchedule from '@/views/schedule/GroupSchedule'
+import PutGroupSchedule from '@/views/groupCalendar/PutGroupSchedule'
 
 const routes = [
   {
@@ -102,6 +104,16 @@ const routes = [
     name: 'SearchGroup',
     component: SearchGroup,
   },
+  {
+    path: '/groupCalendar/createSchedule',
+    name: 'GroupCalendarCreateSchedule',
+    component: GroupSchedule,
+  },
+  {
+    path: '/groupCalendar/putSchedule',
+    name: 'GroupCalendarPutSchedule',
+    component: PutGroupSchedule,
+  }
 ]
 
 const router = createRouter({

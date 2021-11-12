@@ -22,8 +22,6 @@
         </el-row>
       </el-card>
     </el-space>
-
-    
   </div>
 </template>
 
@@ -79,7 +77,8 @@ export default {
     }
 
     .todoList-card-title-checked {
-      font-size: 1.5rem;
+      font-size: 2rem;
+      text-align: start;
     }
   }
 

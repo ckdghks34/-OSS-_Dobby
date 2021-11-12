@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { computed, provide, reactive, onBeforeMount, onUnmounted } from 'vue'
+import { computed, provide, reactive, onBeforeMount, onUnmounted, watchEffect, ref } from 'vue'
 import { useStore } from 'vuex'
 
 // components
@@ -54,12 +54,19 @@ export default {
   setup() {
     const store = useStore()
 
+    let grouptodayData = computed(() => state.mData)
+
     provide( 'grouptodayData',
-      computed(() => state.mData)
+      // computed(() => state.mData)
+      ref(grouptodayData)
     )
     provide('grouptoDoItem',
       computed(() => state.mData[0])
     )
+
+    watchEffect(() => {
+      
+    })
 
     onBeforeMount(() => {
       window.addEventListener('resize', handleGroupTodoListWindowSize)

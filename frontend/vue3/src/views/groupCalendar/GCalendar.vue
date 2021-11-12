@@ -30,7 +30,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { computed, onMounted, reactive, ref } from 'vue'
 
 // component
@@ -54,6 +54,7 @@ export default {
 
     const store = useStore()
     const router = useRouter()
+    const route = useRoute()
 
     const gCData = computed(() => store.state.groupCalendarData)
     const groupfullCalendar = ref(null)
@@ -72,7 +73,9 @@ export default {
 
     const handleClickDate =  function () {
       if ( confirm('일정을 추가하시겠습니까?') ) {
-        router.push({name: 'Schedule'})
+        router.push({name: 'GroupCalendarCreateSchedule', query: {
+          gid: route.query.gid
+        }})
       }
     }
 
@@ -83,7 +86,6 @@ export default {
     }
 
     const initData = function () {
-      // console.log('init data')
       let calendarApi = groupfullCalendar.value.getApi()
       const data = calendarApi.getEvents()
 
