@@ -54,6 +54,7 @@ async function login(req, res, next) {
       const uid = userCredential.user.uid;
       const users = await admin.collection("users").doc(uid).get();
       const fcm = req.headers.FCMtoken;
+      console.log(fcm);
       const tokenRef = admin.collection("users").doc(uid).collection("tokens");
       const tokens = await tokenRef.get();
       var check = false;
@@ -65,6 +66,7 @@ async function login(req, res, next) {
         }
       }
       if (!check) {
+        console.log("저장된 토큰이 없어요");
         const list = {
           token: fcm,
         };
@@ -84,6 +86,7 @@ async function login(req, res, next) {
             tokenMessage = "FCM 토큰 저장 실패";
           });
       } else {
+        console.log("저장된 토큰이 있어요");
         tokenMessage = "토큰이 이미 저장되어 있습니다.";
       }
       const user = users.data();
