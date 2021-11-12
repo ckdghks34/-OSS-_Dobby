@@ -44,11 +44,10 @@ async function registerToken(req, res, next) {
               msg: "토큰 저장 실패",
             });
           });
-      }
-      else {
+      } else {
         res.json({
-            msg: "토큰이 이미 저장되어 있습니다."
-        })
+          msg: "토큰이 이미 저장되어 있습니다.",
+        });
       }
     } else {
       res.status(401).json({

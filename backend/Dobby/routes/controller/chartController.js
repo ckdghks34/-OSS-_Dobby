@@ -3,7 +3,7 @@ const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 const Auth = require("./authController");
 
 async function getPersonal(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
@@ -130,7 +130,7 @@ async function getPersonal(req, res, next) {
 }
 
 async function getGroup(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;

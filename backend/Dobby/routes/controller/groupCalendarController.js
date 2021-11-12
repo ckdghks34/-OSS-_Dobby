@@ -4,7 +4,7 @@ const Auth = require("./authController");
 const FCMCon = require("./FCMController");
 
 async function getGroup(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.query.uid;
@@ -53,7 +53,7 @@ async function getGroup(req, res, next) {
 }
 
 async function getCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.query.gid;
@@ -115,7 +115,7 @@ async function getCalendar(req, res, next) {
 }
 
 async function createCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -210,7 +210,7 @@ async function createCalendar(req, res, next) {
 }
 
 async function updateCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -290,7 +290,7 @@ async function updateCalendar(req, res, next) {
 }
 
 async function deleteCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -343,7 +343,7 @@ async function deleteCalendar(req, res, next) {
 }
 
 async function checkCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;

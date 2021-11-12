@@ -4,7 +4,7 @@ const FCMCon = require("./FCMController");
 const Auth = require("./authController");
 
 async function getUserCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
@@ -42,7 +42,7 @@ async function getUserCalendar(req, res, next) {
 }
 
 async function createCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
   if (valid) {
     const uid = req.body.uid;
     // const fcmtoken = req.headers.fcmtoken;
@@ -117,7 +117,7 @@ async function createCalendar(req, res, next) {
 }
 
 async function deleteUserCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
@@ -162,7 +162,7 @@ async function deleteUserCalendar(req, res, next) {
   }
 }
 async function updateUserCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
@@ -235,7 +235,7 @@ async function updateUserCalendar(req, res, next) {
 }
 
 async function completeUserCalendar(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
