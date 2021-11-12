@@ -81,10 +81,9 @@ async function login(req, res, next) {
               });
           })
           .catch(() => {
-             tokenMessage = "FCM 토큰 저장 실패";
+            tokenMessage = "FCM 토큰 저장 실패";
           });
-      }
-      else {
+      } else {
         tokenMessage = "토큰이 이미 저장되어 있습니다.";
       }
       const user = users.data();
@@ -372,6 +371,11 @@ async function checkUserWithProvider(req, res, next) {
 
   const userRef = admin.collection("users").doc(uid);
   const user = await userRef.get();
+  const fcm = req.headers.FCMtoken;
+  const tokenRef = admin.collection("users").doc(uid).collection("tokens");
+  const tokens = await tokenRef.get();
+  var check = false;
+  var tokenMessage = "";
 
   if (!user.exists) {
     adminauth
@@ -389,9 +393,38 @@ async function checkUserWithProvider(req, res, next) {
             address: "",
           })
           .then((user) => {
+            for (let docu of tokens) {
+              if (docu.data().token == fcm) {
+                check = true;
+                break;
+              }
+            }
+            if (!check) {
+              const list = {
+                token: fcm,
+              };
+              const token = await tokenRef.add(list);
+              tokenRef
+                .doc(token.id)
+                .update({ tid: token.id })
+                .then(() => {
+                  tokenRef
+                    .doc(token.id)
+                    .get()
+                    .then(() => {
+                      tokenMessage = "FCM 토큰 저장 성공";
+                    });
+                })
+                .catch(() => {
+                  tokenMessage = "FCM 토큰 저장 실패";
+                });
+            } else {
+              tokenMessage = "토큰이 이미 저장되어 있습니다.";
+            }
             return res.json({
               msg: "회원 등록이 완료되었습니다.",
               user: user,
+              tokenMessage: tokenMessage,
             });
           });
       })
