@@ -283,6 +283,7 @@ export default {
               calendarApi.addEvent(cal)
             })
           }
+          store.dispatch('refreshGroupCalendarData', calendarApi.getEvents())
           isOpen.value = false
         })
         .catch((error) => {

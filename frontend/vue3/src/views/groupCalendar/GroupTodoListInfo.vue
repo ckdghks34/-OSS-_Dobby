@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-space wrap direction="vertical">
-      <el-card v-for="day in today" :key="day" class="box-card todoList-card" @click="changeTodo(day)">
+      <el-card v-for="day in state.mData" :key="day" class="box-card todoList-card" @click="changeTodo(day)">
         <el-row v-if="isToday(day.start)">
           <el-col :span="9" class="todoList-card-time">
             {{ `${day.start.toString().split(' ')[4].substring(0, 2)}시` }}
