@@ -89,8 +89,6 @@ async function getPersonal(req, res, next) {
                 });
               }
             }
-          } else {
-            reject();
           }
         }
         if (totalNum == 0) {
@@ -225,9 +223,7 @@ async function getGroup(req, res, next) {
                 }
               }
             }
-          } else {
-            reject();
-          }
+          } 
         }
         if (totalNum == 0) {
           reject();
