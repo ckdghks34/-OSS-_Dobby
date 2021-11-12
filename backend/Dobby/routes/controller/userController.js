@@ -59,10 +59,13 @@ async function login(req, res, next) {
       const tokens = await tokenRef.get();
       var check = false;
       var tokenMessage = "";
-      for (let docu of tokens.docs) {
-        if (docu.data().token == fcm) {
-          check = true;
-          break;
+      if(!tokens.empty){
+        console.log("token collection empty")
+        for (let docu of tokens.docs) {
+          if (docu.data().token == fcm) {
+            check = true;
+            break;
+          }
         }
       }
       if (!check) {
