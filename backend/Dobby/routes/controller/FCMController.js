@@ -29,13 +29,16 @@ async function groupPush(gid, msg) {
   const tokenList = [];
   const memberRef = admin.collection("groups").doc(gid).collection("members");
   const member = await memberRef.get();
-  
+
   new Promise(async (resolve, reject) => {
-    for(let doc of member.docs){
-      var tokenRef = admin.collection("users").doc(doc.data().uid).collection("tokens");
+    for (let doc of member.docs) {
+      var tokenRef = admin
+        .collection("users")
+        .doc(doc.data().uid)
+        .collection("tokens");
       var token = await tokenRef.get();
 
-      for(let docu of token.docs){
+      for (let docu of token.docs) {
         tokenList.push(docu.data().token);
       }
     }

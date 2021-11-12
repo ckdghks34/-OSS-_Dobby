@@ -66,7 +66,7 @@ async function getPublicgroups(req, res, next) {
 }
 
 async function getGroup(req, res, next) {
-  const valid = await Auth.verifyToken(req.headers.authorization);
+  const valid = Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.query.gid;
