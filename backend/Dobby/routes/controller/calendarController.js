@@ -112,7 +112,7 @@ async function deleteUserCalendar(req, res, next) {
     calendarRef
       .doc(cid)
       .delete()
-      .then(() => {
+      .then(async () => {
         const msg = {
           title: "일정 삭제 알림",
           body: calendarname + " 일정이 삭제 되었습니다.",
@@ -171,7 +171,7 @@ async function updateUserCalendar(req, res, next) {
         calendarRef
           .doc(cid)
           .get()
-          .then((doc) => {
+          .then(async (doc) => {
             const msg = {
               title: "일정 업데이트 알림",
               body: list.title + " 일정이 수정되었습니다.",
@@ -219,7 +219,7 @@ async function completeUserCalendar(req, res, next) {
         calendarRef
           .doc(cid)
           .get()
-          .then((doc) => {
+          .then(async (doc) => {
             const msg = {
               title: "일정 상태 변경 알림",
               body: doc.data().title + "가 상태가 업데이트 되었습니다.",
