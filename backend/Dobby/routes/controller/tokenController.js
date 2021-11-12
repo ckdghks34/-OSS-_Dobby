@@ -14,7 +14,7 @@ async function registerToken(req, res, next) {
     const token = await tokenRef.get();
     var check = false;
     if (!user.empty) {
-      for (let doc of token) {
+      for (let doc of token.docs) {
         if (doc.data().token == fcm) {
           check = true;
           break;
