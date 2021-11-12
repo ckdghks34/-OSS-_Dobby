@@ -213,7 +213,6 @@ export default {
       })
         .then( (response) => {
           const res = response.data.members
-          // const userUid = localStorage.getItem('uid')
           state.groupMember = res
           state.participantsOption = res.map( (m) => {
             return {

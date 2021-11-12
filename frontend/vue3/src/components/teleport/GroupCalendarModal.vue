@@ -192,7 +192,7 @@ export default {
             data: {
               uid: localStorage.getItem('uid'),
               cid: state.mData.ModalDate.extendedProps.cid,
-              gid: state.mData.ModalDate.extendedProps.gid,
+              gid: route.query.gid,
             }
           },
           {
