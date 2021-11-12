@@ -202,6 +202,7 @@ async function createGroup(req, res, next) {
           .doc(group.id)
           .get()
           .then(async (doc) => {
+            const gid = doc.data().gid;
             const msg = {
               title: "새로운 그룹 생성",
               body: doc.data().name + " 그룹이 생성 되었습니다.",
