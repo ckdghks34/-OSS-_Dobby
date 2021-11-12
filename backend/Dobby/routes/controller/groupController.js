@@ -1,6 +1,6 @@
 const { calculateBackoffMillis } = require("@firebase/util");
 const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
-
+const FCMCon = require("./FCMController");
 const Auth = require("./authController");
 
 async function getAllgroups(req, res, next) {
@@ -66,7 +66,7 @@ async function getPublicgroups(req, res, next) {
 }
 
 async function getGroup(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.query.gid;
@@ -74,7 +74,10 @@ async function getGroup(req, res, next) {
     const group = await groupsRef.get();
 
     if (!group.empty) {
-      const adminRef = await groupsRef.collection("members").where("admin", "==", true).get();
+      const adminRef = await groupsRef
+        .collection("members")
+        .where("admin", "==", true)
+        .get();
       const admin = adminRef.docs[0].data();
 
       const groupmemberRef = groupsRef.collection("members");
@@ -114,7 +117,10 @@ async function getGroupMember(req, res, next) {
 
   if (valid) {
     const gid = req.body.gid;
-    const membersRef = admin.collection("groups").doc(gid).collection("members");
+    const membersRef = admin
+      .collection("groups")
+      .doc(gid)
+      .collection("members");
     const members = await membersRef.get();
 
     if (!members.empty) {
@@ -195,7 +201,12 @@ async function createGroup(req, res, next) {
         await groupRef
           .doc(group.id)
           .get()
-          .then((doc) => {
+          .then(async (doc) => {
+            const msg = {
+              title: "새로운 그룹 생성",
+              body: doc.data().name + " 그룹이 생성 되었습니다.",
+            };
+            // await FCMCon.groupPush(gid, msg);
             res.json({
               group: doc.data(),
               msg: "그룹 생성 성공",
@@ -233,7 +244,12 @@ async function updateGroup(req, res, next) {
           console.log("Group updated successfully for group: " + gid);
           const groupdata = {};
 
-          groupRef.get().then((data) => {
+          groupRef.get().then(async (data) => {
+            const msg = {
+              title: "그룹 정보 수정",
+              body: data.data().name + " 그룹 정보가 수정 되었습니다.",
+            };
+            // await FCMCon.groupPush(gid, msg);
             return res.status(200).json({
               group: data.data(),
               msg: "그룹 정보 수정 성공",
@@ -258,15 +274,22 @@ async function deleteGroup(req, res, next) {
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
 
+    const gname = group.data().name;
     if (group.empty) {
       return res.status(401).json({
         msg: "존재하지 않는 그룹입니다.",
       });
     } else {
-      const groupMemberRef = admin.collection("groups").doc(gid).collection("members");
+      const groupMemberRef = admin
+        .collection("groups")
+        .doc(gid)
+        .collection("members");
       const groupMembers = await groupMemberRef.get();
 
-      const groupCalendarRef = admin.collection("groups").doc(gid).collection("calendar");
+      const groupCalendarRef = admin
+        .collection("groups")
+        .doc(gid)
+        .collection("calendar");
       const groupCalendars = await groupCalendarRef.get();
 
       if (!groupMembers.empty) {
@@ -282,8 +305,13 @@ async function deleteGroup(req, res, next) {
 
       await groupRef
         .delete()
-        .then(() => {
+        .then(async () => {
           console.log("Group deleted successfully for group: " + gid);
+          const msg = {
+            title: "그룹 정보 삭제",
+            body: gname + " 그룹이 삭제 되었습니다.",
+          };
+          // await FCMCon.groupPush(gid, msg);
           return res.status(200).json({
             msg: "그룹 삭제 성공",
           });
@@ -350,13 +378,15 @@ async function addMember(req, res, next) {
     const gid = req.body.gid;
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
-
+    const gname = group.data().name;
     if (group.empty) {
       return res.status(401).json({
         msg: "존재하지 않는 그룹입니다.",
       });
     } else {
-      const userRef = admin.collection("users").where("email", "==", req.body.email);
+      const userRef = admin
+        .collection("users")
+        .where("email", "==", req.body.email);
       const user = await userRef.get();
 
       if (user.empty) {
@@ -365,8 +395,13 @@ async function addMember(req, res, next) {
         });
       } else {
         const userdata = user.docs[0].data();
-        const groupMemberRef = admin.collection("groups").doc(gid).collection("members");
-        const groupMember = await groupMemberRef.where("uid", "==", userdata.uid).get();
+        const groupMemberRef = admin
+          .collection("groups")
+          .doc(gid)
+          .collection("members");
+        const groupMember = await groupMemberRef
+          .where("uid", "==", userdata.uid)
+          .get();
 
         if (groupMember.empty) {
           groupMemberRef
@@ -379,8 +414,16 @@ async function addMember(req, res, next) {
               admin: false,
               writer: false,
             })
-            .then(() => {
-              console.log("Group Member updated successfully for group: " + gid);
+            .then(async () => {
+              console.log(
+                "Group Member updated successfully for group: " + gid
+              );
+              const msg = {
+                title: "그룹 멤버 추가",
+                body:
+                  data.data().name + " 그룹에 새로운 멤버가 입장하였습니다.",
+              };
+              // await FCMCon.groupPush(gid, msg);
               return res.json({
                 msg: "그룹 멤버 추가 성공",
               });
@@ -526,7 +569,10 @@ async function leaveMember(req, res, next) {
         .get();
       const user = userRef.docs[0].data();
 
-      const memberRef = await groupRef.collection("members").where("uid", "==", user.uid).get();
+      const memberRef = await groupRef
+        .collection("members")
+        .where("uid", "==", user.uid)
+        .get();
 
       if (memberRef.empty) {
         return res.status(401).json({
@@ -581,7 +627,10 @@ async function joinGroup(req, res, next) {
           msg: "존재하지 않는 유저입니다.",
         });
       } else {
-        const groupmemberRef = await groupRef.collection("members").where("uid", "==", uid).get();
+        const groupmemberRef = await groupRef
+          .collection("members")
+          .where("uid", "==", uid)
+          .get();
 
         if (groupmemberRef.empty) {
           groupRef
@@ -595,8 +644,14 @@ async function joinGroup(req, res, next) {
               admin: false,
               writer: false,
             })
-            .then(() => {
+            .then(async () => {
               console.log("Group Join successfully for group: " + gid);
+              const msg = {
+                title: "그룹 멤버 추가",
+                body:
+                  data.data().name + " 그룹에 새로운 멤버가 입장하였습니다.",
+              };
+              // await FCMCon.groupPush(gid, msg);
               res.json({
                 msg: "그룹 가입 성공",
               });
@@ -637,7 +692,9 @@ async function updateWriterAuth(req, res, next) {
       });
     } else {
       const memberRef = groupRef.collection("members");
-      const member = await memberRef.where("nickname", "==", req.body.nickname).get();
+      const member = await memberRef
+        .where("nickname", "==", req.body.nickname)
+        .get();
 
       if (member.empty) {
         res.json({
@@ -657,7 +714,9 @@ async function updateWriterAuth(req, res, next) {
             .doc(mid)
             .get()
             .then((doc) => {
-              console.log("Writer Auth change successfully for members : " + doc.id);
+              console.log(
+                "Writer Auth change successfully for members : " + doc.id
+              );
               res.json({
                 memberNickname: doc.data().nickname,
                 msg: "멤버 업데이트 성공",
@@ -695,7 +754,10 @@ async function changeAdmin(req, res, next) {
         error: "해당 그룹이 없습니다.",
       });
     } else {
-      const memberRef = admin.collection("groups").doc(gid).collection("members");
+      const memberRef = admin
+        .collection("groups")
+        .doc(gid)
+        .collection("members");
       const currentAdmin = await memberRef
         .where("uid", "==", currentAdminuid)
         .get()
