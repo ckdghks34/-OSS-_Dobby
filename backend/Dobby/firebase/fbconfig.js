@@ -25,4 +25,4 @@ const adminauth = firebase_admin.auth();
 const auth = firebaseauth.getAuth();
 
 admin.settings({ ignoreUndefinedProperties: true });
-module.exports = { admin, adminauth, auth };
+module.exports = { admin, adminauth, auth, firebase_admin };
