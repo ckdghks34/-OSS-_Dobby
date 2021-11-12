@@ -2,6 +2,7 @@
   <div class="icon-bar" v-if="info.size"> 
   <!-- id="nav" -->
     <div>{{ info.userId }} 님</div>
+    <br>
     <router-link to="/main">Login</router-link> 
     <router-link to="/newgroup">New Group</router-link> 
     <router-link to="/group" >Group</router-link>
@@ -9,20 +10,19 @@
       <div>
         <ul>
           <li v-for="groupList in info.groupLists" :key="groupList.gid">
-          
-            <a class="dropdown-item" style="display:inline;" href="#">{{ groupList.name }}</a>
-
-            <router-link to="/newgroup" style="display:inline;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+            <div>
+              <p @click="TogroupCallendar(groupList.gid)" style="display:inline; margin-right:7px; margin-top:7px; cursor:pointer;">{{ groupList.name }}</p>
+              <!-- <a @click="TogroupCallendar(groupList.gid)">{{ groupList.name }}</a> -->
+              <svg @click="ToGroup(groupList.gid)" xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16" style="cursor:pointer; float:right; margin-right:4px;">
                 <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
-              </svg>
-            </router-link>
-          
+              </svg>          
+            </div>
+         
           </li>
         </ul>
       </div>
     <router-link to="/calendar">Calendar</router-link> 
-    <router-link to="/schedule">Schedule</router-link> 
+    <!-- <router-link to="/schedule">Schedule</router-link>  -->
     <router-link to="/chart">chart</router-link> 
     <button @click="logout" class="logoutButton">logout</button> 
   </div>
@@ -39,7 +39,7 @@
           <el-dropdown-item><router-link to="/newgroup">New Group</router-link> </el-dropdown-item>
           <el-dropdown-item><router-link to="/group">Group</router-link> </el-dropdown-item>
           <el-dropdown-item><router-link to="/calendar">Calendar</router-link> </el-dropdown-item>
-          <el-dropdown-item><router-link to="/schedule">Schedule</router-link> </el-dropdown-item>
+          <!-- <el-dropdown-item><router-link to="/schedule">Schedule</router-link> </el-dropdown-item> -->
           <el-dropdown-item><router-link to="/chart">chart</router-link>  </el-dropdown-item>
           <el-dropdown-item><button @click="logout">logout</button>  </el-dropdown-item>
         </el-dropdown-menu>
@@ -51,9 +51,11 @@
   <div class="teleport-modal">
     <teleportExample />
   </div>
+
   <div class="routerView">
     <router-view />
   </div>
+
 </template>
 
 <script>
@@ -68,14 +70,14 @@ export default {
     teleportExample,
   },
   setup() {
-    const router = useRouter()
+    const router = useRouter() 
 
 // user 정보 
     const info = reactive({
       userId: '',
       size: true,
       groupLists: [],
-      gid: 'PqoDELK06r3jKL9wP5ts',
+      gid: '',
     })
     
     onBeforeMount(() => {
@@ -158,14 +160,22 @@ export default {
         })
     }
 
-    const toGroup = function() {
+    const ToGroup = function(gid) {
       console.log(info.email)
       router.push({
         name: 'GroupInfo',
-        params: { gid: info.gid },
+        params: { gid: gid },
       })
     }
-    return { info, logout, toGroup }
+
+
+    const TogroupCallendar = function(gid) {
+      router.push({name: 'GroupCalendar', query: {gid: gid}})   
+    }
+
+
+
+    return { info, logout, ToGroup, TogroupCallendar }
   },
 }
 </script>
@@ -179,7 +189,7 @@ body,
 }
 
 #app {
-  font-family: 'Gowun Batang', serif !important;
+  font-family: 'Dongle', sans-serif serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -235,7 +245,7 @@ body,
 .icon-bar a {
   display: block;
   text-align: center;
-  padding: 16px;
+  padding: 4px;
   transition: all 0.3s ease;
   color: white;
   font-size: 20px;
@@ -261,6 +271,23 @@ body,
 }
 
 
+a {
+  text-decoration: none;
+}
+
+p:hover {
+  background-color: #DEB4B4;
+}
+
+svg:hover {
+  background-color: #DEB4B4;
+}
+
+@media (max-width: 1086px){
+    svg {
+        display: none; 
+    }
+}
 
 /* @media screen and (max-width: 730px) {
   .icon-bar {
