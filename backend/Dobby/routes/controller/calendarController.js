@@ -45,7 +45,7 @@ async function createCalendar(req, res, next) {
   const valid = Auth.verifyToken(req.headers.authorization);
   if (valid) {
     const uid = req.body.uid;
-    const fcmtoken = req.headers.FCMtoken;
+    const fcmtoken = req.headers.fcmtoken;
     const time = new Date(+new Date() + 3240 * 10000)
       .toISOString()
       .replace("T", " ")
@@ -122,7 +122,7 @@ async function deleteUserCalendar(req, res, next) {
   if (valid) {
     const uid = req.body.uid;
     const cid = req.body.cid;
-    const fcmtoken = req.headers.FCMtoken;
+    const fcmtoken = req.headers.fcmtoken;
 
     const calendarRef = admin
       .collection("users")
@@ -167,7 +167,7 @@ async function updateUserCalendar(req, res, next) {
   if (valid) {
     const uid = req.body.uid;
     const cid = req.body.cid;
-    const fcmtoken = req.headers.FCMtoken;
+    const fcmtoken = req.headers.fcmtoken;
     const time = new Date(+new Date() + 3240 * 10000)
       .toISOString()
       .replace("T", " ")
@@ -240,7 +240,7 @@ async function completeUserCalendar(req, res, next) {
   if (valid) {
     const uid = req.body.uid;
     const cid = req.body.cid;
-    const fcmtoken = req.headers.FCMtoken;
+    const fcmtoken = req.headers.fcmtoken;
 
     const calendarRef = admin
       .collection("users")

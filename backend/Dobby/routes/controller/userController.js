@@ -55,60 +55,54 @@ async function login(req, res, next) {
       const users = await admin.collection("users").doc(uid).get();
       const fcm = req.headers.fcmtoken;
       console.log(fcm);
-      const fcm2 = req.get('FCMtoken');
-      const fcm3 = req.get('fcmtoken');
-      const headers = req.headers;
-      const fcm4 = req.headers['fcmtoken'];
-      const fcm5 = req.headers['FCMtoken'];
-      console.log(fcm2);
-      console.log(fcm3);
-      console.log(headers);
-      console.log(fcm4);
-      console.log(fcm5);
       const tokenRef = admin.collection("users").doc(uid).collection("tokens");
       const tokens = await tokenRef.get();
       var check = false;
       var tokenMessage = "";
-      if(!tokens.empty){
-        console.log("token collection empty")
-        for (let docu of tokens.docs) {
-          if (docu.data().token == fcm) {
-            check = true;
-            break;
+      new Promise((resolve, reject) => {
+        if (!tokens.empty) {
+          console.log("token collection not empty");
+          for (let docu of tokens.docs) {
+            if (docu.data().token == fcm) {
+              check = true;
+              break;
+            }
           }
         }
-      }
-      if (!check) {
-        console.log("저장된 토큰이 없어요");
-        const list = {
-          token: fcm,
-        };
-        const token = await tokenRef.add(list);
-        tokenRef
-          .doc(token.id)
-          .update({ tid: token.id })
-          .then(() => {
-            tokenRef
-              .doc(token.id)
-              .get()
-              .then(() => {
-                tokenMessage = "FCM 토큰 저장 성공";
-              });
-          })
-          .catch(() => {
-            tokenMessage = "FCM 토큰 저장 실패";
-          });
-      } else {
-        console.log("저장된 토큰이 있어요");
-        tokenMessage = "토큰이 이미 저장되어 있습니다.";
-      }
-      const user = users.data();
-      console.log("로그인 성공");
-      return res.json({
-        msg: "성공",
-        user: user,
-        token: userCredential.user.stsTokenManager,
-        tokenMessage: tokenMessage,
+        if (!check) {
+          console.log("저장된 토큰이 없어요");
+          const list = {
+            token: fcm,
+          };
+          const token = await tokenRef.add(list);
+          tokenRef
+            .doc(token.id)
+            .update({ tid: token.id })
+            .then(() => {
+              tokenRef
+                .doc(token.id)
+                .get()
+                .then(() => {
+                  tokenMessage = "FCM 토큰 저장 성공";
+                });
+            })
+            .catch(() => {
+              tokenMessage = "FCM 토큰 저장 실패";
+            });
+        } else {
+          console.log("저장된 토큰이 있어요");
+          tokenMessage = "토큰이 이미 저장되어 있습니다.";
+        }
+        resolve();
+      }).then(() => {
+        const user = users.data();
+        console.log("로그인 성공");
+        return res.json({
+          msg: "성공",
+          user: user,
+          token: userCredential.user.stsTokenManager,
+          tokenMessage: tokenMessage,
+        });
       });
     })
     .catch((error) => {
