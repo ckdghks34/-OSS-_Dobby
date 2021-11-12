@@ -103,7 +103,13 @@ export default {
                 },
               }
             )
-            .then(() => router.push({ name: 'Calendar' }))
+            .then((res) => {
+              console.log(res)
+              router.push({
+                name: 'GroupCalendar',
+                query: { gid: res.data.group.gid },
+              })
+            })
             .catch((err) => {
               if (err.response.status === 403) {
                 alert('로그인이 만료되었습니다')
