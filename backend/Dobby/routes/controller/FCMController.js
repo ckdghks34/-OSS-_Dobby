@@ -26,7 +26,6 @@ async function userPush(fcmtoken, uid, msg) {
 }
 
 async function groupPush(gid, msg) {
-  const tokenList = [];
   const memberRef = admin.collection("groups").doc(gid).collection("members");
   const member = await memberRef.get();
 
@@ -39,31 +38,31 @@ async function groupPush(gid, msg) {
       var token = await tokenRef.get();
 
       for (let docu of token.docs) {
-        tokenList.push(docu.data().token);
+        let message = {
+          notification: {
+            title: msg.title,
+            body: msg.body,
+          },
+          token: docu.data().token,
+        };
+      
+        await firebase_admin
+          .messaging()
+          .send(message)
+          .then((res) => {
+            console.log("Successfully sent message : ", res);
+            return true;
+          })
+          .catch((err) => {
+            console.log("Error Sending message! : ", err);
+            return false;
+          });
       }
     }
     resolve();
   });
 
-  let message = {
-    notification: {
-      title: msg.title,
-      body: msg.body,
-    },
-    token: tokenList,
-  };
-
-  await firebase_admin
-    .messaging()
-    .send(message)
-    .then((res) => {
-      console.log("Successfully sent message : ", res);
-      return true;
-    })
-    .catch((err) => {
-      console.log("Error Sending message! : ", err);
-      return false;
-    });
+  
 }
 
 module.exports = {
