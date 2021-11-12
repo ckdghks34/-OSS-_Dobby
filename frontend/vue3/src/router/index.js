@@ -12,6 +12,8 @@ import sideBar from '@/views/sidebar/sideBar'
 import Chart from '@/views/chart/chart'
 import PutSchedule from '@/views/calendar/PutSchedule'
 import GroupCalendar from '@/views/groupCalendar/GroupCalendar'
+import GroupChart from '@/views/chart/group-chart'
+import SearchGroup from '@/views/group/search-group'
 
 const routes = [
   {
@@ -54,7 +56,7 @@ const routes = [
     component: NewGroup,
   },
   {
-    path: '/:gid',
+    path: '/groupInfo/:gid',
     name: 'GroupInfo',
     component: GroupInfo,
     props: true,
@@ -80,15 +82,26 @@ const routes = [
     component: Chart,
   },
   {
+    path: '/groupChart/:gid',
+    name: 'groupChart',
+    component: GroupChart,
+    props: true,
+  },
+  {
     path: '/calendar/putSchedule',
     name: 'PutSchedule',
     component: PutSchedule,
   },
   {
-    path:'/groupCalendar',
+    path: '/groupCalendar',
     name: 'GroupCalendar',
     component: GroupCalendar,
-  }
+  },
+  {
+    path: '/searchGroup',
+    name: 'SearchGroup',
+    component: SearchGroup,
+  },
 ]
 
 const router = createRouter({
