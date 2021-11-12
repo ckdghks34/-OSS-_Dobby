@@ -57,8 +57,14 @@ async function login(req, res, next) {
       console.log(fcm);
       const fcm2 = req.get('FCMtoken');
       const fcm3 = req.get('fcmtoken');
+      const headers = req.headers;
+      const fcm4 = req.headers['fcmtoken'];
+      const fcm5 = req.headers['FCMtoken'];
       console.log(fcm2);
       console.log(fcm3);
+      console.log(headers);
+      console.log(fcm4);
+      console.log(fcm5);
       const tokenRef = admin.collection("users").doc(uid).collection("tokens");
       const tokens = await tokenRef.get();
       var check = false;
