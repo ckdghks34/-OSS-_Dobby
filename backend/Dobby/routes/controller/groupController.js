@@ -206,7 +206,7 @@ async function createGroup(req, res, next) {
               title: "새로운 그룹 생성",
               body: doc.data().name + " 그룹이 생성 되었습니다.",
             };
-            // await FCMCon.groupPush(gid, msg);
+            await FCMCon.groupPush(gid, msg);
             res.json({
               group: doc.data(),
               msg: "그룹 생성 성공",
@@ -249,7 +249,7 @@ async function updateGroup(req, res, next) {
               title: "그룹 정보 수정",
               body: data.data().name + " 그룹 정보가 수정 되었습니다.",
             };
-            // await FCMCon.groupPush(gid, msg);
+            await FCMCon.groupPush(gid, msg);
             return res.status(200).json({
               group: data.data(),
               msg: "그룹 정보 수정 성공",
@@ -311,7 +311,7 @@ async function deleteGroup(req, res, next) {
             title: "그룹 정보 삭제",
             body: gname + " 그룹이 삭제 되었습니다.",
           };
-          // await FCMCon.groupPush(gid, msg);
+          await FCMCon.groupPush(gid, msg);
           return res.status(200).json({
             msg: "그룹 삭제 성공",
           });
@@ -423,7 +423,7 @@ async function addMember(req, res, next) {
                 body:
                   data.data().name + " 그룹에 새로운 멤버가 입장하였습니다.",
               };
-              // await FCMCon.groupPush(gid, msg);
+              await FCMCon.groupPush(gid, msg);
               return res.json({
                 msg: "그룹 멤버 추가 성공",
               });
@@ -651,7 +651,7 @@ async function joinGroup(req, res, next) {
                 body:
                   data.data().name + " 그룹에 새로운 멤버가 입장하였습니다.",
               };
-              // await FCMCon.groupPush(gid, msg);
+              await FCMCon.groupPush(gid, msg);
               res.json({
                 msg: "그룹 가입 성공",
               });

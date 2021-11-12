@@ -179,7 +179,7 @@ async function createCalendar(req, res, next) {
                   title: "그룹 일정 생성 알림",
                   body: list.title + "그룹 일정이 등록되었습니다.",
                 };
-                // await FCMCon.groupPush(gid, msg);
+                await FCMCon.groupPush(gid, msg);
                 res.json({
                   calendar: doc.data(),
                   msg: "그룹 일정 생성 성공",
@@ -259,7 +259,7 @@ async function updateCalendar(req, res, next) {
                   title: "그룹 일정 수정 알림",
                   body: list.title + "그룹 일정이 수정되었습니다.",
                 };
-                // await FCMCon.groupPush(gid, msg);
+                await FCMCon.groupPush(gid, msg);
                 res.json({
                   calendar: doc.data(),
                   msg: "그룹 일정 수정 성공",
@@ -314,7 +314,7 @@ async function deleteCalendar(req, res, next) {
               title: "그룹 일정 삭제 알림",
               body: calendarName + "그룹 일정이 삭제되었습니다.",
             };
-            // await FCMCon.groupPush(gid, msg);
+            await FCMCon.groupPush(gid, msg);
             res.json({
               msg: "그룹 일정 삭제 성공",
             });
@@ -382,7 +382,7 @@ async function checkCalendar(req, res, next) {
                 title: "그룹 일정 상태 변경 알림",
                 body: doc.data().title + "의 상태가 업데이트 되었습니다.",
               };
-              // await FCMCon.groupPush(gid, msg);
+              await FCMCon.groupPush(gid, msg);
               res.json({
                 calendar: doc.data(),
                 msg: "그룹 일정 완료여부 변경 성공",
