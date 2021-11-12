@@ -34,7 +34,7 @@ async function getUserCalendar(req, res, next) {
 
 async function createCalendar(req, res, next) {
   const uid = req.body.uid;
-  const fcmtoken = req.headers.fcmtoken;
+  // const fcmtoken = req.headers.fcmtoken;
   const time = new Date(+new Date() + 3240 * 10000)
     .toISOString()
     .replace("T", " ")
@@ -80,7 +80,7 @@ async function createCalendar(req, res, next) {
               title: "일정 생성 알림",
               body: list.title + "일정이 등록되었습니다.",
             };
-            await FCMCon.userPush(fcmtoken, uid, msg);
+            // await FCMCon.userPush(fcmtoken, uid, msg);
             res.json({
               calendar: doc.data(),
               msg: "일정 생성 성공",
@@ -103,7 +103,7 @@ async function createCalendar(req, res, next) {
 async function deleteUserCalendar(req, res, next) {
   const uid = req.body.uid;
   const cid = req.body.cid;
-  const fcmtoken = req.headers.fcmtoken;
+  // const fcmtoken = req.headers.fcmtoken;
 
   const calendarRef = admin.collection("users").doc(uid).collection("calendar");
   const calendar = await calendarRef.doc(cid).get();
@@ -117,7 +117,7 @@ async function deleteUserCalendar(req, res, next) {
           title: "일정 삭제 알림",
           body: calendarname + " 일정이 삭제 되었습니다.",
         };
-        await FCMCon.userPush(fcmtoken, uid, msg);
+        // await FCMCon.userPush(fcmtoken, uid, msg);
         res.json({
           msg: "일정 삭제 성공",
         });
@@ -137,7 +137,7 @@ async function deleteUserCalendar(req, res, next) {
 async function updateUserCalendar(req, res, next) {
   const uid = req.body.uid;
   const cid = req.body.cid;
-  const fcmtoken = req.headers.fcmtoken;
+  // const fcmtoken = req.headers.fcmtoken;
   const time = new Date(+new Date() + 3240 * 10000)
     .toISOString()
     .replace("T", " ")
@@ -176,7 +176,7 @@ async function updateUserCalendar(req, res, next) {
               title: "일정 업데이트 알림",
               body: list.title + " 일정이 수정되었습니다.",
             };
-            await FCMCon.userPush(fcmtoken, uid, msg);
+            // await FCMCon.userPush(fcmtoken, uid, msg);
             res.json({
               calendar: doc.data(),
               msg: "일정 수정 성공",
@@ -199,7 +199,7 @@ async function updateUserCalendar(req, res, next) {
 async function completeUserCalendar(req, res, next) {
   const uid = req.body.uid;
   const cid = req.body.cid;
-  const fcmtoken = req.headers.fcmtoken;
+  // const fcmtoken = req.headers.fcmtoken;
 
   const calendarRef = admin.collection("users").doc(uid).collection("calendar");
   const calendar = await calendarRef.doc(cid).get();
@@ -224,7 +224,7 @@ async function completeUserCalendar(req, res, next) {
               title: "일정 상태 변경 알림",
               body: doc.data().title + "가 상태가 업데이트 되었습니다.",
             };
-            await FCMCon.userPush(fcmtoken, uid, msg);
+            // await FCMCon.userPush(fcmtoken, uid, msg);
             res.json({
               calendar: doc.data(),
               msg: "일정 완료여부 변경 성공",
