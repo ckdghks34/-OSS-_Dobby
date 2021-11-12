@@ -50,7 +50,7 @@
         <p style="margin:0 0 3% 0">
           평균 {{ (info.doneCount / info.totalCount).toFixed(2) * 100 }}%
         </p>
-        <div class="demo-progress" v-if="info.doneCount">
+        <div class="demo-progress">
           <div v-for="(t, index) in info.categoryLi" :key="index">
             <p>
               {{ t.category }}
@@ -60,21 +60,6 @@
               :text-inside="true"
               :stroke-width="20"
               :percentage="Math.floor((t.check / t.total).toFixed(2) * 100)"
-              :color="info.color[index % 2]"
-              style="margin-bottom:3%"
-            />
-          </div>
-        </div>
-        <div class="demo-progress" v-else>
-          <div v-for="(t, index) in info.totalLi" :key="index">
-            <p>
-              {{ t.category }}
-            </p>
-            <el-progress
-              class="progress"
-              :text-inside="true"
-              :stroke-width="20"
-              :percentage="0"
               :color="info.color[index % 2]"
               style="margin-bottom:3%"
             />
@@ -94,7 +79,9 @@ import axios from 'axios'
 
 export default {
   name: 'chart',
-  setup() {
+  props: ['gid'],
+  setup(props) {
+    console.log(props)
     const info = reactive({
       totalCount: 0,
       totalLi: [],
@@ -113,8 +100,9 @@ export default {
       console.log(startDate, endDate)
       axios
         .post(
-          'https://k5d105.p.ssafy.io:3030/chart/getPersonal',
+          'https://k5d105.p.ssafy.io:3030/chart/getGroup',
           {
+            gid: props.gid,
             uid: localStorage.getItem('uid'),
             startDate: startDate,
             endDate: endDate,

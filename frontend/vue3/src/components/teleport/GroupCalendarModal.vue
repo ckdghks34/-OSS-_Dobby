@@ -126,7 +126,7 @@
 <script>
 import { computed, reactive, ref, onBeforeMount, onUnmounted } from "vue";
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios';
 
 //icons
@@ -144,6 +144,8 @@ export default {
   setup() {
     const store = useStore()
     const router = useRouter()
+    const route = useRoute()
+
 
     const fullCalendar = ref(null)
     const isOpen = ref(false);
@@ -178,7 +180,7 @@ export default {
     }
 
     const modalPut = () => {
-      router.push({name: 'PutSchedule'})
+      router.push({name: 'GroupCalendarPutSchedule', query: { gid: route.query.gid }})
     }
 
     const delEvent = () => {
@@ -190,7 +192,7 @@ export default {
             data: {
               uid: localStorage.getItem('uid'),
               cid: state.mData.ModalDate.extendedProps.cid,
-              gid: state.mData.ModalDate.extendedProps.gid,
+              gid: route.query.gid,
             }
           },
           {
@@ -295,7 +297,8 @@ export default {
       dialogVisible: ref(false),
       isAuthority: computed(() => localStorage.getItem('uid') === state.mData.ModalDate.extendedProps.creator)
     })
-    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess };
+
+    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess};
   },
   data() {
     return {
@@ -313,6 +316,7 @@ export default {
 
 .modal-content-body-participant-element {
   margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 </style>

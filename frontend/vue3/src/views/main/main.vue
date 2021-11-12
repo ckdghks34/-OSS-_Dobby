@@ -71,17 +71,15 @@
         <button class="blueBtn" @click="login">로그인</button>
       </div>
       <div class="mainMobSocialLogin">
-        <div>
+        <div @click="facebookSignIn">
           <img src="@/assets/facebook.png" alt="" /><span style="font-size:15px"
             >페이스북 로그인</span
           >
         </div>
         <br />
-        <div>
+        <div @click="googleSignIn">
           <img src="@/assets/google.png" alt="" />
-          <div class="g-signin2" @click="onSignIn">
-            <span style="font-size:15px">구글 로그인</span>
-          </div>
+          <span style="font-size:15px">구글 로그인</span>
         </div>
       </div>
       <div class="mainMobSign">
@@ -137,34 +135,41 @@ export default {
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
       signInWithPopup(auth, provider)
-        .then((result) => {
-          const credential = GoogleAuthProvider.credentialFromResult(result)
+        .then((res) => {
+          const credential = GoogleAuthProvider.credentialFromResult(res)
           const token = credential.accessToken
-          const uid = result.user.uid
+          const uid = res.user.uid
           localStorage.setItem('token', token)
           localStorage.setItem('uid', uid)
-          console.log('result: ' + JSON.stringify(result))
-          console.log('token: ' + token)
-          console.log('uid: ' + uid)
+          // console.log('result: ' + JSON.stringify(res))
+          // console.log('token: ' + token)
+          // console.log('uid: ' + uid)
           axios
             .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
               uid: uid,
             })
             .then((res) => {
               console.log(res)
-              this.$router.push('Calendar')
+              if (res.data.msg === '이미 등록된 회원입니다.') {
+                this.$router.push('Calendar')
+              } else {
+                this.$router.push('SuccessSignup')
+              }
             })
             .catch((err) => console.log(err))
         })
-        .catch((error) => {
-          const errorCode = error.code
-          const errorMessage = error.message
-          const email = error.email
-          const credential = GoogleAuthProvider.credentialFromError(error)
-          console.log('errorCode: ' + errorCode)
-          console.log('errorMessage: ' + errorMessage)
-          console.log('email: ' + email)
-          console.log('credential: ' + credential)
+        .catch((err) => {
+          const errorCode = err.code
+          // const errorMessage = error.message
+          // const email = error.email
+          // const credential = GoogleAuthProvider.credentialFromError(error)
+          // console.log('errorCode: ' + errorCode)
+          // console.log('errorMessage: ' + errorMessage)
+          // console.log('email: ' + email)
+          // console.log('credential: ' + credential)
+          if (errorCode === 'auth/popup-blocked') {
+            alert('팝업이 차단되었습니다')
+          }
         })
     },
     facebookSignIn() {
@@ -173,37 +178,40 @@ export default {
       const provider = new FacebookAuthProvider()
       const auth = getAuth()
       signInWithPopup(auth, provider)
-        .then((result) => {
-          // The signed-in user info.
-          const user = result.user
-          const uid = result.user.uid
-          // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-          const credential = FacebookAuthProvider.credentialFromResult(result)
+        .then((res) => {
+          const uid = res.user.uid
+          const credential = FacebookAuthProvider.credentialFromResult(res)
           const token = credential.accessToken
           localStorage.setItem('token', token)
           localStorage.setItem('uid', uid)
-          console.log('result: ' + JSON.stringify(result))
-          console.log('user: ' + user)
-          console.log('token: ' + token)
+          // console.log('result: ' + JSON.stringify(result))
+          // console.log('user: ' + user)
+          // console.log('token: ' + token)
           axios
             .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
               uid: uid,
             })
-            .then((res) => console.log(res))
-            .catch((err) => console.log(err))
+            .then((res) => {
+              console.log(res)
+              if (res.data.msg === '이미 등록된 회원입니다.') {
+                this.$router.push('Calendar')
+              } else {
+                this.$router.push('SuccessSignup')
+              }
+            })
         })
-        .catch((error) => {
-          // Handle Errors here.
-          const errorCode = error.code
-          const errorMessage = error.message
-          // The email of the user's account used.
-          const email = error.email
-          // The AuthCredential type that was used.
-          const credential = FacebookAuthProvider.credentialFromError(error)
-          console.log('errorCode: ' + errorCode)
-          console.log('errorMessage: ' + errorMessage)
-          console.log('email: ' + email)
-          console.log('credential: ' + credential)
+        .catch((err) => {
+          const errorCode = err.code
+          // const errorMessage = error.message
+          // const email = error.email
+          // const credential = FacebookAuthProvider.credentialFromError(error)
+          // console.log('errorCode: ' + errorCode)
+          // console.log('errorMessage: ' + errorMessage)
+          // console.log('email: ' + email)
+          // console.log('credential: ' + credential)
+          if (errorCode === 'auth/popup-blocked') {
+            alert('팝업이 차단되었습니다')
+          }
         })
     },
   },
