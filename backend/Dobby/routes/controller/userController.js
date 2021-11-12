@@ -53,7 +53,7 @@ async function login(req, res, next) {
     .then(async (userCredential) => {
       const uid = userCredential.user.uid;
       const users = await admin.collection("users").doc(uid).get();
-      const fcm = req.headers.FCMtoken;
+      const fcm = req.headers.fcmtoken;
       console.log(fcm);
       const tokenRef = admin.collection("users").doc(uid).collection("tokens");
       const tokens = await tokenRef.get();
