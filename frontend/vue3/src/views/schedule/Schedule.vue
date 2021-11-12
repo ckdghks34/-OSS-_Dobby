@@ -24,6 +24,10 @@
         <div class="userCalendar-schedule-row">
             <label class="label" for="place">장소</label>
             <input class="web-input" type="text" id="place" v-model="state.placeName">
+            <GMapAutocomplete
+                placeholder="This is a placeholder"
+                @place_changed="setPlace">
+            </GMapAutocomplete>
         </div>
         <br>
         <div class="userCalendar-schedule-category">
@@ -126,6 +130,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { reactive, onBeforeMount } from 'vue'
 import { useStore } from 'vuex';
+
 
 export default {
     name: 'Schedule',

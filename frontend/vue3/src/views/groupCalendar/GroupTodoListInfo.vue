@@ -13,7 +13,7 @@
               {{ titleFormat(day.title) }}
             </span>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="4" class="todoList-card-particpant">
             <el-icon>
               <User />
             </el-icon>
@@ -26,7 +26,7 @@
               {{ titleFormat(day.title) }}
             </span>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="4" class="todoList-card-particpant">
             <el-icon>
               <User />
             </el-icon>
@@ -143,6 +143,11 @@ export default {
 <style>
   .todoList-card {
     cursor: pointer;
+  }
+
+  .todoList-card-particpant {
+    display: flex;
+    align-items: center;
   }
 
   @media screen and (min-width: 1200px) {
