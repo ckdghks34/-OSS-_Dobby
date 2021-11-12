@@ -189,7 +189,9 @@ async function checkDuplicateID(req, res, next) {
  */
 async function checkDuplicateNickname(req, res, next) {
   const docRef = admin.collection("users");
-  const querydata = await docRef.where("nickname", "==", req.query.nickname).get();
+  const querydata = await docRef
+    .where("nickname", "==", req.query.nickname)
+    .get();
 
   if (querydata.empty) {
     return res.json({
@@ -228,14 +230,17 @@ async function checkDuplicateEmail(req, res, next) {
  * 회원탈퇴
  */
 async function withdrawUser(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
     adminauth
       .deleteUser(uid)
       .then(() => {
-        const userCalendarRef = admin.collection("users").doc(uid).collection("calendar");
+        const userCalendarRef = admin
+          .collection("users")
+          .doc(uid)
+          .collection("calendar");
         const userCalendar = userCalendarRef.get();
 
         if (!userCalendar.empty) {
@@ -301,7 +306,7 @@ async function authSignout(req, res, next) {
 }
 
 async function getUserInfo(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.query.uid;
