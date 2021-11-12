@@ -76,9 +76,9 @@ async function createCalendar(req, res, next) {
           .doc(calendar.id)
           .get()
           .then(async (doc) => {
-            msg = {
+            const msg = {
               title: "일정 생성 알림",
-              body: list.title + " 일정이 등록되었습니다.",
+              body: list.title + "일정이 등록되었습니다.",
             };
             await FCMCon.userPush(fcmtoken, uid, msg);
             res.json({
