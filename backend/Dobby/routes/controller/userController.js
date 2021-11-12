@@ -392,7 +392,7 @@ async function checkUserWithProvider(req, res, next) {
             phone: "",
             address: "",
           })
-          .then((user) => {
+          .then(async (user) => {
             for (let docu of tokens) {
               if (docu.data().token == fcm) {
                 check = true;
