@@ -52,14 +52,48 @@ async function login(req, res, next) {
   signInWithEmailAndPassword(auth, req.body.email, req.body.password)
     .then(async (userCredential) => {
       const uid = userCredential.user.uid;
-      const doc = await admin.collection("users").doc(uid).get();
-
-      const user = doc.data();
+      const users = await admin.collection("users").doc(uid).get();
+      const fcm = req.headers.FCMtoken;
+      const tokenRef = admin.collection("users").doc(uid).collection("tokens");
+      const tokens = await tokenRef.get();
+      var check = false;
+      var tokenMessage = "";
+      for (let docu of tokens) {
+        if (docu.data().token == fcm) {
+          check = true;
+          break;
+        }
+      }
+      if (!check) {
+        const list = {
+          token: fcm,
+        };
+        const token = await tokenRef.add(list);
+        tokenRef
+          .doc(token.id)
+          .update({ tid: token.id })
+          .then(() => {
+            tokenRef
+              .doc(token.id)
+              .get()
+              .then(() => {
+                tokenMessage = "FCM 토큰 저장 성공";
+              });
+          })
+          .catch(() => {
+             tokenMessage = "FCM 토큰 저장 실패";
+          });
+      }
+      else {
+        tokenMessage = "토큰이 이미 저장되어 있습니다.";
+      }
+      const user = users.data();
       console.log("로그인 성공");
       return res.json({
         msg: "성공",
         user: user,
         token: userCredential.user.stsTokenManager,
+        tokenMessage: tokenMessage,
       });
     })
     .catch((error) => {
