@@ -111,14 +111,15 @@
 <script>
 import { reactive } from '@vue/reactivity'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
-import { onBeforeMount } from '@vue/runtime-core'
+import { useRouter, useRoute } from 'vue-router'
+import { onBeforeMount, watch } from '@vue/runtime-core'
 
 export default {
   name: 'groupInfo',
   props: ['gid'],
   setup(props) {
     const router = useRouter()
+    const route = useRoute()
     const info = reactive({
       userEmail: '',
       userNick: '',
@@ -135,6 +136,14 @@ export default {
       inviteEmail: '',
       member: [],
     })
+
+    watch(
+      () => route.params,
+      () => {
+        location.reload()
+      }
+    )
+
     onBeforeMount(() => {
       axios
         .get(
@@ -151,24 +160,7 @@ export default {
         .then((res) => {
           info.userEmail = res.data.user.email
           info.userNick = res.data.user.nickname
-          axios
-            .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-              params: { gid: props.gid },
-            })
-            .then((res) => {
-              console.log(res)
-              info.name = res.data.group.name
-              info.description = res.data.group.description
-              info.private = res.data.group.private
-              info.password = res.data.group.password
-              info.member = res.data.group.members
-              if (res.data.group.admin === info.userEmail) {
-                info.admin = true
-              } else {
-                info.admin = false
-              }
-              console.log(info.member)
-            })
+          getGroup()
         })
         .catch((err) => {
           if (err.response.status === 403) {
@@ -179,6 +171,24 @@ export default {
           }
         })
     })
+    const getGroup = function() {
+      axios
+        .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
+          params: { gid: props.gid },
+        })
+        .then((res) => {
+          info.name = res.data.group.name
+          info.description = res.data.group.description
+          info.private = res.data.group.private
+          info.password = res.data.group.password
+          info.member = res.data.group.members
+          if (res.data.group.admin === info.userEmail) {
+            info.admin = true
+          } else {
+            info.admin = false
+          }
+        })
+    }
 
     const changeInfo = function() {
       axios
@@ -223,24 +233,25 @@ export default {
           alert(`그룹장이 ${info.changeAdmin} 님으로 변경되었습니다`)
           info.changeDia = false
           info.changeAdmin = ''
-          axios
-            .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-              params: { gid: props.gid },
-            })
-            .then((res) => {
-              console.log(res)
-              info.name = res.data.group.name
-              info.description = res.data.group.description
-              info.private = res.data.group.private
-              info.password = res.data.group.password
-              info.member = res.data.group.members
-              if (res.data.group.admin === info.userEmail) {
-                info.admin = true
-              } else {
-                info.admin = false
-              }
-              console.log(info.member)
-            })
+          getGroup()
+          // axios
+          //   .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
+          //     params: { gid: props.gid },
+          //   })
+          //   .then((res) => {
+          //     console.log(res)
+          //     info.name = res.data.group.name
+          //     info.description = res.data.group.description
+          //     info.private = res.data.group.private
+          //     info.password = res.data.group.password
+          //     info.member = res.data.group.members
+          //     if (res.data.group.admin === info.userEmail) {
+          //       info.admin = true
+          //     } else {
+          //       info.admin = false
+          //     }
+          //     console.log(info.member)
+          //   })
         })
         .catch((err) => console.log(err))
     }
@@ -350,6 +361,7 @@ export default {
 
     return {
       info,
+      getGroup,
       changeInfo,
       deleteMem,
       changeAdminBtn,
