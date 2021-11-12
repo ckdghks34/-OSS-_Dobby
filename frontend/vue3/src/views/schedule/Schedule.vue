@@ -54,10 +54,9 @@
         <br>
         <div>
             <button class="web-button-red" @click="handleCancleSchedule">취소</button> 
-            <button class="web-button-blue" style="margin-left:30px" type="button" @click="addSchedule" v-bind:disabled="title==''">수정</button>
+            <button class="web-button-blue" style="margin-left:30px" type="button" @click="addSchedule" v-bind:disabled="title==''">추가</button>
         </div> 
     </div>
-
 
 
     <div class="mobile-schedule-main" v-else>

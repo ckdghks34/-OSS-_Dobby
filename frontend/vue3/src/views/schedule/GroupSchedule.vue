@@ -263,6 +263,7 @@ export default {
       if ( state.allDay ) {
         const aDay = {
           uid : state.uid,
+          gid: route.query.gid,
           title : state.title,
           content : state.content,
           startDate : state.startDate,
@@ -290,7 +291,6 @@ export default {
               const d = {
                 cid : res.cid,
                 gid: route.query.gid,
-                completed: res.completed,
                 title : res.title,
                 content : res.content,
                 start: res.startDate+'T'+res.startTime,
@@ -305,7 +305,7 @@ export default {
                 allDay : res.allDay,
                 participant : res.participant
                 }
-
+              
               store.dispatch('pushGroupCalendarData', d)
               router.push({name: 'GroupCalendar', query : {gid: route.query.gid}})
             })
@@ -358,6 +358,7 @@ export default {
                   allDay : res.allDay,
                   participant : res.participant
                   }
+
                 store.dispatch('pushGroupCalendarData', day)
                 router.push({name: 'GroupCalendar', query : {gid: route.query.gid}})
               })
