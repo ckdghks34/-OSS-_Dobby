@@ -1,53 +1,79 @@
 <template>
-  <div class="icon-bar" v-if="info.size"> 
-  <!-- id="nav" -->
+  <div class="icon-bar" v-if="info.size">
+    <!-- id="nav" -->
     <div>{{ info.userId }} 님</div>
-    <br>
-    <router-link to="/main">Login</router-link> 
-    <router-link to="/newgroup">New Group</router-link> 
-    <router-link to="/group" >Group</router-link>
+    <br />
+    <router-link to="/main">Login</router-link>
+    <router-link to="/newgroup">New Group</router-link>
+    <router-link to="/group">Group</router-link>
     <!-- <i class="bi bi-gear-fill"></i> -->
-      <div>
-        <ul>
-          <li v-for="groupList in info.groupLists" :key="groupList.gid">
-            <div>
-              <p @click="TogroupCallendar(groupList.gid)" style="display:inline; margin-right:7px; margin-top:7px; cursor:pointer;">{{ groupList.name }}</p>
-              <!-- <a @click="TogroupCallendar(groupList.gid)">{{ groupList.name }}</a> -->
-              <svg @click="ToGroup(groupList.gid)" xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16" style="cursor:pointer; float:right; margin-right:4px;">
-                <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
-              </svg>          
-            </div>
-         
-          </li>
-        </ul>
-      </div>
-    <router-link to="/calendar">Calendar</router-link> 
+    <div>
+      <ul>
+        <li v-for="groupList in info.groupLists" :key="groupList.gid">
+          <div>
+            <p
+              @click="TogroupCallendar(groupList.gid)"
+              style="display:inline; margin-right:7px; margin-top:7px; cursor:pointer;"
+            >
+              {{ groupList.name }}
+            </p>
+            <!-- <a @click="TogroupCallendar(groupList.gid)">{{ groupList.name }}</a> -->
+            <svg
+              @click="ToGroup(groupList.gid)"
+              xmlns="http://www.w3.org/2000/svg"
+              width="10"
+              height="10"
+              fill="currentColor"
+              class="bi bi-gear-fill"
+              viewBox="0 0 16 16"
+              style="cursor:pointer; float:right; margin-right:4px;"
+            >
+              <path
+                d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"
+              />
+            </svg>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <router-link to="/calendar">Calendar</router-link>
     <!-- <router-link to="/schedule">Schedule</router-link>  -->
-    <router-link to="/chart">chart</router-link> 
-    <button @click="logout" class="logoutButton">logout</button> 
+    <router-link to="/chart">chart</router-link>
+    <button @click="logout" class="logoutButton">logout</button>
   </div>
 
   <div v-else>
-    <el-dropdown class="list-button" >
+    <el-dropdown class="list-button">
       <el-button btn-sm icon="el-icon-notebook-2">
-      <el-icon class="el-icon--right"><arrow-down /></el-icon>
+        <el-icon class="el-icon--right"><arrow-down /></el-icon>
       </el-button>
-      
+
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item><router-link to="/main">Login</router-link> </el-dropdown-item>
-          <el-dropdown-item><router-link to="/newgroup">New Group</router-link> </el-dropdown-item>
-          <el-dropdown-item><router-link to="/group">Group</router-link> </el-dropdown-item>
-          <el-dropdown-item><router-link to="/calendar">Calendar</router-link> </el-dropdown-item>
+          <el-dropdown-item
+            ><router-link to="/main">Login</router-link>
+          </el-dropdown-item>
+          <el-dropdown-item
+            ><router-link to="/newgroup">New Group</router-link>
+          </el-dropdown-item>
+          <el-dropdown-item
+            ><router-link to="/group">Group</router-link>
+          </el-dropdown-item>
+          <el-dropdown-item
+            ><router-link to="/calendar">Calendar</router-link>
+          </el-dropdown-item>
           <!-- <el-dropdown-item><router-link to="/schedule">Schedule</router-link> </el-dropdown-item> -->
-          <el-dropdown-item><router-link to="/chart">chart</router-link>  </el-dropdown-item>
-          <el-dropdown-item><button @click="logout">logout</button>  </el-dropdown-item>
+          <el-dropdown-item
+            ><router-link to="/chart">chart</router-link>
+          </el-dropdown-item>
+          <el-dropdown-item
+            ><button @click="logout">logout</button>
+          </el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-
   </div>
- 
+
   <div class="teleport-modal">
     <teleportExample />
   </div>
@@ -55,7 +81,6 @@
   <div class="routerView">
     <router-view />
   </div>
-
 </template>
 
 <script>
@@ -63,33 +88,66 @@
 import teleportExample from '@/components/teleport/teleportExample'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
-import { reactive, onBeforeMount} from 'vue'
+import { reactive, onBeforeMount } from 'vue'
+import { getMessaging, getToken, onMessage } from 'firebase/messaging'
+import firebaseConfig from '../firebaseConfig'
+import firebase from 'firebase/compat/app'
 
 export default {
   components: {
     teleportExample,
   },
   setup() {
-    const router = useRouter() 
+    const router = useRouter()
 
-// user 정보 
+    // user 정보
     const info = reactive({
       userId: '',
       size: true,
       groupLists: [],
       gid: '',
     })
-    
+
+    const firebaseApp = firebase.initializeApp(firebaseConfig)
+    const messaging = getMessaging(firebaseApp)
+
+    getToken(messaging, {
+      vapidKey:
+        'BE5n2nc_3FLKh9U_gkhPTcpe3NMimxEcUBAdriZG1dk3arXlOWRFhg3-6U6sIVa1cVMJbVI236v93OMMKQf0jy0',
+    })
+      .then((currentToken) => {
+        if (currentToken) {
+          console.log('currentToken : ' + currentToken)
+          localStorage.setItem('FCMtoken', currentToken)
+        } else {
+          console.log(
+            'No Instance ID token available. Request permission to generate one.'
+          )
+        }
+      })
+      .catch((err) => {
+        console.log('An error occurred while retrieving token. ', err)
+      })
+    onMessage(messaging, function(payload) {
+      console.log('메세지왔다!')
+      console.log('Message received. ', payload)
+    })
+
     onBeforeMount(() => {
-      axios.get('https://k5d105.p.ssafy.io:3030/users/getUserInfo',{params: {
-          uid : localStorage.getItem('uid')
-      } })
+      axios
+        .get('https://k5d105.p.ssafy.io:3030/users/getUserInfo', {
+          params: {
+            uid: localStorage.getItem('uid'),
+          },
+        })
         .then((response) => {
-            // console.log(response)
-            info.userId = response.data.user.nickname        
-            })
-        .catch((error) => {console.log(error)})
-      
+          // console.log(response)
+          info.userId = response.data.user.nickname
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+
       // axios.get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {params: {
       //     uid :localStorage.getItem('uid')
       // } })
@@ -98,38 +156,43 @@ export default {
       //   })
       //   .catch((error) => {console.log(error)})
 
-// groupLists
-      axios.get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {params: {
-          uid :localStorage.getItem('uid')
-      } },
-      {
-          headers: {
-            authorization: localStorage.getItem('token')
+      // groupLists
+      axios
+        .get(
+          'https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup',
+          {
+            params: {
+              uid: localStorage.getItem('uid'),
+            },
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
           }
-      }
-      )
+        )
         .then((response) => {
-            // console.log(response)
-            info.groupLists = response.data.group
+          // console.log(response)
+          info.groupLists = response.data.group
         })
-        .catch((error) => {console.log(error)})
-
+        .catch((error) => {
+          console.log(error)
+        })
     })
 
     window.addEventListener(
-        'resize',
-        function() {
-            if (window.innerWidth < 730) {
-            info.size = false
-            } else {
-            info.size = true
-            }
-        },
-        true
+      'resize',
+      function() {
+        if (window.innerWidth < 730) {
+          info.size = false
+        } else {
+          info.size = true
+        }
+      },
+      true
     )
 
-
-// 로그아웃
+    // 로그아웃
     const logout = function() {
       axios
         .post(
@@ -147,17 +210,19 @@ export default {
           console.log(res)
           localStorage.removeItem('token')
           localStorage.removeItem('uid')
-          router.push({ name: 'main' })
+          localStorage.removeItem('FCMtoken')
+          location.replace('/main')
+          // router.push({ name: 'main' })
         })
-        .catch((err) => {
-          console.log(err.response.status)
-          if (err.response.status === 403) {
-            alert('로그인이 만료되었습니다')
-            router.push({ name: 'main' })
-            localStorage.removeItem('token')
-            localStorage.removeItem('uid')
-          }
-        })
+      // .catch((err) => {
+      //   console.log(err.response.status)
+      //   if (err.response.status === 403) {
+      //     alert('로그인이 만료되었습니다')
+      //     router.push({ name: 'main' })
+      //     localStorage.removeItem('token')
+      //     localStorage.removeItem('uid')
+      //   }
+      // })
     }
 
     const ToGroup = function(gid) {
@@ -168,12 +233,9 @@ export default {
       })
     }
 
-
     const TogroupCallendar = function(gid) {
-      router.push({name: 'GroupCalendar', query: {gid: gid}})   
+      router.push({ name: 'GroupCalendar', query: { gid: gid } })
     }
-
-
 
     return { info, logout, ToGroup, TogroupCallendar }
   },
@@ -223,26 +285,25 @@ body,
 }
 
 .logoutButton {
-  position:fixed;
+  position: fixed;
   bottom: 0;
   left: 0;
 }
-
 
 /* 사이드바 */
 .icon-bar {
   height: 100%;
   width: 15vw;
   float: left;
-  background-color: #A9C9DE;
+  background-color: #a9c9de;
   /* position: fixed;  */
-  top: 0; 
+  top: 0;
   left: 0;
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 0;
 }
 
-.icon-bar a{
+.icon-bar a {
   display: block;
   text-align: center;
   padding: 4px;
@@ -254,7 +315,7 @@ body,
 /* .icon-bar { fontSize: 1rem !important; } */
 
 .icon-bar a:hover {
-  background-color: #DEB4B4;
+  background-color: #deb4b4;
 }
 
 .active {
@@ -270,23 +331,22 @@ body,
   font-size: 1.5rem;
 }
 
-
 a {
   text-decoration: none;
 }
 
 p:hover {
-  background-color: #DEB4B4;
+  background-color: #deb4b4;
 }
 
 svg:hover {
-  background-color: #DEB4B4;
+  background-color: #deb4b4;
 }
 
-@media (max-width: 1086px){
-    svg {
-        display: none; 
-    }
+@media (max-width: 1086px) {
+  svg {
+    display: none;
+  }
 }
 
 /* @media screen and (max-width: 730px) {
@@ -294,5 +354,4 @@ svg:hover {
     display: none;
   }
 } */
-
 </style>
