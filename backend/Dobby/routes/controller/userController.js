@@ -55,6 +55,10 @@ async function login(req, res, next) {
       const users = await admin.collection("users").doc(uid).get();
       const fcm = req.headers.fcmtoken;
       console.log(fcm);
+      const fcm2 = req.get('FCMtoken');
+      const fcm3 = req.get('fcmtoken');
+      console.log(fcm2);
+      console.log(fcm3);
       const tokenRef = admin.collection("users").doc(uid).collection("tokens");
       const tokens = await tokenRef.get();
       var check = false;
