@@ -4,51 +4,93 @@
       <template #header>
         <div v-if="state.isBig">
           <el-row>
-            <el-col :span="1" >
+            <el-col :span="1">
               <div class="modal-content-color">
-                <span class="modal-content-color-box" v-bind:style="{backgroundColor: state.mData.ModalDate.backgroundColor}"></span>
+                <span
+                  class="modal-content-color-box"
+                  v-bind:style="{
+                    backgroundColor: state.mData.ModalDate.backgroundColor,
+                  }"
+                ></span>
               </div>
             </el-col>
             <el-col :span="22" :offset="1">
               <div class="modal-content-header">
                 <div>
-                  <span v-if="state.mData.ModalDate.title.length <= 10" style="fontSize: 2rem">{{ state.mData.ModalDate.title }}</span>
-                  <span v-else style="fontSize: 1.5rem">{{ state.mData.ModalDate.title }}</span>
+                  <span
+                    v-if="state.mData.ModalDate.title.length <= 10"
+                    style="fontSize: 2rem"
+                    >{{ state.mData.ModalDate.title }}</span
+                  >
+                  <span v-else style="fontSize: 1.5rem">{{
+                    state.mData.ModalDate.title
+                  }}</span>
                 </div>
                 <div>
-                  <i v-if="state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
-                  <i v-if="!state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
+                  <i
+                    v-if="state.mData.ModalDate.extendedProps.completed"
+                    class="el-icon-refresh-left modalIcon"
+                    @click="modalSuccess"
+                  ></i>
+                  <i
+                    v-if="!state.mData.ModalDate.extendedProps.completed"
+                    class="el-icon-check modalIcon"
+                    @click="modalSuccess"
+                  ></i>
                   <i class="el-icon-edit modalIcon" @click="modalPut"></i>
-                  <i class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
+                  <i
+                    class="el-icon-delete modalIcon"
+                    @click="state.dialogVisible = true"
+                  ></i>
                   <i class="el-icon-close modalIcon" @click="hide"></i>
                 </div>
               </div>
             </el-col>
           </el-row>
-        
         </div>
         <div v-if="!state.isBig">
           <el-row class="modal-content-body-contents-row">
             <div class="modal-content-header" style="width: 100%">
-              <i v-if="state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
-              <i v-if="!state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
+              <i
+                v-if="state.mData.ModalDate.extendedProps.completed"
+                class="el-icon-refresh-left modalIcon"
+                @click="modalSuccess"
+              ></i>
+              <i
+                v-if="!state.mData.ModalDate.extendedProps.completed"
+                class="el-icon-check modalIcon"
+                @click="modalSuccess"
+              ></i>
               <i class="el-icon-edit modalIcon" @click="modalPut"></i>
-              <i class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
+              <i
+                class="el-icon-delete modalIcon"
+                @click="state.dialogVisible = true"
+              ></i>
               <i class="el-icon-close modalIcon" @click="hide"></i>
             </div>
           </el-row>
 
           <el-row class="modal-content-body-contents-row">
-            <span class="modal-content-small-color-box" :style="{backgroundColor: state.mData.ModalDate.backgroundColor}"></span>
+            <span
+              class="modal-content-small-color-box"
+              :style="{
+                backgroundColor: state.mData.ModalDate.backgroundColor,
+              }"
+            ></span>
           </el-row>
 
           <el-row>
             <div class="modal-content-header">
-              <span v-if="state.mData.ModalDate.title.length <= 10" style="fontSize: 2rem">{{ state.mData.ModalDate.title }}</span>
-              <span v-else style="fontSize: 1.5rem">{{ state.mData.ModalDate.title }}</span>
+              <span
+                v-if="state.mData.ModalDate.title.length <= 10"
+                style="fontSize: 2rem"
+                >{{ state.mData.ModalDate.title }}</span
+              >
+              <span v-else style="fontSize: 1.5rem">{{
+                state.mData.ModalDate.title
+              }}</span>
             </div>
           </el-row>
-
         </div>
       </template>
       <div class="modal-content-body">
@@ -60,7 +102,9 @@
           </el-col>
           <el-col :span="22" :offset="1">
             <span v-if="state.mData.allDay">{{ state.mData.startDay }}</span>
-            <span v-if="!state.mData.allDay" style="fontSize: 0.9rem">{{ state.mData.startDay }} - {{ state.mData.endDay }}</span>
+            <span v-if="!state.mData.allDay" style="fontSize: 0.9rem"
+              >{{ state.mData.startDay }} - {{ state.mData.endDay }}</span
+            >
           </el-col>
         </el-row>
 
@@ -76,7 +120,7 @@
             </el-button>
           </el-col>
         </el-row>
-        
+
         <el-row class="modal-content-body-contents-row">
           <el-col :span="1">
             <div class="modal-content-body-contents-row-icon-wrap">
@@ -103,15 +147,12 @@
       </div>
     </el-card>
 
-    
-    <el-dialog
-      v-model="state.dialogVisible"
-      width="30%">
-      <span>일정을 삭제할까요?</span>  
+    <el-dialog v-model="state.dialogVisible" width="30%">
+      <span>일정을 삭제할까요?</span>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="state.dialogVisible = false">취소</el-button>
-          <el-button type="danger" @click="delEvent" >삭제</el-button>
+          <el-button type="danger" @click="delEvent">삭제</el-button>
         </span>
       </template>
     </el-dialog>
@@ -119,18 +160,17 @@
 </template>
 
 <script>
-import { computed, reactive, ref, onBeforeMount, onUnmounted } from "vue";
+import { computed, reactive, ref, onBeforeMount, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import axios from 'axios';
+import axios from 'axios'
 
 //icons
 import { Calendar, Location, Document, FolderOpened } from '@element-plus/icons'
 
-
 export default {
   props: {
-    curModal : { type: Object }
+    curModal: { type: Object },
   },
   components: {
     Calendar,
@@ -142,15 +182,15 @@ export default {
     const store = useStore()
     const router = useRouter()
 
-    const isOpen = ref(false);
+    const isOpen = ref(false)
 
     const hide = () => {
-      isOpen.value = false;
-    };
+      isOpen.value = false
+    }
 
     const show = () => {
-      isOpen.value = true;
-    };
+      isOpen.value = true
+    }
 
     const fullCalendar = ref(null)
 
@@ -163,8 +203,7 @@ export default {
       window.removeEventListener('resize', handleGroupModalWindowSize)
     })
 
-
-    const calData = function (cal) {
+    const calData = function(cal) {
       fullCalendar.value = cal
     }
 
@@ -177,69 +216,73 @@ export default {
       }
     }
 
-
     const modalPut = () => {
-      router.push({name: 'PutSchedule'})
+      router.push({ name: 'PutSchedule' })
     }
 
     const delEvent = () => {
-      state.dialogVisible = false    
+      state.dialogVisible = false
       // 삭제 axios 요청
       axios
-        .delete('https://k5d105.p.ssafy.io:3030/calendar/deleteCalendar',
-          { 
-            data: {
-              uid: localStorage.getItem('uid'),
-              cid: state.mData.ModalDate.extendedProps.cid
-            }
+        .delete('https://k5d105.p.ssafy.io:3030/calendar/deleteCalendar', {
+          headers: {
+            authorization: localStorage.getItem('token'),
+            FCMtoken: localStorage.getItem('FCMtoken'),
+          },
+
+          data: {
+            uid: localStorage.getItem('uid'),
+            cid: state.mData.ModalDate.extendedProps.cid,
+          },
+        })
+        .then(() => {
+          state.mData.ModalDate.remove()
+          isOpen.value = false
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+
+    const modalSuccess = function() {
+      axios
+        .put(
+          'https://k5d105.p.ssafy.io:3030/calendar/checkCalendar',
+          {
+            uid: localStorage.getItem('uid'),
+            cid: state.mData.ModalDate.extendedProps.cid,
           },
           {
             headers: {
-              authorization: localStorage.getItem('token')
-            }
-          })
-          .then(() => {
-            state.mData.ModalDate.remove()
-            isOpen.value = false;
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-    }
-
-    const modalSuccess = function () {
-      axios.
-        put('https://k5d105.p.ssafy.io:3030/calendar/checkCalendar',
-        {
-          uid: localStorage.getItem('uid'),
-          cid: state.mData.ModalDate.extendedProps.cid,
-        },
-        {
-          headers: {
-            authorization: localStorage.getItem('token')
+              authorization: localStorage.getItem('token'),
+              FCMtoken: localStorage.getItem('FCMtoken'),
+            },
           }
-        })
+        )
         .then((response) => {
           let calendarApi = state.calendar.getApi()
 
-          store.dispatch('deleteCalendarData', state.mData.ModalDate.extendedProps.cid)
+          store.dispatch(
+            'deleteCalendarData',
+            state.mData.ModalDate.extendedProps.cid
+          )
           state.mData.ModalDate.remove()
           const r = response.data.calendar
-          if ( r.completed ) {
+          if (r.completed) {
             const cal = {
               cid: r.cid,
               completed: r.completed,
               title: r.title,
               content: r.content,
-              start: r.startDate+'T'+r.startTime,
-              end: r.endDate+'T'+r.endTime,
+              start: r.startDate + 'T' + r.startTime,
+              end: r.endDate + 'T' + r.endTime,
               color: r.color,
               placeName: r.placeName,
               placeLat: r.placeLat,
               placeLng: r.placeLng,
               startDate: r.startDate,
               endDate: r.endDate,
-              classNames: ['calendar-done']
+              classNames: ['calendar-done'],
             }
             store.dispatch('pushCalendarData', cal)
             calendarApi.batchRendering(function() {
@@ -251,14 +294,14 @@ export default {
               completed: r.completed,
               title: r.title,
               content: r.content,
-              start: r.startDate+'T'+r.startTime,
-              end: r.endDate+'T'+r.endTime,
+              start: r.startDate + 'T' + r.startTime,
+              end: r.endDate + 'T' + r.endTime,
               color: r.color,
               placeName: r.placeName,
               placeLat: r.placeLat,
               placeLng: r.placeLng,
               startDate: r.startDate,
-              endDate: r.endDate
+              endDate: r.endDate,
             }
             store.dispatch('pushCalendarData', cal)
 
@@ -273,20 +316,27 @@ export default {
         })
     }
 
-
     const state = reactive({
       mData: computed(() => store.getters.getModalDataFormat),
       calendar: computed(() => store.state.calAPI),
       dialogVisible: ref(false),
       isBig: true,
     })
-    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess };
-  },
-  data() {
     return {
+      isOpen,
+      hide,
+      show,
+      modalPut,
+      state,
+      delEvent,
+      calData,
+      modalSuccess,
     }
   },
-};
+  data() {
+    return {}
+  },
+}
 </script>
 
 <style>
@@ -322,7 +372,7 @@ export default {
 }
 
 .modal-content-body > span {
-  color:#7E8183;
+  color: #7e8183;
 }
 
 .modal-content-color-box {
@@ -366,33 +416,33 @@ export default {
   font-weight: bold;
 }
 
-  @media screen and (min-width: 1200px) {
-    .modal-content {
-      width: 900px;
-    }
+@media screen and (min-width: 1200px) {
+  .modal-content {
+    width: 900px;
   }
+}
 
-  @media screen and (max-width: 1199px) and (min-width: 993px) {
-    .modal-content {
-      width: 900px;
-    }
+@media screen and (max-width: 1199px) and (min-width: 993px) {
+  .modal-content {
+    width: 900px;
   }
+}
 
-  @media screen and (max-width: 992px) and (min-width: 768px) {
-    .modal-content {
-      width: 700px;
-    }
+@media screen and (max-width: 992px) and (min-width: 768px) {
+  .modal-content {
+    width: 700px;
   }
+}
 
-  @media screen and (max-width: 767px) and (min-width: 500px) {
-    .modal-content {
-      width: 450px;
-    }
+@media screen and (max-width: 767px) and (min-width: 500px) {
+  .modal-content {
+    width: 450px;
   }
+}
 
-  @media screen and (max-width: 499px) {
-    .modal-content {
-      width: 380px;
-    }
+@media screen and (max-width: 499px) {
+  .modal-content {
+    width: 380px;
   }
+}
 </style>
