@@ -23,10 +23,12 @@
         <br>
         <div class="userCalendar-schedule-row">
             <label class="label" for="place">장소</label>
-            <input class="web-input" type="text" id="place" v-model="state.placeName">
+            <!-- <input class="web-input" type="text" id="place" v-model="state.placeName"> -->
             <GMapAutocomplete
-                placeholder="This is a placeholder"
-                @place_changed="setPlace">
+                placeholder="장소를 입력해주세요"
+                @place_changed="setPlace"
+                class="web-input"
+                ref="mapAutoComplete">
             </GMapAutocomplete>
         </div>
         <br>
@@ -89,7 +91,13 @@
         <br>
         <div>
             <label class="label" for="place">장소</label>
-            <input class="input" type="text" id="place" v-model="state.placeName">
+            <!-- <input class="input" type="text" id="place" v-model="state.placeName"> -->
+            <GMapAutocomplete
+                placeholder="장소를 입력해주세요"
+                @place_changed="setPlace"
+                class="web-input"
+                ref="mapAutoComplete">
+            </GMapAutocomplete>
         </div>
         <br>
         <div>
@@ -128,7 +136,7 @@
 <script>
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { reactive, onBeforeMount } from 'vue'
+import { reactive, onBeforeMount, ref } from 'vue'
 import { useStore } from 'vuex';
 
 
@@ -141,6 +149,8 @@ export default {
         const router = useRouter()
         const store = useStore()
 
+        const mapAutoComplete = ref(null)
+
         const state = reactive({
             uid: localStorage.getItem('uid'),
             title:'',
@@ -150,8 +160,8 @@ export default {
             startTime:'',
             endTime:'',
             placeName: '',
-            placeLat: 38.5000,
-            placeLng: 0.00022,
+            placeLat: '',
+            placeLng: '',
             allDay: false,
             color: '#FF7C7C',
             category: '',
@@ -175,6 +185,12 @@ export default {
             },
             true
         )
+
+        const setPlace = (e) => {
+            state.placeName = e.name
+            state.placeLat = e.geometry.location.lat()
+            state.placplaceLngeName = e.geometry.location.lng()
+        }
 
         const handleCancleSchedule = () => {
             router.push({name: 'Calendar'})
@@ -278,6 +294,8 @@ export default {
             state,
             addSchedule,
             handleCancleSchedule,
+            setPlace,
+            mapAutoComplete,
         }
     }
 }

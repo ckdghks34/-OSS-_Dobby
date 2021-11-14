@@ -42,7 +42,13 @@
     <br>
     <div class="userCalendar-schedule-row">
       <label class="label" for="place">장소</label>
-      <input class="web-input" type="text" id="place" v-model="state.placeName">
+      <!-- <input class="web-input" type="text" id="place" v-model="state.placeName"> -->
+      <GMapAutocomplete
+                placeholder="장소를 입력해주세요"
+                @place_changed="setPlace"
+                class="web-input"
+                ref="mapAutoComplete">
+      </GMapAutocomplete>
     </div>
     <br>
     <div class="userCalendar-schedule-category">
@@ -122,7 +128,11 @@
     <br>
     <div>
       <label class="label" for="place">장소</label>
-      <input class="input" type="text" id="place" v-model="state.placeName">
+      <GMapAutocomplete
+                placeholder="장소를 입력해주세요"
+                @place_changed="setPlace"
+                ref="mapAutoComplete">
+      </GMapAutocomplete>
     </div>
     <br>
     <div>
