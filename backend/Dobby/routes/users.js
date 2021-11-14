@@ -16,6 +16,7 @@ router.put("/changePW", userController.changePW);
 router.get("/checkDuplicateID", userController.checkDuplicateID);
 router.get("/checkDuplicateNick", userController.checkDuplicateNickname);
 router.get("/checkDuplicateEmail", userController.checkDuplicateEmail);
+router.get("/checkDuplicatePhone", userController.checkDuplicatePhone);
 router.delete("/withdraw", userController.withdrawUser);
 router.post("/logout", userController.authSignout);
 router.get("/getUserInfo", userController.getUserInfo);
