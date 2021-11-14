@@ -54,6 +54,14 @@ export default {
   setup() {
     const store = useStore()
 
+
+    provide( 'todayData',
+      computed(() => state.mData)
+    )
+    provide('toDoItem',
+      computed(() => state.mData[0])
+    )
+
     // windowSize
     const handleWindowSize = () => {
       if (window.innerWidth > 992) {
@@ -80,12 +88,6 @@ export default {
       isBig: true,
     })
 
-    provide( 'todayData',
-      computed(() => state.mData)
-    )
-    provide('toDoItem',
-      computed(() => state.mData[0])
-    )
 
     return { state }
   }

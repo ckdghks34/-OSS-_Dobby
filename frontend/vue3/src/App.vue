@@ -61,7 +61,7 @@
     </div>
 
   </div>
- 
+
   <div class="teleport-modal">
     <teleportExample />
   </div>
@@ -69,7 +69,6 @@
   <div class="routerView">
     <router-view />
   </div>
-
 </template>
 
 <script>
@@ -77,33 +76,66 @@
 import teleportExample from '@/components/teleport/teleportExample'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
-import { reactive, onBeforeMount} from 'vue'
+import { reactive, onBeforeMount } from 'vue'
+import { getMessaging, getToken, onMessage } from 'firebase/messaging'
+import firebaseConfig from '../firebaseConfig'
+import firebase from 'firebase/compat/app'
 
 export default {
   components: {
     teleportExample,
   },
   setup() {
-    const router = useRouter() 
+    const router = useRouter()
 
-// user 정보 
+    // user 정보
     const info = reactive({
       userId: '',
       size: true,
       groupLists: [],
       gid: '',
     })
-    
+
+    const firebaseApp = firebase.initializeApp(firebaseConfig)
+    const messaging = getMessaging(firebaseApp)
+
+    getToken(messaging, {
+      vapidKey:
+        'BE5n2nc_3FLKh9U_gkhPTcpe3NMimxEcUBAdriZG1dk3arXlOWRFhg3-6U6sIVa1cVMJbVI236v93OMMKQf0jy0',
+    })
+      .then((currentToken) => {
+        if (currentToken) {
+          console.log('currentToken : ' + currentToken)
+          localStorage.setItem('FCMtoken', currentToken)
+        } else {
+          console.log(
+            'No Instance ID token available. Request permission to generate one.'
+          )
+        }
+      })
+      .catch((err) => {
+        console.log('An error occurred while retrieving token. ', err)
+      })
+    onMessage(messaging, function(payload) {
+      console.log('메세지왔다!')
+      console.log('Message received. ', payload)
+    })
+
     onBeforeMount(() => {
-      axios.get('https://k5d105.p.ssafy.io:3030/users/getUserInfo',{params: {
-          uid : localStorage.getItem('uid')
-      } })
+      axios
+        .get('https://k5d105.p.ssafy.io:3030/users/getUserInfo', {
+          params: {
+            uid: localStorage.getItem('uid'),
+          },
+        })
         .then((response) => {
-            // console.log(response)
-            info.userId = response.data.user.nickname        
-            })
-        .catch((error) => {console.log(error)})
-      
+          // console.log(response)
+          info.userId = response.data.user.nickname
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+
       // axios.get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {params: {
       //     uid :localStorage.getItem('uid')
       // } })
@@ -112,38 +144,43 @@ export default {
       //   })
       //   .catch((error) => {console.log(error)})
 
-// groupLists
-      axios.get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {params: {
-          uid :localStorage.getItem('uid')
-      } },
-      {
-          headers: {
-            authorization: localStorage.getItem('token')
+      // groupLists
+      axios
+        .get(
+          'https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup',
+          {
+            params: {
+              uid: localStorage.getItem('uid'),
+            },
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
           }
-      }
-      )
+        )
         .then((response) => {
-            // console.log(response)
-            info.groupLists = response.data.group
+          // console.log(response)
+          info.groupLists = response.data.group
         })
-        .catch((error) => {console.log(error)})
-
+        .catch((error) => {
+          console.log(error)
+        })
     })
 
     window.addEventListener(
-        'resize',
-        function() {
-            if (window.innerWidth < 730) {
-            info.size = false
-            } else {
-            info.size = true
-            }
-        },
-        true
+      'resize',
+      function() {
+        if (window.innerWidth < 730) {
+          info.size = false
+        } else {
+          info.size = true
+        }
+      },
+      true
     )
 
-
-// 로그아웃
+    // 로그아웃
     const logout = function() {
       axios
         .post(
@@ -161,17 +198,19 @@ export default {
           console.log(res)
           localStorage.removeItem('token')
           localStorage.removeItem('uid')
-          router.push({ name: 'main' })
+          localStorage.removeItem('FCMtoken')
+          location.replace('/main')
+          // router.push({ name: 'main' })
         })
-        .catch((err) => {
-          console.log(err.response.status)
-          if (err.response.status === 403) {
-            alert('로그인이 만료되었습니다')
-            router.push({ name: 'main' })
-            localStorage.removeItem('token')
-            localStorage.removeItem('uid')
-          }
-        })
+      // .catch((err) => {
+      //   console.log(err.response.status)
+      //   if (err.response.status === 403) {
+      //     alert('로그인이 만료되었습니다')
+      //     router.push({ name: 'main' })
+      //     localStorage.removeItem('token')
+      //     localStorage.removeItem('uid')
+      //   }
+      // })
     }
 
     const ToGroup = function(gid) {
@@ -182,12 +221,9 @@ export default {
       })
     }
 
-
     const TogroupCallendar = function(gid) {
-      router.push({name: 'GroupCalendar', query: {gid: gid}})   
+      router.push({ name: 'GroupCalendar', query: { gid: gid } })
     }
-
-
 
     return { info, logout, ToGroup, TogroupCallendar }
   },
@@ -237,20 +273,19 @@ body,
 }
 
 .logoutButton {
-  position:fixed;
+  position: fixed;
   bottom: 0;
   left: 0;
 }
-
 
 /* 사이드바 */
 .icon-bar {
   height: 100%;
   width: 20vw;
   float: left;
-  background-color: #A9C9DE;
+  background-color: #a9c9de;
   /* position: fixed;  */
-  top: 0; 
+  top: 0;
   left: 0;
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 0;
@@ -277,7 +312,7 @@ body,
 /* .icon-bar { fontSize: 1rem !important; } */
 
 .icon-bar a:hover {
-  background-color: #DEB4B4;
+  background-color: #deb4b4;
 }
 
 .active {
@@ -306,10 +341,10 @@ body,
   background-color: #DEB4B4;
 }
 
-@media (max-width: 1086px){
-    svg {
-        display: none; 
-    }
+@media (max-width: 1086px) {
+  svg {
+    display: none;
+  }
 }
 
 /* @media screen and (max-width: 730px) {
@@ -317,5 +352,4 @@ body,
     display: none;
   }
 } */
-
 </style>
