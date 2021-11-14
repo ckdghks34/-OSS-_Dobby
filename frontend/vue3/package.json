@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@element-plus/icons": "^0.0.11",
+    "@fawmi/vue-google-maps": "^0.9.4",
     "@fullcalendar/core": "^5.10.0",
     "@fullcalendar/daygrid": "^5.10.0",
     "@fullcalendar/interaction": "^5.10.0",
