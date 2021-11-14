@@ -288,10 +288,16 @@ export default {
     const inviteMem = function() {
       if (info.inviteEmail) {
         axios
-          .put('https://k5d105.p.ssafy.io:3030/group/addMember', {
-            gid: props.gid,
-            email: info.inviteEmail,
-          })
+          .put(
+            'https://k5d105.p.ssafy.io:3030/group/addMember',
+            {
+              gid: props.gid,
+              email: info.inviteEmail,
+            },
+            {
+              headers: { authorization: localStorage.getItem('token') },
+            }
+          )
           .then(() => {
             info.dialogVisible = true
             info.message = '회원을 초대했습니다'
