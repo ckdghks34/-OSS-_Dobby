@@ -90,7 +90,7 @@ export default createStore({
     SETGROUPTODO ( state, payload) {
       state.groupToDo = payload
       state.isGroupTodoItem = true
-    }
+    },
   },
   actions: {
     // user calendar
@@ -279,7 +279,7 @@ export default createStore({
     },
     setGroupTodo ( { commit }, payload ) {
       commit('SETGROUPTODO', payload)
-    }
+    },
   },
   modules: {},
   getters: {
