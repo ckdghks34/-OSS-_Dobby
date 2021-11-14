@@ -309,6 +309,7 @@ export default {
               calendarApi.addEvent(cal)
             })
           }
+          store.dispatch('refreshCalData', calendarApi.getEvents())
           isOpen.value = false
         })
         .catch((error) => {

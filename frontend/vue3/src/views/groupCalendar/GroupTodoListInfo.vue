@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-space wrap direction="vertical">
-      <el-card v-for="day in today" :key="day" class="box-card todoList-card" @click="changeTodo(day)">
+      <el-card v-for="day in state.mData" :key="day" class="box-card todoList-card" @click="changeTodo(day)">
         <el-row v-if="isToday(day.start)">
           <el-col :span="9" class="todoList-card-time">
             {{ `${day.start.toString().split(' ')[4].substring(0, 2)}시` }}
@@ -13,7 +13,7 @@
               {{ titleFormat(day.title) }}
             </span>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="4" class="todoList-card-particpant">
             <el-icon>
               <User />
             </el-icon>
@@ -26,7 +26,7 @@
               {{ titleFormat(day.title) }}
             </span>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="4" class="todoList-card-particpant">
             <el-icon>
               <User />
             </el-icon>
@@ -143,6 +143,11 @@ export default {
 <style>
   .todoList-card {
     cursor: pointer;
+  }
+
+  .todoList-card-particpant {
+    display: flex;
+    align-items: center;
   }
 
   @media screen and (min-width: 1200px) {
