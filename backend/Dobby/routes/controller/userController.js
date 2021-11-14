@@ -232,9 +232,7 @@ async function checkDuplicateID(req, res, next) {
  */
 async function checkDuplicateNickname(req, res, next) {
   const docRef = admin.collection("users");
-  const querydata = await docRef
-    .where("nickname", "==", req.query.nickname)
-    .get();
+  const querydata = await docRef.where("nickname", "==", req.query.nickname).get();
 
   if (querydata.empty) {
     return res.json({
@@ -270,6 +268,27 @@ async function checkDuplicateEmail(req, res, next) {
 }
 
 /**
+ * 휴대폰 번호 중복 체크
+ */
+async function checkDuplicatePhone(req, res, next) {
+  const phone = "+82" + req.query.phone.substring(1);
+  const docRef = admin.collection("users");
+  const querydata = await docRef.where("phone", "==", phone).get();
+
+  if (querydata.empty) {
+    return res.json({
+      msg: "사용 가능한 휴대폰 번호 입니다.",
+      valid: true,
+    });
+  } else {
+    return res.json({
+      msg: "이미 등록된 휴대폰 번호 입니다.",
+      valid: false,
+    });
+  }
+}
+
+/**
  * 회원탈퇴
  */
 async function withdrawUser(req, res, next) {
@@ -280,10 +299,7 @@ async function withdrawUser(req, res, next) {
     adminauth
       .deleteUser(uid)
       .then(() => {
-        const userCalendarRef = admin
-          .collection("users")
-          .doc(uid)
-          .collection("calendar");
+        const userCalendarRef = admin.collection("users").doc(uid).collection("calendar");
         const userCalendar = userCalendarRef.get();
 
         if (!userCalendar.empty) {
@@ -474,4 +490,5 @@ module.exports = {
   authSignout,
   getUserInfo,
   checkUserWithProvider,
+  checkDuplicatePhone,
 };
