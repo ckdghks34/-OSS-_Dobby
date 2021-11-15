@@ -11,7 +11,7 @@ async function getAllgroups(req, res, next) {
     const groups = await groupsRef.get();
 
     if (groups.empty) {
-      return res.status(401).json({
+      return res.json({
         msg: "생성된 그룹이 없습니다.",
       });
     } else {
@@ -22,13 +22,13 @@ async function getAllgroups(req, res, next) {
           ...doc.data(),
         });
       });
-      return res.status(200).json({
+      return res.json({
         msg: "그룹 조회 성공",
         groups: groupsList,
       });
     }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -42,7 +42,7 @@ async function getPublicgroups(req, res, next) {
     const groups = await groupRef.get();
 
     if (groups.empty) {
-      return res.status(401).json({
+      return res.json({
         msg: "생성된 그룹이 없습니다.",
       });
     } else {
@@ -53,13 +53,13 @@ async function getPublicgroups(req, res, next) {
           ...doc.data(),
         });
       });
-      return res.status(200).json({
+      return res.json({
         msg: "그룹 조회 성공",
         groups: groupsList,
       });
     }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -70,6 +70,12 @@ async function getGroup(req, res, next) {
 
   if (valid) {
     const gid = req.query.gid;
+    if(gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const groupsRef = admin.collection("groups").doc(gid);
     const group = await groupsRef.get();
 
@@ -98,12 +104,13 @@ async function getGroup(req, res, next) {
         msg: "그룹 조회 성공",
       });
     } else {
-      return res.status(401).json({
+      return res.json({
         message: "존재하지 않는 그룹입니다.",
       });
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -114,6 +121,12 @@ async function getGroupMember(req, res, next) {
 
   if (valid) {
     const gid = req.body.gid;
+    if(gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const membersRef = admin.collection("groups").doc(gid).collection("members");
     const members = await membersRef.get();
 
@@ -125,17 +138,18 @@ async function getGroupMember(req, res, next) {
         });
       });
 
-      return res.status(200).json({
+      return res.json({
         msg: "그룹 멤버 조회 성공",
         members: membersList,
       });
     } else {
-      return res.status(401).json({
+      return res.json({
         msg: "존재하지 않는 그룹입니다.",
       });
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -146,6 +160,12 @@ async function createGroup(req, res, next) {
 
   if (valid) {
     const uid = req.body.uid;
+    if(uid === undefined){
+      res.status(400).json({
+        msg: "요청에서 유저 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const time = new Date(+new Date() + 3240 * 10000)
       .toISOString()
       .replace("T", " ")
@@ -206,10 +226,17 @@ async function createGroup(req, res, next) {
               group: doc.data(),
               msg: "그룹 생성 성공",
             });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              msg: "그룹 생성 실패",
+            });
           });
       });
+    }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -220,11 +247,17 @@ async function updateGroup(req, res, next) {
 
   if (valid) {
     const gid = req.body.gid;
+    if(gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
 
     if (group.empty) {
-      return res.status(401).json({
+      return res.json({
         msg: "존재하지 않는 그룹입니다.",
       });
     } else {
@@ -245,7 +278,7 @@ async function updateGroup(req, res, next) {
               body: data.data().name + " 그룹 정보가 수정 되었습니다.",
             };
             await FCMCon.groupPush(gid, msg);
-            return res.status(200).json({
+            return res.json({
               group: data.data(),
               msg: "그룹 정보 수정 성공",
             });
@@ -253,11 +286,17 @@ async function updateGroup(req, res, next) {
         })
         .catch((error) => {
           console.log("Error updating group : ", error);
-          return res.status(401).json({
+          return res.status(500).json({
             msg: "그룹 정보 수정 실패",
           });
         });
+      }
     }
+  }
+  else {
+    res.status(401).json({
+      error: "Token is not valid",
+    });
   }
 }
 
@@ -266,12 +305,18 @@ async function deleteGroup(req, res, next) {
 
   if (valid) {
     const gid = req.body.gid;
+    if(gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
 
     const gname = group.data().name;
     if (group.empty) {
-      return res.status(401).json({
+      return res.json({
         msg: "존재하지 않는 그룹입니다.",
       });
     } else {
@@ -301,19 +346,20 @@ async function deleteGroup(req, res, next) {
             body: gname + " 그룹이 삭제 되었습니다.",
           };
           await FCMCon.groupPush(gid, msg);
-          return res.status(200).json({
+          return res.json({
             msg: "그룹 삭제 성공",
           });
         })
         .catch((error) => {
           console.log("Error deleting group : ", error);
-          return res.status(401).json({
+          return res.status(500).json({
             msg: "그룹 삭제 실패",
           });
         });
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -323,6 +369,12 @@ async function changePrivate(req, res, next) {
 
   if (valid) {
     const gid = req.body.gid;
+    if(gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
 
@@ -333,7 +385,7 @@ async function changePrivate(req, res, next) {
       private = true;
     }
     if (group.empty) {
-      return res.status(401).json({
+      return res.json({
         msg: "존재하지 않는 그룹입니다.",
       });
     } else {
@@ -343,19 +395,20 @@ async function changePrivate(req, res, next) {
         })
         .then(() => {
           console.log("Group updated successfully for group: " + gid);
-          return res.status(200).json({
+          return res.json({
             msg: "그룹 정보 수정 성공",
           });
         })
         .catch((error) => {
           console.log("Error updating group : ", error);
-          return res.status(401).json({
+          return res.status(500).json({
             msg: "그룹 정보 수정 실패",
           });
         });
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -365,11 +418,17 @@ async function addMember(req, res, next) {
 
   if (valid) {
     const gid = req.body.gid;
+    if(gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
     const gname = group.data().name;
     if (!group.exists) {
-      return res.status(401).json({
+      return res.json({
         msg: "존재하지 않는 그룹입니다.",
       });
     } else {
@@ -377,7 +436,7 @@ async function addMember(req, res, next) {
       const user = await userRef.get();
 
       if (user.empty) {
-        return res.status(401).json({
+        return res.json({
           msg: "존재하지 않는 유저입니다.",
         });
       } else {
@@ -409,20 +468,21 @@ async function addMember(req, res, next) {
             })
             .catch((error) => {
               console.log("Error Member updating group : ", error);
-              return res.status(401).json({
+              return res.status(500).json({
                 error: "그룹 멤버 추가 실패",
               });
             });
         } else {
           console.log("User already in group");
-          return res.status(401).json({
+          return res.json({
             msg: "이미 존재하는 유저입니다.",
           });
         }
       }
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -534,11 +594,17 @@ async function leaveMember(req, res, next) {
 
   if (valid) {
     const gid = req.body.gid;
+    if(gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
 
     if (group.empty) {
-      return res.status(401).json({
+      return res.json({
         message: "존재하지 않는 그룹입니다.",
       });
     } else {
@@ -551,7 +617,7 @@ async function leaveMember(req, res, next) {
       const memberRef = await groupRef.collection("members").where("uid", "==", user.uid).get();
 
       if (memberRef.empty) {
-        return res.status(401).json({
+        return res.json({
           message: "존재하지 않는 멤버입니다.",
         });
       } else {
@@ -568,14 +634,15 @@ async function leaveMember(req, res, next) {
           })
           .catch((error) => {
             console.log("Error deleting group : ", error);
-            res.json({
+            res.status(500).json({
               msg: "멤버 삭제 실패",
             });
           });
       }
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -587,11 +654,17 @@ async function joinGroup(req, res, next) {
   if (valid) {
     const gid = req.body.gid;
     const uid = req.body.uid;
+    if(gid === undefined || uid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보 또는 유저 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
 
     if (group.empty) {
-      return res.status(401).json({
+      return res.json({
         msg: "존재하지 않는 그룹입니다.",
       });
     } else {
@@ -599,7 +672,7 @@ async function joinGroup(req, res, next) {
       const user = await userRef.get();
 
       if (!user.exists) {
-        return res.status(401).json({
+        return res.json({
           msg: "존재하지 않는 유저입니다.",
         });
       } else {
@@ -630,7 +703,7 @@ async function joinGroup(req, res, next) {
             })
             .catch((error) => {
               console.log("Error Join Group : ", error);
-              res.json({
+              res.status(500).json({
                 msg: "그룹 가입 실패",
               });
             });
@@ -642,8 +715,9 @@ async function joinGroup(req, res, next) {
         }
       }
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -654,12 +728,17 @@ async function updateWriterAuth(req, res, next) {
 
   if (valid) {
     const gid = req.body.gid;
-
+    if(gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const groupRef = admin.collection("groups").doc(gid);
     const group = await groupRef.get();
 
     if (group.empty) {
-      res.status(401).json({
+      res.json({
         msg: "존재하는 그룹이 없습니다.",
       });
     } else {
@@ -693,13 +772,14 @@ async function updateWriterAuth(req, res, next) {
         })
         .catch((error) => {
           console.log("Error Change Write Auth : " + error);
-          res.status(401).json({
+          res.status(500).json({
             error: error,
           });
         });
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
@@ -710,6 +790,12 @@ async function changeAdmin(req, res, next) {
 
   if (valid) {
     const gid = req.body.gid;
+    if(gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const currentAdminuid = req.body.currentuid;
     const changeAdminNickname = req.body.changenickname;
 
@@ -718,7 +804,7 @@ async function changeAdmin(req, res, next) {
 
     if (group.empty) {
       console.log("해당 그룹이 없습니다.");
-      res.status.json({
+      res.json({
         error: "해당 그룹이 없습니다.",
       });
     } else {
@@ -729,7 +815,7 @@ async function changeAdmin(req, res, next) {
         .then((doc) => {
           if (doc.empty) {
             console.log("그룹에 해당 멤버가 없습니다.");
-            res.status(401).json({
+            res.json({
               error: "그룹에 해당 멤버(Admin)가 없습니다.",
             });
           } else {
@@ -741,7 +827,7 @@ async function changeAdmin(req, res, next) {
               };
             } else {
               console.log("그룹장이 아닙니다.");
-              res.status(401).json({
+              res.json({
                 error: error,
               });
             }
@@ -754,7 +840,7 @@ async function changeAdmin(req, res, next) {
         .then((doc) => {
           if (doc.empty) {
             console.log("그룹에 해당 멤버가 없습니다.");
-            res.status(401).json({
+            res.json({
               error: error,
             });
           } else {
@@ -788,13 +874,14 @@ async function changeAdmin(req, res, next) {
         })
         .catch((error) => {
           console.log("Error Change Admin : ", error);
-          res.status(401).json({
+          res.status(500).json({
             error: error,
           });
         });
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not valid",
     });
   }
