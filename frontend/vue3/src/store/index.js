@@ -17,7 +17,7 @@ export default createStore({
     todayToDoList: [],
     toDo: {},
     calAPI: {},
-    
+    calendarMapGoal: {},
     // group calendar
     isGroupData: false,
     isGroupTodoItem: false,
@@ -62,6 +62,9 @@ export default createStore({
       state.calendarData = state.calendarData.filter((c) => {
         return c.cid != payload
       })
+    },
+    SETCALENDARMAPGOAL ( state, payload) {
+      state.calendarMapGoal = payload
     },
     // 그룹 캘린더
     SETGROUPCALENDARDATA (state, payload) {
@@ -176,6 +179,9 @@ export default createStore({
     deleteCalendarData ( { commit }, payload) {
       commit('DELETECALENDARDATA', payload)
     },
+    setCalendarMapGoal ( {commit}, payload ) {
+      commit( 'SETCALENDARMAPGOAL', payload)
+    },
     // group calendar
     getGroupCalendarData ( { commit }, payload ) {
       axios.
@@ -289,7 +295,7 @@ export default createStore({
       // 날짜 정리하기
       // Fri Nov 26 2021 18:00:00 GMT+0900 (한국 표준시)
       const ModalDate = state.modalData
-      console.log(ModalDate)
+      // console.log(ModalDate)
       const start = ModalDate.start.toString().split(' ')
       // 시작하는 날
       const startDay = changeDateFormat(start, ModalDate.allDay)

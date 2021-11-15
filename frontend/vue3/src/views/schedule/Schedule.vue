@@ -1,135 +1,146 @@
 <template>
-    <div class="schedule-info" v-if="state.size">
-        <h1>New Schedule</h1>
-        <div class="userCalendar-schedule-row">
-            <label class="label" for="scheduleTitle">제목</label>        
-            <input class="web-input" id="scheduleTitle" type="text" v-model="state.title">
+  <div class="schedule-info" v-if="state.size">
+      <h1>New Schedule</h1>
+      <div class="userCalendar-schedule-row">
+          <label class="label" for="scheduleTitle">제목</label>        
+          <input class="web-input" id="scheduleTitle" type="text" v-model="state.title">
+      </div>
+      <br>
+      <div class="userCalendar-schedule-row">
+          <label class="label" for="date">날짜</label>
+          <input class="date-input" type="date" id="date" v-model="state.startDate">~<input class="date-input" type="date" v-model="state.endDate">
+      </div>
+      <br>
+      <div class="userCalendar-schedule-row">
+          <label class="label" for="time">시간</label>
+          <input class="time-input" type="time" id="time" v-model="state.startTime"> ~ <input class="time-input" type="time" v-model="state.endTime">
+      </div>
+      <br>
+      <div class="userCalendar-schedule-allDay">
+          <label for="allDay" class="label">종일</label>
+          <input type="checkbox" v-model="state.allDay">
+      </div>
+      <br>
+      <div class="userCalendar-schedule-row">
+          <label class="label" for="place">장소</label>
+          <!-- <input class="web-input" type="text" id="place" v-model="state.placeName"> -->
+          <GMapAutocomplete
+              placeholder="장소를 입력해주세요"
+              @place_changed="setPlace"
+              class="web-input"
+              ref="mapAutoComplete">
+          </GMapAutocomplete>
+      </div>
+      <br>
+      <div class="userCalendar-schedule-row">
+        <el-button v-if="state.placeName" round @click="showMapModal">경로탐색</el-button>
+        <el-button v-else disabled round @click="showMapModal">경로탐색</el-button>
+        <div class="userCalendar-schedule-map" v-if="falTest">
+          <CalendarMap style="height: 75vh; width: 50vw;"/>
         </div>
-        <br>
-        <div class="userCalendar-schedule-row">
-            <label class="label" for="date">날짜</label>
-            <input class="date-input" type="date" id="date" v-model="state.startDate">~<input class="date-input" type="date" v-model="state.endDate">
-        </div>
-        <br>
-        <div class="userCalendar-schedule-row">
-            <label class="label" for="time">시간</label>
-            <input class="time-input" type="time" id="time" v-model="state.startTime"> ~ <input class="time-input" type="time" v-model="state.endTime">
-        </div>
-        <br>
-        <div class="userCalendar-schedule-allDay">
-            <label for="allDay" class="label">종일</label>
-            <input type="checkbox" v-model="state.allDay">
-        </div>
-        <br>
-        <div class="userCalendar-schedule-row">
-            <label class="label" for="place">장소</label>
-            <!-- <input class="web-input" type="text" id="place" v-model="state.placeName"> -->
-            <GMapAutocomplete
-                placeholder="장소를 입력해주세요"
-                @place_changed="setPlace"
-                class="web-input"
-                ref="mapAutoComplete">
-            </GMapAutocomplete>
-        </div>
-        <br>
-        <div class="userCalendar-schedule-category">
-            <label class="label" for="category">분류</label>
-            <div class="userCalendar-schedule-category-button-wrap">
-                <el-radio v-model="state.category" label="공부" border size="medium">공부</el-radio>
-                <el-radio v-model="state.category" label="운동" border>운동</el-radio>
-                <el-radio v-model="state.category" label="업무" border>업무</el-radio>
-                <el-radio v-model="state.category" label="취미" border>취미</el-radio>
-            </div>
-        </div>
-        <br>
-        <div class="userCalendar-schedule-color-wrap">
-            <label class="label" for="radio">중요도</label>
-            <div class="userCalendar-schedule-color-box">
-                <label class="import-label" v-bind:class="{'red':true}"><input type="radio" value="#FF7C7C" v-model="state.color"></label>
-                <label class="import-label" v-bind:class="{'orange':true}"><input type="radio" value="#FECFA3" v-model="state.color"></label>
-                <label class="import-label" v-bind:class="{'yellow':true}"><input type="radio" value="#FFF972" v-model="state.color"></label>
-                <label class="import-label" v-bind:class="{'green':true}"><input type="radio" value="#B6FB81" v-model="state.color"></label>
-                <label class="import-label" v-bind:class="{'blue':true}"><input type="radio" value="#7886FF" v-model="state.color"></label>
-            </div>
-        </div>
-        <br>
-        <div class="userCalendar-schedule-row">
-            <label class="label">내용</label>
-            <input class="web-memo" v-bind:class="{'memo-content':true, 'input':true}" type="text" v-model="state.content">
-        </div>
-        <br>
-        <div>
-            <button class="web-button-red" @click="handleCancleSchedule">취소</button> 
-            <button class="web-button-blue" style="margin-left:30px" type="button" @click="addSchedule" v-bind:disabled="title==''">추가</button>
-        </div> 
-    </div>
+      </div>
+      <br>
+      <div class="userCalendar-schedule-category">
+          <label class="label" for="category">분류</label>
+          <div class="userCalendar-schedule-category-button-wrap">
+              <el-radio v-model="state.category" label="공부" border size="medium">공부</el-radio>
+              <el-radio v-model="state.category" label="운동" border>운동</el-radio>
+              <el-radio v-model="state.category" label="업무" border>업무</el-radio>
+              <el-radio v-model="state.category" label="취미" border>취미</el-radio>
+          </div>
+      </div>
+      <br>
+      <div class="userCalendar-schedule-color-wrap">
+          <label class="label" for="radio">중요도</label>
+          <div class="userCalendar-schedule-color-box">
+              <label class="import-label" v-bind:class="{'red':true}"><input type="radio" value="#FF7C7C" v-model="state.color"></label>
+              <label class="import-label" v-bind:class="{'orange':true}"><input type="radio" value="#FECFA3" v-model="state.color"></label>
+              <label class="import-label" v-bind:class="{'yellow':true}"><input type="radio" value="#FFF972" v-model="state.color"></label>
+              <label class="import-label" v-bind:class="{'green':true}"><input type="radio" value="#B6FB81" v-model="state.color"></label>
+              <label class="import-label" v-bind:class="{'blue':true}"><input type="radio" value="#7886FF" v-model="state.color"></label>
+          </div>
+      </div>
+      <br>
+      <div class="userCalendar-schedule-row">
+          <label class="label">내용</label>
+          <input class="web-memo" v-bind:class="{'memo-content':true, 'input':true}" type="text" v-model="state.content">
+      </div>
+      <br>
+      <div>
+          <button class="web-button-red" @click="handleCancleSchedule">취소</button> 
+          <button class="web-button-blue" style="margin-left:30px" type="button" @click="addSchedule" v-bind:disabled="title==''">추가</button>
+      </div> 
+  </div>
 
 
-    <div class="mobile-schedule-main" v-else>
-        <h1>New Schedule</h1>
-        <div>
-            <label class="label" for="scheduleTitle">제목</label>        
-            <input class="input" id="scheduleTitle" type="text" v-model="state.title">
-        </div>
-        <br>
-        <div>
-            <label class="label" for="date">날짜</label>
-            <div>   
-                <input class="input" type="date" id="date" v-model="state.startDate">~<input class="input" type="date" v-model="state.endDate">
-            </div>         
-        </div>
-        <br>
-        <div>  <!--v-if -->
-            <label class="label" for="time">시간</label>
-            <input class="input" type="time" id="time" v-model="state.startTime"> ~ <input class="input" type="time" v-model="state.endTime">
-        </div>
-        <br>
-        <div>
-            <label for="allDay" class="label">종일</label>
-            <input type="checkbox" v-model="state.allDay">
-        </div>
-        <br>
-        <div>
-            <label class="label" for="place">장소</label>
-            <!-- <input class="input" type="text" id="place" v-model="state.placeName"> -->
-            <GMapAutocomplete
-                placeholder="장소를 입력해주세요"
-                @place_changed="setPlace"
-                class="web-input"
-                ref="mapAutoComplete">
-            </GMapAutocomplete>
-        </div>
-        <br>
-        <div>
-            <label class="label" for="category">분류</label>
-            <!-- <span class="label">분류</span> -->
-            <div>
-                <el-radio v-model="staet.category" label="공부" border>공부</el-radio>
-                <el-radio v-model="staet.category" label="운동" border>운동</el-radio>
-                <el-radio v-model="staet.category" label="업무" border>업무</el-radio>
-                <el-radio v-model="staet.category" label="취미" border>취미</el-radio>
-            </div>
-        </div>
-        <br>
-        <div>
-            <label class="label" for="radio">중요도</label>
-            <label class="import-label" v-bind:class="{'red':true}"><input type="radio" value="#FF7C7C" v-model="state.color"></label>
-            <label class="import-label" v-bind:class="{'orange':true}"><input type="radio" value="#FECFA3" v-model="state.color"></label>
-            <label class="import-label" v-bind:class="{'yellow':true}"><input type="radio" value="#FFF972" v-model="state.color"></label>
-            <label class="import-label" v-bind:class="{'green':true}"><input type="radio" value="#B6FB81" v-model="state.color"></label>
-            <label class="import-label" v-bind:class="{'blue':true}"><input type="radio" value="#7886FF" v-model="state.color"></label>
-        </div>
-        <br>
-        <div>
-            <label>내용</label>
-            <input class="memo" v-bind:class="{'memo-content':true, 'input':true}" type="text" v-model="state.content">
-        </div>
-        <br>
-        <div>
-            <button class="redBtn" @click="handleCancleSchedule">취소</button>
-            <button class="blueBtn" type="button" @click="addSchedule" v-bind:disabled="title==''">추가</button>
-        </div> 
-    </div>
+  <div class="mobile-schedule-main" v-else>
+      <h1>New Schedule</h1>
+      <div>
+          <label class="label" for="scheduleTitle">제목</label>        
+          <input class="input" id="scheduleTitle" type="text" v-model="state.title">
+      </div>
+      <br>
+      <div>
+          <label class="label" for="date">날짜</label>
+          <div>   
+              <input class="input" type="date" id="date" v-model="state.startDate">~<input class="input" type="date" v-model="state.endDate">
+          </div>         
+      </div>
+      <br>
+      <div>  <!--v-if -->
+          <label class="label" for="time">시간</label>
+          <input class="input" type="time" id="time" v-model="state.startTime"> ~ <input class="input" type="time" v-model="state.endTime">
+      </div>
+      <br>
+      <div>
+          <label for="allDay" class="label">종일</label>
+          <input type="checkbox" v-model="state.allDay">
+      </div>
+      <br>
+      <div>
+          <label class="label" for="place">장소</label>
+          <!-- <input class="input" type="text" id="place" v-model="state.placeName"> -->
+          <GMapAutocomplete
+              placeholder="장소를 입력해주세요"
+              @place_changed="setPlace"
+              class="web-input"
+              ref="mapAutoComplete">
+          </GMapAutocomplete>
+      </div>
+      <br>
+      <div>
+          <label class="label" for="category">분류</label>
+          <!-- <span class="label">분류</span> -->
+          <div>
+              <el-radio v-model="staet.category" label="공부" border>공부</el-radio>
+              <el-radio v-model="staet.category" label="운동" border>운동</el-radio>
+              <el-radio v-model="staet.category" label="업무" border>업무</el-radio>
+              <el-radio v-model="staet.category" label="취미" border>취미</el-radio>
+          </div>
+      </div>
+      <br>
+      <div>
+          <label class="label" for="radio">중요도</label>
+          <label class="import-label" v-bind:class="{'red':true}"><input type="radio" value="#FF7C7C" v-model="state.color"></label>
+          <label class="import-label" v-bind:class="{'orange':true}"><input type="radio" value="#FECFA3" v-model="state.color"></label>
+          <label class="import-label" v-bind:class="{'yellow':true}"><input type="radio" value="#FFF972" v-model="state.color"></label>
+          <label class="import-label" v-bind:class="{'green':true}"><input type="radio" value="#B6FB81" v-model="state.color"></label>
+          <label class="import-label" v-bind:class="{'blue':true}"><input type="radio" value="#7886FF" v-model="state.color"></label>
+      </div>
+      <br>
+      <div>
+          <label>내용</label>
+          <input class="memo" v-bind:class="{'memo-content':true, 'input':true}" type="text" v-model="state.content">
+      </div>
+      <br>
+      <div>
+          <button class="redBtn" @click="handleCancleSchedule">취소</button>
+          <button class="blueBtn" type="button" @click="addSchedule" v-bind:disabled="title==''">추가</button>
+      </div> 
+  </div>
+  <teleport to="#destination">
+    <CalendarMapModal ref="mapModal" />
+  </teleport>
 </template>
 
 <script>
@@ -138,17 +149,29 @@ import { useRouter } from 'vue-router';
 import { reactive, onBeforeMount, ref } from 'vue'
 import { useStore } from 'vuex';
 
+// component
+import CalendarMap from'@/components/map/CalendarMap'
+import CalendarMapModal from'@/components/teleport/CalendarMapModal'
+
+// map
+// import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
+// import "leaflet/dist/leaflet.css"
+// import L from 'leaflet'
 
 export default {
     name: 'Schedule',
     components : {
-        
+      CalendarMap,
+        // LMap,
+        // LGeoJson,
+      CalendarMapModal,
     },
     setup() {
         const router = useRouter()
         const store = useStore()
 
         const mapAutoComplete = ref(null)
+        const mapModal = ref(null)
 
         const state = reactive({
             uid: localStorage.getItem('uid'),
@@ -165,12 +188,16 @@ export default {
             color: '#FF7C7C',
             category: '',
             size: true,
+            latitude: 1.1,
+            longitude: 1.1,
+            falTest: false,
         })
 
-        onBeforeMount(() => {
+        onBeforeMount(async () => {
             if (window.innerWidth < 730) {
                 state.size = false
             }
+            startMap()
         })
 
         window.addEventListener(
@@ -185,11 +212,66 @@ export default {
             true
         )
 
-        const setPlace = (e) => {
-            state.placeName = e.name
-            state.placeLat = e.geometry.location.lat()
-            state.placplaceLngeName = e.geometry.location.lng()
-        }
+    const showMapModal = function() {
+      mapModal.value.show()
+    }
+
+    const setPlace = (e) => {
+        state.placeName = e.name
+        state.placeLat = e.geometry.location.lat()
+        state.placeLng = e.geometry.location.lng()
+
+        findWay()
+
+        store.dispatch('setCalendarMapGoal', {
+          Lat: state.placeLat,
+          Lng: state.placeLng
+        })
+
+        // provide('plcaeLat', state.placeLat)
+        // provide('placeLng', state.placeLng)
+    }
+
+    const findWay = () => {
+      axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.placeLng},${state.placeLat}?steps=true`)
+        .then((response) => {
+          console.log(response)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+
+    const startMap = () => {
+        if ("geolocation" in navigator) {	/* geolocation 사용 가능 */
+        navigator.geolocation.getCurrentPosition(function(data) {
+        
+          var latitude = data.coords.latitude;
+          var longitude = data.coords.longitude;
+          
+          // $('#latitude').text(latitude);
+          state.latitude = latitude
+          // $('#longitude').text(longitude);
+          state.longitude = longitude
+
+        }, function(error) {
+          alert(error);
+        }, {
+          enableHighAccuracy: true,
+          timeout: Infinity,
+          maximumAge: 0
+        });
+      } else {	/* geolocation 사용 불가능 */
+        alert('geolocation 사용 불가능');
+      }
+      }
+
+
+
+
+
+
+
 
     const handleCancleSchedule = () => {
         router.push({ name: 'Calendar' })
@@ -330,14 +412,27 @@ export default {
         handleCancleSchedule,
         setPlace,
         mapAutoComplete,
-    }
-    }
+        showMapModal,
+        mapModal,
+        // geojson,
+        // geojsonOptions
+    }}
 }
 </script>
 
 <style>
-.schedule-info {
+.tt1 { 
   width: 500px;
+}
+
+.tt2 {
+  width: 100%;
+  height: 100%;
+}
+
+.schedule-info {
+  /* 500 */
+  width: 1000px;
   margin: 0 auto;
 }
 
@@ -395,6 +490,11 @@ export default {
 .userCalendar-schedule-row {
   display: flex;
   align-items: center;
+}
+
+.userCalendar-schedule-map {
+  display: flex;
+  justify-content: center;
 }
 
 .web-input {

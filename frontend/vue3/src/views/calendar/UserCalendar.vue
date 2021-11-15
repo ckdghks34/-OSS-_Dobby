@@ -71,6 +71,7 @@ export default {
 
     function showModal() {
       // VMmodal.vue에 접근하여 show 함수 실행
+      console.log(modal.value)
       modal.value.show();
     }
 
@@ -82,7 +83,7 @@ export default {
 
     const handleEventClick = (clickInfo) => {
       // vuex 상태전환
-      console.log(clickInfo)
+      // console.log(clickInfo)
       store.dispatch('setModal', clickInfo.event)
       // modal open
       showModal()

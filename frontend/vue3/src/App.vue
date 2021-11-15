@@ -62,9 +62,9 @@
 
   </div>
 
-  <div class="teleport-modal">
+  <!-- <div class="teleport-modal">
     <teleportExample />
-  </div>
+  </div> -->
 
   <div class="routerView">
     <router-view />
@@ -73,7 +73,7 @@
 
 <script>
 // teleport
-import teleportExample from '@/components/teleport/teleportExample'
+// import teleportExample from '@/components/teleport/teleportExample'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { reactive, onBeforeMount } from 'vue'
@@ -83,7 +83,7 @@ import firebase from 'firebase/compat/app'
 
 export default {
   components: {
-    teleportExample,
+    // teleportExample,
   },
   setup() {
     const router = useRouter()
@@ -262,10 +262,10 @@ body,
 .routerView {
   display: table-cell;
   width: 85vw;
-  /* float: left; */
   height: 90vh;
   vertical-align: middle;
   text-align: center;
+  /* float: left; */
 }
 
 * {
@@ -342,7 +342,7 @@ body,
 }
 
 @media (max-width: 1086px) {
-  svg {
+  .icon-bar svg {
     display: none;
   }
 }
