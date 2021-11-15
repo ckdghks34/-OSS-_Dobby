@@ -3,7 +3,7 @@ const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 const Auth = require("./authController");
 
 async function registerToken(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;

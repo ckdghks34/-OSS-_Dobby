@@ -3,16 +3,13 @@ const { admin, adminauth, auth } = require("./../../firebase/fbconfig");
 const Auth = require("./authController");
 
 async function getPersonal(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
     const startDate = parseInt(req.body.startDate.replace(/\-/g, ""));
     const endDate = parseInt(req.body.endDate.replace(/\-/g, ""));
-    const calendarRef = admin
-      .collection("users")
-      .doc(uid)
-      .collection("calendar");
+    const calendarRef = admin.collection("users").doc(uid).collection("calendar");
     const calendar = await calendarRef.get();
 
     if (!calendar.empty) {
@@ -130,17 +127,14 @@ async function getPersonal(req, res, next) {
 }
 
 async function getGroup(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
     const gid = req.body.gid;
     const startDate = parseInt(req.body.startDate.replace(/\-/g, ""));
     const endDate = parseInt(req.body.endDate.replace(/\-/g, ""));
-    const calendarRef = admin
-      .collection("groups")
-      .doc(gid)
-      .collection("groupcalendar");
+    const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
     const calendar = await calendarRef.get();
 
     if (!calendar.empty) {
