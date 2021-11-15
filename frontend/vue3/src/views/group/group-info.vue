@@ -163,24 +163,19 @@ export default {
 
     onBeforeMount(() => {
       axios
-        .get(
-          'https://k5d105.p.ssafy.io:3030/users/getUserInfo',
-          {
-            params: { uid: localStorage.getItem('uid') },
+        .get('https://k5d105.p.ssafy.io:3030/users/getUserInfo', {
+          params: { uid: localStorage.getItem('uid') },
+          headers: {
+            authorization: localStorage.getItem('token'),
           },
-          {
-            headers: {
-              authorization: localStorage.getItem('token'),
-            },
-          }
-        )
+        })
         .then((res) => {
           info.userEmail = res.data.user.email
           info.userNick = res.data.user.nickname
           getGroup()
         })
         .catch((err) => {
-          if (err.response.status === 403) {
+          if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
             router.push({ name: 'main' })
             localStorage.removeItem('token')
@@ -192,6 +187,9 @@ export default {
       axios
         .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
           params: { gid: props.gid },
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
         })
         .then((res) => {
           console.log(res)
@@ -209,18 +207,25 @@ export default {
     }
 
     const changeInfo = function() {
-      axios
-        .put('https://k5d105.p.ssafy.io:3030/group/updateGroup', {
+      axios.put(
+        'https://k5d105.p.ssafy.io:3030/group/updateGroup',
+        {
           private: info.private,
           password: info.password,
           name: info.name,
           description: info.description,
           gid: props.gid,
-        })
-        .then(() => {
-          info.dialogVisible = true
-          info.message = '정보가 수정되었습니다'
-        })
+        },
+        {
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+        }
+      )
+      // .then(() => {
+      //   info.dialogVisible = true
+      //   info.message = '정보가 수정되었습니다'
+      // })
     }
 
     const changeAdminBtn = function(e) {
@@ -252,24 +257,6 @@ export default {
           info.changeDia = false
           info.changeAdmin = ''
           getGroup()
-          // axios
-          //   .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-          //     params: { gid: props.gid },
-          //   })
-          //   .then((res) => {
-          //     console.log(res)
-          //     info.name = res.data.group.name
-          //     info.description = res.data.group.description
-          //     info.private = res.data.group.private
-          //     info.password = res.data.group.password
-          //     info.member = res.data.group.members
-          //     if (res.data.group.admin === info.userEmail) {
-          //       info.admin = true
-          //     } else {
-          //       info.admin = false
-          //     }
-          //     console.log(info.member)
-          //   })
         })
         .catch((err) => console.log(err))
     }
@@ -309,16 +296,10 @@ export default {
         .then(() => {
           info.dialogVisible = true
           info.message = '회원을 추방했습니다'
-          axios
-            .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-              params: { gid: props.gid },
-            })
-            .then((res) => {
-              info.member = res.data.group.members
-            })
+          getGroup()
         })
         .catch((err) => {
-          if (err.response.status === 403) {
+          if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
             router.push({ name: 'main' })
             localStorage.removeItem('token')
@@ -341,18 +322,9 @@ export default {
             }
           )
           .then(() => {
-            info.dialogVisible = true
-            info.message = '회원을 초대했습니다'
             info.inviteDia = false
             info.inviteEmail = ''
-            axios
-              .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-                params: { gid: props.gid },
-              })
-              .then((res) => {
-                info.member = res.data.group.members
-                console.log(info.member)
-              })
+            getGroup()
           })
           .catch(() => {
             info.dialogVisible = true
@@ -376,7 +348,7 @@ export default {
           router.push({ name: 'Calendar' })
         })
         .catch((err) => {
-          if (err.response.status === 403) {
+          if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
             router.push({ name: 'main' })
             localStorage.removeItem('token')
@@ -398,7 +370,7 @@ export default {
           router.push({ name: 'Calendar' })
         })
         .catch((err) => {
-          if (err.response.status === 403) {
+          if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
             router.push({ name: 'main' })
             localStorage.removeItem('token')

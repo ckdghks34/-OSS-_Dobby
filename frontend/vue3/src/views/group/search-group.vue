@@ -123,7 +123,11 @@ export default {
 
     onBeforeMount(() => {
       axios
-        .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups')
+        .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups', {
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+        })
         .then((res) => {
           info.groupLi = res.data.groups
           info.pageGroup = info.groupLi.slice(0, 8)
@@ -133,14 +137,22 @@ export default {
     const search = function() {
       if (info.value === '전체 그룹') {
         axios
-          .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups')
+          .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups', {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          })
           .then((res) => {
             info.groupLi = res.data.groups
             info.pageGroup = info.groupLi.slice(0, 8)
           })
       } else {
         axios
-          .get('https://k5d105.p.ssafy.io:3030/group/getPublicGroups')
+          .get('https://k5d105.p.ssafy.io:3030/group/getPublicGroups', {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          })
           .then((res) => {
             info.groupLi = res.data.groups
             info.pageGroup = info.groupLi.slice(0, 8)
@@ -157,6 +169,9 @@ export default {
       axios
         .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
           params: { gid: info.groupGid },
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
         })
         .then((res) => {
           info.groupName = res.data.group.name
@@ -169,19 +184,17 @@ export default {
     const joinGroup = function() {
       console.log('join')
       axios
-        .get(
-          'https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup',
-          {
-            params: {
-              uid: localStorage.getItem('uid'),
-            },
-          },
-          {
+        .get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {
+          params: {
+            uid: localStorage.getItem('uid'),
             headers: {
               authorization: localStorage.getItem('token'),
             },
-          }
-        )
+          },
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+        })
         .then((res) => {
           for (var i in res.data.group) {
             if (res.data.group[i]['name'] === info.groupName) {
@@ -191,10 +204,18 @@ export default {
             }
           }
           axios
-            .post('https://k5d105.p.ssafy.io:3030/group/joinGroup', {
-              gid: info.groupGid,
-              uid: localStorage.getItem('uid'),
-            })
+            .post(
+              'https://k5d105.p.ssafy.io:3030/group/joinGroup',
+              {
+                gid: info.groupGid,
+                uid: localStorage.getItem('uid'),
+              },
+              {
+                headers: {
+                  authorization: localStorage.getItem('token'),
+                },
+              }
+            )
             .then(() => {
               info.searchDia = false
               info.message = `${info.groupName}에 가입되었습니다`
