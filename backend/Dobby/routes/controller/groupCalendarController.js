@@ -239,14 +239,6 @@ async function updateCalendar(req, res, next) {
     const gid = req.body.gid;
     const uid = req.body.uid;
     const cid = req.body.cid;
-<<<<<<< HEAD
-    const time = new Date(+new Date() + 3240 * 10000)
-      .toISOString()
-      .replace("T", " ")
-      .replace(/\..*/, "");
-    const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-    const calendar = await calendarRef.doc(cid).get();
-=======
     if (gid === undefined || uid === undefined || cid === undefined) {
       res.status(400).json({
         msg: "요청에서 유저 정보 또는 그룹 정보 또는 일정 정보가 빠져있습니다.",
@@ -261,7 +253,6 @@ async function updateCalendar(req, res, next) {
         .doc(gid)
         .collection("groupcalendar");
       const calendar = await calendarRef.doc(cid).get();
->>>>>>> chae
 
       if (!calendar.empty) {
         if (calendar.data().creator == uid) {
@@ -346,31 +337,6 @@ async function deleteCalendar(req, res, next) {
       const calendar = await calendarRef.doc(cid).get();
       const calendarName = calendar.data().title;
 
-<<<<<<< HEAD
-    const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-    const calendar = await calendarRef.doc(cid).get();
-    const calendarName = calendar.data().title;
-
-    if (!calendar.empty) {
-      if (calendar.data().creator == uid) {
-        calendarRef
-          .doc(cid)
-          .delete()
-          .then(async () => {
-            const msg = {
-              title: "그룹 일정 삭제 알림",
-              body: calendarName + "그룹 일정이 삭제되었습니다.",
-            };
-            await FCMCon.groupPush(gid, msg);
-            res.json({
-              msg: "그룹 일정 삭제 성공",
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            res.status(401).json({
-              msg: "그룹 일정 삭제 실패",
-=======
       if (!calendar.empty) {
         if (calendar.data().creator == uid) {
           calendarRef
@@ -391,7 +357,6 @@ async function deleteCalendar(req, res, next) {
               res.status(500).json({
                 msg: "그룹 일정 삭제 실패",
               });
->>>>>>> chae
             });
         } else {
           res.status(403).json({
@@ -429,20 +394,6 @@ async function checkCalendar(req, res, next) {
         .collection("groupcalendar");
       const calendar = await calendarRef.doc(cid).get();
 
-<<<<<<< HEAD
-    const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-    const calendar = await calendarRef.doc(cid).get();
-
-    var participant = calendar.data().participant;
-    for (let doc of participant) {
-      if (doc.uid == uid) {
-        if (doc.completed) {
-          doc.completed = false;
-          break;
-        } else {
-          doc.completed = true;
-          break;
-=======
       var participant = calendar.data().participant;
       for (let doc of participant) {
         if (doc.uid == uid) {
@@ -453,7 +404,6 @@ async function checkCalendar(req, res, next) {
             doc.completed = true;
             break;
           }
->>>>>>> chae
         }
       }
 
