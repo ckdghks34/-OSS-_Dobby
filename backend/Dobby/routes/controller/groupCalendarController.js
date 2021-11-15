@@ -144,10 +144,6 @@ async function createCalendar(req, res, next) {
         .replace("T", " ")
         .replace(/\..*/, "");
 
-<<<<<<< HEAD
-    if (!group.empty) {
-      const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
-=======
       const groupRef = admin.collection("groups").doc(gid);
       const group = await groupRef.get();
       const memberRef = admin
@@ -156,7 +152,6 @@ async function createCalendar(req, res, next) {
         .collection("members");
       const member = await memberRef.get();
       var writer = false;
->>>>>>> chae
 
       if (!group.empty) {
         const calendarRef = admin
