@@ -33,15 +33,24 @@
         </template>
       </el-dialog>
       <img src="@/assets/dobby.png" alt="" />
-      <el-select v-model="info.value" @change="search">
-        <el-option
-          v-for="item in info.options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+      <div>
+        <el-select class="search" v-model="info.value" @change="search">
+          <el-option
+            v-for="item in info.options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <button
+          class="newGroupBtn blueBtn"
+          type="button"
+          @click="handleToCreate"
         >
-        </el-option>
-      </el-select>
+          그룹 생성
+        </button>
+      </div>
       <div
         class="groupLi"
         v-for="(group, index) in info.pageGroup"
@@ -83,9 +92,12 @@
 import { reactive, ref } from '@vue/reactivity'
 import axios from 'axios'
 import { onBeforeMount } from '@vue/runtime-core'
+import { useRouter } from 'vue-router'
+
 export default {
   name: 'searchGroup',
   setup() {
+    const router = useRouter()
     const info = reactive({
       dialogVisible: false,
       message: '',
@@ -134,6 +146,10 @@ export default {
             info.pageGroup = info.groupLi.slice(0, 8)
           })
       }
+    }
+
+    const handleToCreate = function() {
+      router.push({ name: 'NewGroup' })
     }
 
     const clickGroup = function(e) {
@@ -190,7 +206,14 @@ export default {
     const handleCurrentChange = function(val) {
       info.pageGroup = info.groupLi.slice((val - 1) * 8, (val - 1) * 8 + 8)
     }
-    return { info, search, clickGroup, joinGroup, handleCurrentChange }
+    return {
+      info,
+      search,
+      handleToCreate,
+      clickGroup,
+      joinGroup,
+      handleCurrentChange,
+    }
   },
 }
 </script>
@@ -214,9 +237,15 @@ export default {
   max-width: 600px;
 }
 
-.searchGroupDiv .el-select {
-  width: 100%;
+.search {
+  width: 80%;
   margin-bottom: 3%;
+}
+
+.newGroupBtn {
+  width: 15%;
+  height: 40px;
+  margin-left: 2%;
 }
 
 .searchGroupDiv .el-select:hover {
@@ -276,6 +305,17 @@ export default {
 } */
 
 @media screen and (max-width: 530px) {
+  .search {
+    width: 100%;
+    margin-bottom: 3%;
+  }
+
+  .newGroup {
+    width: 100%;
+    height: 40px;
+    margin-left: 0;
+  }
+
   .groupLi {
     width: 95%;
     height: 50px;

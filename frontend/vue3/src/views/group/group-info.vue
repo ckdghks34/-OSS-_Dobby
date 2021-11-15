@@ -67,6 +67,23 @@
         </button>
         <div class="groupMember">
           <div v-for="(t, index) in info.member" :key="index">
+            <span
+              v-if="t.admin"
+              style="float: left; margin-left:2%; cursor: pointer;"
+              >👑</span
+            >
+            <span
+              v-else-if="t.writer"
+              style="float: left; margin-left:2%; cursor: pointer;"
+              @click="handleWriter(t.nickname, true)"
+              >✏</span
+            >
+            <span
+              v-else
+              style="color: lightgray; float: left; margin-left:2%; cursor: pointer;"
+              @click="handleWriter(t.nickname, false)"
+              >✏</span
+            >
             <p
               style="display:inline-block; margin: 4px 0; cursor:pointer"
               @click="changeAdminBtn(t.nickname)"
@@ -177,6 +194,7 @@ export default {
           params: { gid: props.gid },
         })
         .then((res) => {
+          console.log(res)
           info.name = res.data.group.name
           info.description = res.data.group.description
           info.private = res.data.group.private
@@ -254,6 +272,30 @@ export default {
           //   })
         })
         .catch((err) => console.log(err))
+    }
+
+    const handleWriter = function(nickname, writer) {
+      axios
+        .put(
+          'https://k5d105.p.ssafy.io:3030/group/updateWriterAuth',
+          {
+            gid: props.gid,
+            nickname: nickname,
+            writer: !writer,
+          },
+          {
+            headers: { authorization: localStorage.getItem('token') },
+          }
+        )
+        .then((res) => {
+          console.log(res)
+          info.dialogVisible = true
+          info.message = '일정 작성 권한이 수정되었습니다'
+          getGroup()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
 
     const deleteMem = function(e) {
@@ -369,6 +411,7 @@ export default {
       info,
       getGroup,
       changeInfo,
+      handleWriter,
       deleteMem,
       changeAdminBtn,
       changeAdmin,
