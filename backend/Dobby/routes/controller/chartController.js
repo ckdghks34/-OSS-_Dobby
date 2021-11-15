@@ -7,6 +7,12 @@ async function getPersonal(req, res, next) {
 
   if (valid) {
     const uid = req.body.uid;
+    if(uid === undefined){
+      res.status(400).json({
+        msg: "요청에서 유저 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const startDate = parseInt(req.body.startDate.replace(/\-/g, ""));
     const endDate = parseInt(req.body.endDate.replace(/\-/g, ""));
     const calendarRef = admin.collection("users").doc(uid).collection("calendar");
@@ -110,17 +116,18 @@ async function getPersonal(req, res, next) {
           });
         })
         .catch(() => {
-          res.status(401).json({
+          res.json({
             msg: "해당 기간 안에 일정 정보가 없습니다.",
           });
         });
     } else {
-      res.status(401).json({
+      res.json({
         msg: "등록된 일정 정보가 없습니다.",
       });
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not vaild",
     });
   }
@@ -132,6 +139,12 @@ async function getGroup(req, res, next) {
   if (valid) {
     const uid = req.body.uid;
     const gid = req.body.gid;
+    if(uid === undefined || gid === undefined){
+      res.status(400).json({
+        msg: "요청에서 유저 정보 또는 그룹 정보가 빠져있습니다.",
+      });
+    }
+    else{
     const startDate = parseInt(req.body.startDate.replace(/\-/g, ""));
     const endDate = parseInt(req.body.endDate.replace(/\-/g, ""));
     const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
@@ -241,17 +254,18 @@ async function getGroup(req, res, next) {
           });
         })
         .catch(() => {
-          res.status(401).json({
+          res.json({
             msg: "해당 기간 안에 참여자로 지정 된 그룹 일정 정보가 없습니다.",
           });
         });
     } else {
-      res.status(401).json({
+      res.json({
         msg: "등록된 그룹 일정 정보가 없습니다.",
       });
     }
+  }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not vaild",
     });
   }
