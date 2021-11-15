@@ -235,7 +235,7 @@ export default {
     const findWay = () => {
       axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.placeLng},${state.placeLat}?steps=true`)
         .then((response) => {
-          console.log(response)
+          console.log(response.data.routes)
         })
         .catch((error) => {
           console.log(error)
@@ -432,7 +432,7 @@ export default {
 
 .schedule-info {
   /* 500 */
-  width: 1000px;
+  width: 500px;
   margin: 0 auto;
 }
 
