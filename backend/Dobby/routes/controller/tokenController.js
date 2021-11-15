@@ -40,7 +40,7 @@ async function registerToken(req, res, next) {
               });
           })
           .catch((err) => {
-            res.status(401).json({
+            res.status(200).json({
               msg: "토큰 저장 실패",
             });
           });
@@ -50,12 +50,12 @@ async function registerToken(req, res, next) {
         });
       }
     } else {
-      res.status(401).json({
+      res.status(200).json({
         msg: "유저 정보가 없습니다.",
       });
     }
   } else {
-    res.status(403).json({
+    res.status(401).json({
       error: "Token is not vaild",
     });
   }
