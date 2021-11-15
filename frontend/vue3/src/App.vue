@@ -80,6 +80,7 @@ import { reactive, onBeforeMount } from 'vue'
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 import firebaseConfig from '../firebaseConfig'
 import firebase from 'firebase/compat/app'
+import { ElNotification } from 'element-plus'
 
 export default {
   components: {
@@ -118,7 +119,12 @@ export default {
       })
     onMessage(messaging, function(payload) {
       console.log('메세지왔다!')
-      console.log('Message received. ', payload)
+      console.log('Message received. ', payload.notification.body)
+      ElNotification({
+        title: 'Success',
+        message: payload.notification.body,
+        type: 'success',
+      })
     })
 
     onBeforeMount(() => {
