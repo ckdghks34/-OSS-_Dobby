@@ -116,7 +116,7 @@ async function getCalendar(req, res, next) {
           });
         }
       } else {
-        res.status(400).json({
+        res.json({
           msg: "등록된 그룹 정보가 없습니다.",
         });
       }
@@ -220,7 +220,7 @@ async function createCalendar(req, res, next) {
           });
         }
       } else {
-        res.status(400).json({
+        res.json({
           msg: "그룹 정보가 없습니다.",
         });
       }
@@ -306,7 +306,7 @@ async function updateCalendar(req, res, next) {
           });
         }
       } else {
-        res.status(400).json({
+        res.json({
           msg: "그룹 일정 정보가 없습니다.",
         });
       }
@@ -364,7 +364,7 @@ async function deleteCalendar(req, res, next) {
           });
         }
       } else {
-        res.status(400).json({
+        res.json({
           msg: "그룹 일정 정보가 없습니다.",
         });
       }
@@ -434,7 +434,7 @@ async function checkCalendar(req, res, next) {
             });
           });
       } else {
-        res.status(400).json({
+        res.json({
           msg: "그룹 일정 정보가 없습니다.",
         });
       }
