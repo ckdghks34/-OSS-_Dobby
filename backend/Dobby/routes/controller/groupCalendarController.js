@@ -4,7 +4,7 @@ const Auth = require("./authController");
 const FCMCon = require("./FCMController");
 
 async function getGroup(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.query.uid;
@@ -53,7 +53,7 @@ async function getGroup(req, res, next) {
 }
 
 async function getCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.query.gid;
@@ -61,10 +61,7 @@ async function getCalendar(req, res, next) {
     const group = await groupRef.get();
 
     if (!group.empty) {
-      const calendarRef = admin
-        .collection("groups")
-        .doc(gid)
-        .collection("groupcalendar");
+      const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
       const calendar = await calendarRef.get();
       const calendarList = [];
 
@@ -115,7 +112,7 @@ async function getCalendar(req, res, next) {
 }
 
 async function createCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -132,10 +129,7 @@ async function createCalendar(req, res, next) {
     var writer = false;
 
     if (!group.empty) {
-      const calendarRef = admin
-        .collection("groups")
-        .doc(gid)
-        .collection("groupcalendar");
+      const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
 
       new Promise(async (resolve, reject) => {
         for (let doc of member.docs) {
@@ -210,7 +204,7 @@ async function createCalendar(req, res, next) {
 }
 
 async function updateCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -220,10 +214,7 @@ async function updateCalendar(req, res, next) {
       .toISOString()
       .replace("T", " ")
       .replace(/\..*/, "");
-    const calendarRef = admin
-      .collection("groups")
-      .doc(gid)
-      .collection("groupcalendar");
+    const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
     const calendar = await calendarRef.doc(cid).get();
 
     if (!calendar.empty) {
@@ -290,17 +281,14 @@ async function updateCalendar(req, res, next) {
 }
 
 async function deleteCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
     const cid = req.body.cid;
     const uid = req.body.uid;
 
-    const calendarRef = admin
-      .collection("groups")
-      .doc(gid)
-      .collection("groupcalendar");
+    const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
     const calendar = await calendarRef.doc(cid).get();
     const calendarName = calendar.data().title;
 
@@ -343,17 +331,14 @@ async function deleteCalendar(req, res, next) {
 }
 
 async function checkCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
     const uid = req.body.uid;
     const cid = req.body.cid;
 
-    const calendarRef = admin
-      .collection("groups")
-      .doc(gid)
-      .collection("groupcalendar");
+    const calendarRef = admin.collection("groups").doc(gid).collection("groupcalendar");
     const calendar = await calendarRef.doc(cid).get();
 
     var participant = calendar.data().participant;

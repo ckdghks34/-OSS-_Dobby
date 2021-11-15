@@ -292,7 +292,7 @@ async function checkDuplicatePhone(req, res, next) {
  * 회원탈퇴
  */
 async function withdrawUser(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
@@ -365,7 +365,7 @@ async function authSignout(req, res, next) {
 }
 
 async function getUserInfo(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.query.uid;

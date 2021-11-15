@@ -4,7 +4,7 @@ const FCMCon = require("./FCMController");
 const Auth = require("./authController");
 
 async function getUserCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
@@ -12,10 +12,7 @@ async function getUserCalendar(req, res, next) {
     const user = admin.collection("users").doc(uid).get();
 
     if (!user.empty) {
-      const calendarRef = admin
-        .collection("users")
-        .doc(uid)
-        .collection("calendar");
+      const calendarRef = admin.collection("users").doc(uid).collection("calendar");
       const calendar = await calendarRef.get();
 
       if (!calendar.empty) {
@@ -42,7 +39,7 @@ async function getUserCalendar(req, res, next) {
 }
 
 async function createCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
   if (valid) {
     const uid = req.body.uid;
     const fcmtoken = req.headers.fcmtoken;
@@ -54,10 +51,7 @@ async function createCalendar(req, res, next) {
     const user = admin.collection("uesr").doc(uid).get();
 
     if (!user.empty) {
-      const calendarRef = admin
-        .collection("users")
-        .doc(uid)
-        .collection("calendar");
+      const calendarRef = admin.collection("users").doc(uid).collection("calendar");
 
       const list = {
         title: req.body.title,
@@ -117,17 +111,14 @@ async function createCalendar(req, res, next) {
 }
 
 async function deleteUserCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
     const cid = req.body.cid;
     const fcmtoken = req.headers.fcmtoken;
 
-    const calendarRef = admin
-      .collection("users")
-      .doc(uid)
-      .collection("calendar");
+    const calendarRef = admin.collection("users").doc(uid).collection("calendar");
     const calendar = await calendarRef.doc(cid).get();
     const calendarname = calendar.data().title;
     if (!calendar.empty) {
@@ -162,7 +153,7 @@ async function deleteUserCalendar(req, res, next) {
   }
 }
 async function updateUserCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
@@ -172,10 +163,7 @@ async function updateUserCalendar(req, res, next) {
       .toISOString()
       .replace("T", " ")
       .replace(/\..*/, "");
-    const calendarRef = admin
-      .collection("users")
-      .doc(uid)
-      .collection("calendar");
+    const calendarRef = admin.collection("users").doc(uid).collection("calendar");
     const calendar = await calendarRef.doc(cid).get();
 
     if (!calendar.empty) {
@@ -235,17 +223,14 @@ async function updateUserCalendar(req, res, next) {
 }
 
 async function completeUserCalendar(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
     const cid = req.body.cid;
     const fcmtoken = req.headers.fcmtoken;
 
-    const calendarRef = admin
-      .collection("users")
-      .doc(uid)
-      .collection("calendar");
+    const calendarRef = admin.collection("users").doc(uid).collection("calendar");
     const calendar = await calendarRef.doc(cid).get();
 
     var value;
