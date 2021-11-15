@@ -4,7 +4,7 @@ const FCMCon = require("./FCMController");
 const Auth = require("./authController");
 
 async function getAllgroups(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const groupsRef = admin.collection("groups");
@@ -35,7 +35,7 @@ async function getAllgroups(req, res, next) {
 }
 
 async function getPublicgroups(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const groupRef = admin.collection("groups").where("private", "==", false);
@@ -66,7 +66,7 @@ async function getPublicgroups(req, res, next) {
 }
 
 async function getGroup(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.query.gid;
@@ -110,7 +110,7 @@ async function getGroup(req, res, next) {
 }
 
 async function getGroupMember(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -142,7 +142,7 @@ async function getGroupMember(req, res, next) {
 }
 
 async function createGroup(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const uid = req.body.uid;
@@ -216,7 +216,7 @@ async function createGroup(req, res, next) {
 }
 
 async function updateGroup(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -262,7 +262,7 @@ async function updateGroup(req, res, next) {
 }
 
 async function deleteGroup(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -319,7 +319,7 @@ async function deleteGroup(req, res, next) {
   }
 }
 async function changePrivate(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -361,7 +361,7 @@ async function changePrivate(req, res, next) {
   }
 }
 async function addMember(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -530,7 +530,7 @@ async function addMember(req, res, next) {
 }
 
 async function leaveMember(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -582,7 +582,7 @@ async function leaveMember(req, res, next) {
 }
 
 async function joinGroup(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -650,7 +650,7 @@ async function joinGroup(req, res, next) {
 }
 
 async function updateWriterAuth(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
@@ -706,7 +706,7 @@ async function updateWriterAuth(req, res, next) {
 }
 
 async function changeAdmin(req, res, next) {
-  const valid = Auth.verifyToken(req.headers.authorization);
+  const valid = await Auth.verifyToken(req.headers.authorization);
 
   if (valid) {
     const gid = req.body.gid;
