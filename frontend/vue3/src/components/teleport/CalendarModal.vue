@@ -282,6 +282,7 @@ export default {
               placeLng: r.placeLng,
               startDate: r.startDate,
               endDate: r.endDate,
+              allDay : r.allDay,
               classNames: ['calendar-done'],
             }
             store.dispatch('pushCalendarData', cal)
@@ -300,6 +301,7 @@ export default {
               placeName: r.placeName,
               placeLat: r.placeLat,
               placeLng: r.placeLng,
+              allDay : r.allDay,
               startDate: r.startDate,
               endDate: r.endDate,
             }
@@ -309,7 +311,7 @@ export default {
               calendarApi.addEvent(cal)
             })
           }
-          store.dispatch('refreshCalData', calendarApi.getEvents())
+          store.dispatch('refreshCalendarData', calendarApi.getEvents())
           isOpen.value = false
         })
         .catch((error) => {
