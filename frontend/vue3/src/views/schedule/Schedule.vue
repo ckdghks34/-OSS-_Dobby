@@ -145,7 +145,7 @@
 
 <script>
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { reactive, onBeforeMount, ref } from 'vue'
 import { useStore } from 'vuex';
 
@@ -168,6 +168,7 @@ export default {
     },
     setup() {
         const router = useRouter()
+        const route = useRoute()
         const store = useStore()
 
         const mapAutoComplete = ref(null)
@@ -177,7 +178,7 @@ export default {
             uid: localStorage.getItem('uid'),
             title:'',
             content:'',
-            startDate:'',
+            startDate: route.query.start,
             endDate:'',
             startTime:'',
             endTime:'',
