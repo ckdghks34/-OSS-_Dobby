@@ -136,9 +136,9 @@ export default {
             .then((res) => {
               console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
-                this.$router.push('Calendar')
+                location.replace('/calendar')
               } else {
-                this.$router.push('SuccessSignup')
+                location.replace('/welcome')
               }
             })
             .catch((err) => console.log(err))
@@ -168,9 +168,9 @@ export default {
             .then((res) => {
               console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
-                this.$router.push('Calendar')
+                location.replace('/calendar')
               } else {
-                this.$router.push('SuccessSignup')
+                location.replace('/welcome')
               }
             })
         })
