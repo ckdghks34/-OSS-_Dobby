@@ -42,7 +42,7 @@
           ></el-input>
         </el-form-item>
       </el-form>
-      <router-link to="/main"><button class="redBtn">취소</button></router-link>
+      <router-link to="/"><button class="redBtn">취소</button></router-link>
       <button class="blueBtn" type="button" @click="createNewGroup">
         생성
       </button>
