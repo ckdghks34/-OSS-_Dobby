@@ -125,7 +125,6 @@ export default createStore({
     // user calendar
     getCalendarData({ commit }) {
       // console.log('store axios')
-
       axios
         .post(
           `${BASE_URL}calendar/getCalendar`,
@@ -307,6 +306,9 @@ export default createStore({
             console.log(error)
           }
         })
+    },  
+    getChangeGroupCalendarData( {commit}, payload) {
+      commit('SETGROUPCALENDARDATA', payload)
     },
     setGroupModal({ commit }, payload) {
       commit('SETGROUPMODAL', payload)
