@@ -14,11 +14,21 @@
       <div class="mainLoginDiv">
         <div>
           <span>Email</span>
-          <input class="input" type="text" v-model="info.userEmail" />
+          <input
+            class="input"
+            type="text"
+            v-model="info.userEmail"
+            @keyup.enter="login"
+          />
         </div>
         <div>
           <span>PW</span>
-          <input class="input" type="password" v-model="info.userPw" />
+          <input
+            class="input"
+            type="password"
+            v-model="info.userPw"
+            @keyup.enter="login"
+          />
           <br />
           <router-link class="mainFind" to="/find"
             ><span>이메일/비밀번호 찾기</span></router-link
@@ -94,7 +104,6 @@
 import { reactive } from '@vue/reactivity'
 import { onBeforeMount } from '@vue/runtime-core'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
 import firebase from 'firebase/compat/app'
 import {
   getAuth,
@@ -103,31 +112,10 @@ import {
   FacebookAuthProvider,
 } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
-// import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 import './main.css'
 
 export default {
   name: 'main',
-  // created() {
-  //   const firebaseApp = firebase.initializeApp(firebaseConfig);
-  //   const messaging = getMessaging(firebaseApp);
-
-  //   getToken(messaging,{
-  //     vapidKey : 'BE5n2nc_3FLKh9U_gkhPTcpe3NMimxEcUBAdriZG1dk3arXlOWRFhg3-6U6sIVa1cVMJbVI236v93OMMKQf0jy0'
-  //   }).then(currentToken => {
-  //     if (currentToken) {
-  //       console.log("currentToken : "+ currentToken)
-  //     } else {
-  //       console.log('No Instance ID token available. Request permission to generate one.')
-  //     }
-  //   }).catch((err) => {
-  //     console.log('An error occurred while retrieving token. ', err)
-  //   });
-  //   onMessage(messaging, function(payload) {
-  //     console.log("메세지왔다!");
-  //     console.log('Message received. ', payload);
-  //   });
-  // },
   methods: {
     googleSignIn() {
       console.log('signin')
@@ -188,13 +176,6 @@ export default {
         })
         .catch((err) => {
           const errorCode = err.code
-          // const errorMessage = error.message
-          // const email = error.email
-          // const credential = FacebookAuthProvider.credentialFromError(error)
-          // console.log('errorCode: ' + errorCode)
-          // console.log('errorMessage: ' + errorMessage)
-          // console.log('email: ' + email)
-          // console.log('credential: ' + credential)
           if (errorCode === 'auth/popup-blocked') {
             alert('팝업이 차단되었습니다')
           }
@@ -202,7 +183,6 @@ export default {
     },
   },
   setup() {
-    const router = useRouter()
     const info = reactive({
       size: true,
       userEmail: '',
@@ -211,14 +191,14 @@ export default {
       message: '',
     })
     onBeforeMount(() => {
-      if (window.innerWidth < 730) {
+      if (window.innerWidth < 890) {
         info.size = false
       }
     })
     window.addEventListener(
       'resize',
       function() {
-        if (window.innerWidth < 730) {
+        if (window.innerWidth < 890) {
           info.size = false
         } else {
           info.size = true
@@ -246,7 +226,7 @@ export default {
             console.log(res)
             localStorage.setItem('token', res.data.token.accessToken)
             localStorage.setItem('uid', res.data.user.uid)
-            router.push({ name: 'Calendar' })
+            location.replace('/calendar')
           })
           .catch(() => {
             info.dialogVisible = true

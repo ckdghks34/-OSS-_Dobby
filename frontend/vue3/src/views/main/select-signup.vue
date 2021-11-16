@@ -25,7 +25,7 @@
         </div>
       </router-link>
       <br />
-      <router-link to="/main"
+      <router-link to="/"
         ><button class="blueBtn">돌아가기</button></router-link
       >
     </div>

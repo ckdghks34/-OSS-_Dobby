@@ -92,7 +92,7 @@
         </el-form-item>
       </el-form>
 
-      <router-link to="/main"
+      <router-link to="/"
         ><button class="signupCancel redBtn">취소</button></router-link
       >
       <button class="signupBtn blueBtn" @click="clickSignup" type="button">
