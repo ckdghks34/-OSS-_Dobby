@@ -283,7 +283,7 @@ export default {
     const setPlace = (e) => {
       state.placeName = e.name
       state.placeLat = e.geometry.location.lat()
-      state.placplaceLngeName = e.geometry.location.lng()
+      state.placeLng = e.geometry.location.lng()
 
       findWay()
       store.dispatch('setCalendarMapGoal', {

@@ -1,7 +1,6 @@
 <template>
   <div class="modal" v-if="isOpen">
     <el-card class="box-card modal-map-content">
-     
           <el-row>
             <el-col :span="24">
               <div class="modal-content-header">
