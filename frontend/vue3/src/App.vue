@@ -30,6 +30,7 @@
       <router-link to="/chart">chart</router-link> 
       <button @click="logout" class="logoutButton">logout</button>
     </div> 
+
     <div v-else>
       <router-link to="/main">Login</router-link>
     </div>
@@ -69,6 +70,7 @@
   <div class="routerView">
     <router-view />
   </div>
+
 </template>
 
 <script>
@@ -80,6 +82,7 @@ import { reactive, onBeforeMount } from 'vue'
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 import firebaseConfig from '../firebaseConfig'
 import firebase from 'firebase/compat/app'
+import { ElNotification } from 'element-plus'
 
 export default {
   components: {
@@ -118,16 +121,24 @@ export default {
       })
     onMessage(messaging, function(payload) {
       console.log('메세지왔다!')
-      console.log('Message received. ', payload)
+      console.log('Message received. ', payload.notification.body)
+      ElNotification({
+        title: 'Success',
+        message: payload.notification.body,
+        type: 'success',
+      })
     })
 
     onBeforeMount(() => {
       axios
-        .get('https://k5d105.p.ssafy.io:3030/users/getUserInfo', {
-          params: {
-            uid: localStorage.getItem('uid'),
+        .get('https://k5d105.p.ssafy.io:3030/users/getUserInfo', 
+        {
+          params: { uid: localStorage.getItem('uid') },
+          headers: {
+            authorization: localStorage.getItem('token'),
           },
-        })
+        }
+        )
         .then((response) => {
           // console.log(response)
           info.userId = response.data.user.nickname
@@ -148,16 +159,12 @@ export default {
       axios
         .get(
           'https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup',
-          {
-            params: {
-              uid: localStorage.getItem('uid'),
-            },
+        {
+          params: { uid: localStorage.getItem('uid') },
+          headers: {
+            authorization: localStorage.getItem('token'),
           },
-          {
-            headers: {
-              authorization: localStorage.getItem('token'),
-            },
-          }
+        }
         )
         .then((response) => {
           // console.log(response)
