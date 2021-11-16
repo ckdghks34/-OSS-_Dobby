@@ -28,7 +28,7 @@ const routes = [
       import(/* webpackChunkName: "about" */ '../views/About.vue'),
   },
   {
-    path: '/main',
+    path: '/',
     name: 'main',
     component: Main,
   },
@@ -113,7 +113,7 @@ const routes = [
     path: '/groupCalendar/putSchedule',
     name: 'GroupCalendarPutSchedule',
     component: PutGroupSchedule,
-  }
+  },
 ]
 
 const router = createRouter({

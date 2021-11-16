@@ -156,8 +156,9 @@ export default {
 
     watch(
       () => route.params,
-      () => {
-        location.reload()
+      (first) => {
+        props = first
+        getGroup()
       }
     )
 
