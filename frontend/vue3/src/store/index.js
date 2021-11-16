@@ -18,6 +18,8 @@ export default createStore({
     toDo: {},
     calAPI: {},
     calendarMapGoal: {},
+    isChoiceWay: false,
+    choiceWay: {},
     // group calendar
     isGroupData: false,
     isGroupTodoItem: false,
@@ -65,6 +67,16 @@ export default createStore({
     },
     SETCALENDARMAPGOAL ( state, payload) {
       state.calendarMapGoal = payload
+    },
+    SETMAPMODALCHOICE ( state, payload) {
+      state.isChoiceWay = true,
+      state.choiceWay = {
+        distance : payload.distance,
+        duration : payload.duration
+      }
+    },
+    DISABLEMAPMODALCHOICE(state) {
+      state.isChoiceWay = false
     },
     // 그룹 캘린더
     SETGROUPCALENDARDATA (state, payload) {
@@ -181,6 +193,12 @@ export default createStore({
     },
     setCalendarMapGoal ( {commit}, payload ) {
       commit( 'SETCALENDARMAPGOAL', payload)
+    },
+    setMapModalChoice ( {commit} , payload) {
+      commit('SETMAPMODALCHOICE', payload)
+    },
+    disableMapModalChocie ( {commit} ) {
+      commit('DISABLEMAPMODALCHOICE')
     },
     // group calendar
     getGroupCalendarData ( { commit }, payload ) {

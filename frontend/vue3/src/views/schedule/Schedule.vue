@@ -33,10 +33,17 @@
       </div>
       <br>
       <div class="userCalendar-schedule-row">
-        <el-button v-if="state.placeName" round @click="showMapModal">경로탐색</el-button>
-        <el-button v-else disabled round @click="showMapModal">경로탐색</el-button>
-        <div class="userCalendar-schedule-map" v-if="falTest">
-          <CalendarMap style="height: 75vh; width: 50vw;"/>
+        <div class="label"></div>
+        <div>
+          <el-button v-if="state.placeName" round @click="showMapModal" type="info">경로탐색</el-button>
+          <el-button v-else disabled round @click="showMapModal" type="info">경로탐색</el-button>
+        </div>
+        <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+          <!-- <span class="userCalendar-choice-">
+            {{ `시간 : ${state.choiceWay.duration}  거리 : ${state.choiceWay.distance}` }}
+          </span> -->
+          <el-button round size="small">{{state.choiceWay.duration}}</el-button>
+          <el-button round size="small">{{state.choiceWay.distance}}</el-button>
         </div>
       </div>
       <br>
@@ -68,10 +75,9 @@
       <br>
       <div>
           <button class="web-button-red" @click="handleCancleSchedule">취소</button> 
-          <button class="web-button-blue" style="margin-left:30px" type="button" @click="addSchedule" v-bind:disabled="title==''">추가</button>
+          <button class="web-button-blue" style="margin-left:30px" type="button" @click="addSchedule">추가</button>
       </div> 
   </div>
-
 
   <div class="mobile-schedule-main" v-else>
       <h1>New Schedule</h1>
@@ -146,11 +152,10 @@
 <script>
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
-import { reactive, onBeforeMount, ref } from 'vue'
+import { reactive, onBeforeMount, ref, computed } from 'vue'
 import { useStore } from 'vuex';
 
 // component
-import CalendarMap from'@/components/map/CalendarMap'
 import CalendarMapModal from'@/components/teleport/CalendarMapModal'
 
 // map
@@ -161,7 +166,6 @@ import CalendarMapModal from'@/components/teleport/CalendarMapModal'
 export default {
     name: 'Schedule',
     components : {
-      CalendarMap,
         // LMap,
         // LGeoJson,
       CalendarMapModal,
@@ -192,6 +196,8 @@ export default {
             latitude: 1.1,
             longitude: 1.1,
             falTest: false,
+            isChoiceWay: computed(() => store.state.isChoiceWay),
+            choiceWay: computed(() => store.state.choiceWay),
         })
 
         onBeforeMount(async () => {
@@ -218,12 +224,17 @@ export default {
     }
 
     const setPlace = (e) => {
+
+        // console.log(mapAutoComplete.value)
         state.placeName = e.name
         state.placeLat = e.geometry.location.lat()
         state.placeLng = e.geometry.location.lng()
 
-        findWay()
+        // findWay()
 
+        // mapModal.value.findWayCar()
+        // mapModal.value.choiceWay(mapModal.value.state.curWay[0], 'car')
+        store.dispatch('disableMapModalChocie')
         store.dispatch('setCalendarMapGoal', {
           Lat: state.placeLat,
           Lng: state.placeLng
@@ -233,15 +244,16 @@ export default {
         // provide('placeLng', state.placeLng)
     }
 
-    const findWay = () => {
-      axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.placeLng},${state.placeLat}?steps=true`)
-        .then((response) => {
-          console.log(response.data.routes)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    }
+    // const findWay = () => {
+    //   // car driving
+    //   axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
+    //     .then((response) => {
+    //       console.log(response.data.routes)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // }
 
     const startMap = () => {
         if ("geolocation" in navigator) {	/* geolocation 사용 가능 */
@@ -266,13 +278,6 @@ export default {
         alert('geolocation 사용 불가능');
       }
       }
-
-
-
-
-
-
-
 
     const handleCancleSchedule = () => {
         router.push({ name: 'Calendar' })
@@ -422,15 +427,6 @@ export default {
 </script>
 
 <style>
-.tt1 { 
-  width: 500px;
-}
-
-.tt2 {
-  width: 100%;
-  height: 100%;
-}
-
 .schedule-info {
   /* 500 */
   width: 500px;
