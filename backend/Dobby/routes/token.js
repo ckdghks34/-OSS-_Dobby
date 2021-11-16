@@ -3,6 +3,6 @@ var router = express.Router();
 
 const tokenController = require("./controller/tokenController");
 
-router.post("/registerToken", tokenController.registerToken);
+router.post("/checkToken", tokenController.checkToken);
 
 module.exports = router;
