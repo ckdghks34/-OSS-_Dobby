@@ -191,26 +191,50 @@ export default createStore({
           },
         })
         .then((response) => {
-          // console.log(response)
-          const res = response.data.calendar.map((r) => {
-            // participants completed check
-            let checkCompleted = false
+          console.log(response)
+          if (response.data.msg === '그룹 캘린더가 없습니다.') {
+            commit('SETGROUPCALENDARDATA', [])
+            commit('CHECKGROUPCALENDARDATA')
+          } else {
+            const res = response.data.calendar.map((r) => {
+              // participants completed check
+              let checkCompleted = false
 
-            for (let par of r.participant) {
-              if (par.uid === localStorage.getItem('uid')) {
-                if (par.completed) {
-                  checkCompleted = true
+              for (let par of r.participant) {
+                if (par.uid === localStorage.getItem('uid')) {
+                  if (par.completed) {
+                    checkCompleted = true
+                  }
+                  break
                 }
-                break
               }
-            }
 
-            if (checkCompleted) {
-              // completed 된 것
+              if (checkCompleted) {
+                // completed 된 것
+                return {
+                  cid: r.cid,
+                  gid: payload,
+                  completed: true,
+                  title: r.title,
+                  content: r.content,
+                  start: r.startDate + 'T' + r.startTime,
+                  end: r.endDate + 'T' + r.endTime,
+                  color: r.color,
+                  placeName: r.placeName,
+                  placeLat: r.placeLat,
+                  placeLng: r.placeLng,
+                  startDate: r.startDate,
+                  endDate: r.endDate,
+                  classNames: ['calendar-done'],
+                  participant: r.participant,
+                  creator: r.creator,
+                  category: r.category,
+                }
+              }
               return {
                 cid: r.cid,
                 gid: payload,
-                completed: true,
+                completed: false,
                 title: r.title,
                 content: r.content,
                 start: r.startDate + 'T' + r.startTime,
@@ -221,35 +245,17 @@ export default createStore({
                 placeLng: r.placeLng,
                 startDate: r.startDate,
                 endDate: r.endDate,
-                classNames: ['calendar-done'],
                 participant: r.participant,
                 creator: r.creator,
                 category: r.category,
               }
-            }
-            return {
-              cid: r.cid,
-              gid: payload,
-              completed: false,
-              title: r.title,
-              content: r.content,
-              start: r.startDate + 'T' + r.startTime,
-              end: r.endDate + 'T' + r.endTime,
-              color: r.color,
-              placeName: r.placeName,
-              placeLat: r.placeLat,
-              placeLng: r.placeLng,
-              startDate: r.startDate,
-              endDate: r.endDate,
-              participant: r.participant,
-              creator: r.creator,
-              category: r.category,
-            }
-          })
-          commit('SETGROUPCALENDARDATA', res)
-          commit('CHECKGROUPCALENDARDATA')
+            })
+            commit('SETGROUPCALENDARDATA', res)
+            commit('CHECKGROUPCALENDARDATA')
+          }
         })
         .catch((error) => {
+          console.log(error)
           console.log(error.response)
           if (
             error.response.status == 401 &&
