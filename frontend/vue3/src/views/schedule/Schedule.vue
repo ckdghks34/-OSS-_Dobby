@@ -49,9 +49,13 @@
       </GMapAutocomplete>
     </div>
     <div>
-      <el-button v-if="state.placeName" round @click="showMapModal">경로탐색</el-button>
+      <el-button v-if="state.placeName" round @click="showMapModal"
+        >경로탐색</el-button
+      >
       <!-- <el-button disabled round @click="showMapModal">경로탐색</el-button> -->
-      <el-button v-else disabled round @click="showMapModal">경로탐색</el-button>
+      <el-button v-else disabled round @click="showMapModal"
+        >경로탐색</el-button
+      >
     </div>
     <br />
     <div class="userCalendar-schedule-category">
@@ -288,38 +292,47 @@ export default {
       findWay()
       store.dispatch('setCalendarMapGoal', {
         Lat: state.placeLat,
-        Lng: state.placeLng
+        Lng: state.placeLng,
       })
     }
 
     const findWay = () => {
-      axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.placeLng},${state.placeLat}?steps=true`)
+      axios
+        .get(
+          `http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.placeLng},${state.placeLat}?steps=true`
+        )
         .then((response) => {
           console.log(response.data.routes)
         })
         .catch((error) => {
           console.log(error)
         })
-      }
+    }
 
     const startMap = () => {
-        if ("geolocation" in navigator) { /* geolocation 사용 가능 */
-          navigator.geolocation.getCurrentPosition(function(data) {
-          var latitude = data.coords.latitude;
-          var longitude = data.coords.longitude;
-          state.latitude = latitude
-          state.longitude = longitude
-        }, function(error) {
-          alert(error);
-        }, {
-          enableHighAccuracy: true,
-          timeout: Infinity,
-          maximumAge: 0
-        });
-      } else {  /* geolocation 사용 불가능 */
-        alert('geolocation 사용 불가능');
+      if ('geolocation' in navigator) {
+        /* geolocation 사용 가능 */
+        navigator.geolocation.getCurrentPosition(
+          function(data) {
+            var latitude = data.coords.latitude
+            var longitude = data.coords.longitude
+            state.latitude = latitude
+            state.longitude = longitude
+          },
+          function(error) {
+            alert(error)
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: Infinity,
+            maximumAge: 0,
+          }
+        )
+      } else {
+        /* geolocation 사용 불가능 */
+        alert('geolocation 사용 불가능')
       }
-      }
+    }
 
     const handleCancleSchedule = () => {
       router.push({ name: 'Calendar' })
@@ -341,7 +354,7 @@ export default {
             startDate: state.startDate,
             endDate: state.endDate,
             startTime: '00:00',
-            endTime: '24:00',
+            endTime: '23:59',
             placeName: state.placeName,
             placeLat: state.placeLat,
             placeLng: state.placeLng,
@@ -458,21 +471,22 @@ export default {
     }
 
     return {
-        state,
-        addSchedule,
-        handleCancleSchedule,
-        setPlace,
-        mapAutoComplete,
-        showMapModal,
-        mapModal,
-        // geojson,
-        // geojsonOptions
-    }}
+      state,
+      addSchedule,
+      handleCancleSchedule,
+      setPlace,
+      mapAutoComplete,
+      showMapModal,
+      mapModal,
+      // geojson,
+      // geojsonOptions
+    }
+  },
 }
 </script>
 
 <style>
-.tt1 { 
+.tt1 {
   width: 500px;
 }
 

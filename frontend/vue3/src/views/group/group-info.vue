@@ -74,15 +74,15 @@
             >
             <span
               v-else-if="t.writer"
-              style="float: left; margin-left:2%; cursor: pointer;"
+              style="float: left; margin-left:2%; cursor: pointer;font-weight: 900; font-size: 20px;"
               @click="handleWriter(t.nickname, true)"
-              >✏</span
+              >🖍</span
             >
             <span
               v-else
-              style="color: lightgray; float: left; margin-left:2%; cursor: pointer;"
+              style="color: lightgray; float: left; margin-left:2%; cursor: pointer; font-weight: 900; font-size: 20px;"
               @click="handleWriter(t.nickname, false)"
-              >✏</span
+              >🖍</span
             >
             <p
               style="display:inline-block; margin: 4px 0; cursor:pointer"
