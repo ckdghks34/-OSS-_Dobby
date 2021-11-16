@@ -188,7 +188,7 @@ export default {
       uid: localStorage.getItem('uid'),
       title:'',
       content:'',
-      startDate:'',
+      startDate: route.query.start,
       endDate:'',
       startTime:'',
       endTime:'',

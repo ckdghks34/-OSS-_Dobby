@@ -1,10 +1,9 @@
-import  { createStore } from 'vuex'
+import { createStore } from 'vuex'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 
-const BASE_URL = 'https://k5d105.p.ssafy.io:3030/';
-
+const BASE_URL = 'https://k5d105.p.ssafy.io:3030/'
 
 export default createStore({
   state: {
@@ -17,7 +16,7 @@ export default createStore({
     todayToDoList: [],
     toDo: {},
     calAPI: {},
-    
+    calendarMapGoal: {},
     // group calendar
     isGroupData: false,
     isGroupTodoItem: false,
@@ -28,95 +27,99 @@ export default createStore({
     groupToDo: {},
   },
   mutations: {
-    setCalendarData( state, payload ) {
+    setCalendarData(state, payload) {
       // set calendar Data
       state.calendarData = payload
     },
-    checkCalendarData ( state ) {
+    checkCalendarData(state) {
       // check calendar loading state
-      if ( state.calendarData.length )
+      if (state.calendarData.length) state.isData = true
+    },
+    CHECKEMPTYCALENDARDATA(state) {
       state.isData = true
     },
-    CHECKEMPTYCALENDARDATA ( state ) {
-      state.isData = true
-    },
-    setModalData ( state, payload ) {
+    setModalData(state, payload) {
       state.modalData = payload
     },
-    refreshCalData ( state, payload ) {
+    refreshCalData(state, payload) {
       //todoList 뽑기...
       state.refreshData = payload
     },
-    SETTODO( state, payload) {
+    SETTODO(state, payload) {
       state.toDo = payload
       state.isTodoItem = true
     },
-    SETCALENDARAPI ( state, payload ) {
+    SETCALENDARAPI(state, payload) {
       state.calAPI = payload
     },
-    PUSHCALENDARDATA ( state, payload ) {
+    PUSHCALENDARDATA(state, payload) {
       state.calendarData.push(payload)
     },
-    DELETECALENDARDATA ( state, payload ) {
+    DELETECALENDARDATA(state, payload) {
       // console.log(state.calendarData)
       state.calendarData = state.calendarData.filter((c) => {
         return c.cid != payload
       })
     },
+    SETCALENDARMAPGOAL ( state, payload) {
+      state.calendarMapGoal = payload
+    },
     // 그룹 캘린더
-    SETGROUPCALENDARDATA (state, payload) {
+    SETGROUPCALENDARDATA(state, payload) {
       state.groupCalendarData = payload
     },
-    CHECKGROUPCALENDARDATA ( state ) {
+    CHECKGROUPCALENDARDATA(state) {
       state.isGroupData = true
     },
-    SETGROUPMODAL ( state, payload ) {
+    SETGROUPMODAL(state, payload) {
       state.groupModalData = payload
     },
-    SETGROUPCALENDARAPI ( state, payload ) {
+    SETGROUPCALENDARAPI(state, payload) {
       state.groupCalAPI = payload
     },
-    DELETEGROUPCALENDARDATA ( state, payload ) {
+    DELETEGROUPCALENDARDATA(state, payload) {
       state.groupCalendarData = state.groupCalendarData.filter((c) => {
         return c.cid != payload
       })
     },
-    PUSHGROUPCALENDARDATA ( state, payload ) {
+    PUSHGROUPCALENDARDATA(state, payload) {
       state.groupCalendarData.push(payload)
     },
-    REFRESHGROUPCALENDARDATA ( state, payload ) {
+    REFRESHGROUPCALENDARDATA(state, payload) {
       state.groupRefreshData = payload
     },
-    SETGROUPTODO ( state, payload) {
+    SETGROUPTODO(state, payload) {
       state.groupToDo = payload
       state.isGroupTodoItem = true
     },
   },
   actions: {
     // user calendar
-    getCalendarData( {commit} ) {
+    getCalendarData({ commit }) {
       // console.log('store axios')
-      
-      axios.
-        post(`${BASE_URL}calendar/getCalendar`,
-        {
-          uid: localStorage.getItem('uid')
-        },
-        {
-          headers: {
-            authorization: localStorage.getItem('token')
+
+      axios
+        .post(
+          `${BASE_URL}calendar/getCalendar`,
+          {
+            uid: localStorage.getItem('uid'),
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
           }
-        })
-        .then( response => {
+        )
+        .then((response) => {
           const res = response.data.calendar.map((r) => {
-            if ( r.completed) {
+            if (r.completed) {
               return {
                 cid: r.cid,
                 completed: r.completed,
                 title: r.title,
                 content: r.content,
-                start: r.startDate+'T'+r.startTime,
-                end: r.endDate+'T'+r.endTime,
+                start: r.startDate + 'T' + r.startTime,
+                end: r.endDate + 'T' + r.endTime,
                 color: r.color,
                 placeName: r.placeName,
                 placeLat: r.placeLat,
@@ -125,7 +128,7 @@ export default createStore({
                 endDate: r.endDate,
                 category: r.category,
                 allDay: r.allDay,
-                classNames: ['calendar-done']
+                classNames: ['calendar-done'],
               }
             }
             return {
@@ -133,8 +136,8 @@ export default createStore({
               completed: r.completed,
               title: r.title,
               content: r.content,
-              start: r.startDate+'T'+r.startTime,
-              end: r.endDate+'T'+r.endTime,
+              start: r.startDate + 'T' + r.startTime,
+              end: r.endDate + 'T' + r.endTime,
               color: r.color,
               placeName: r.placeName,
               placeLat: r.placeLat,
@@ -148,170 +151,177 @@ export default createStore({
           commit('setCalendarData', res)
           commit('checkCalendarData')
         })
-        .catch( error => {
-          if (error.response.status == 401 && error.response.data.msg === "일정 정보가 없습니다.") {
+        .catch((error) => {
+          if (
+            error.response.status == 401 &&
+            error.response.data.msg === '일정 정보가 없습니다.'
+          ) {
             commit('setCalendarData', [])
             commit('CHECKEMPTYCALENDARDATA')
-          }
-          else {
+          } else {
             console.log(error.response)
           }
         })
     },
-    setModal( { commit }, payload ) {
+    setModal({ commit }, payload) {
       commit('setModalData', payload)
     },
-    refreshCalendarData ( { commit }, payload ) {
+    refreshCalendarData({ commit }, payload) {
       commit('refreshCalData', payload)
     },
-    setTodo( {commit}, payload) {
+    setTodo({ commit }, payload) {
       commit('SETTODO', payload)
     },
-    setCalendarApi ( { commit }, payload ) {
+    setCalendarApi({ commit }, payload) {
       commit('SETCALENDARAPI', payload)
     },
-    pushCalendarData ( { commit }, payload) {
+    pushCalendarData({ commit }, payload) {
       commit('PUSHCALENDARDATA', payload)
     },
-    deleteCalendarData ( { commit }, payload) {
+    deleteCalendarData({ commit }, payload) {
       commit('DELETECALENDARDATA', payload)
     },
+    setCalendarMapGoal ( {commit}, payload ) {
+      commit( 'SETCALENDARMAPGOAL', payload)
+    },
     // group calendar
-    getGroupCalendarData ( { commit }, payload ) {
-      axios.
-        get(`${BASE_URL}groupCalendar/getCalendar`,
-        {
+    getGroupCalendarData({ commit }, payload) {
+      axios
+        .get(`${BASE_URL}groupCalendar/getCalendar`, {
           // uid: localStorage.getItem('uid'),
           params: {
             gid: payload,
-          }
-        },
-        {
+          },
           headers: {
-            authorization: localStorage.getItem('token')
-          }
+            authorization: localStorage.getItem('token'),
+          },
         })
         .then((response) => {
-          // console.log(response)
-          const res = response.data.calendar.map((r) => {
-            
-            // participants completed check
-            let checkCompleted = false
+          console.log(response)
+          if (response.data.msg === '그룹 캘린더가 없습니다.') {
+            commit('SETGROUPCALENDARDATA', [])
+            commit('CHECKGROUPCALENDARDATA')
+          } else {
+            const res = response.data.calendar.map((r) => {
+              // participants completed check
+              let checkCompleted = false
 
-            for (let par of r.participant) {
-              if ( par.uid === localStorage.getItem('uid')) {
-                    if ( par.completed ) {
-                      checkCompleted = true
-                    }
-                    break;
+              for (let par of r.participant) {
+                if (par.uid === localStorage.getItem('uid')) {
+                  if (par.completed) {
+                    checkCompleted = true
                   }
-            }
+                  break
+                }
+              }
 
-            if ( checkCompleted ) {
-              // completed 된 것
+              if (checkCompleted) {
+                // completed 된 것
+                return {
+                  cid: r.cid,
+                  gid: payload,
+                  completed: true,
+                  title: r.title,
+                  content: r.content,
+                  start: r.startDate + 'T' + r.startTime,
+                  end: r.endDate + 'T' + r.endTime,
+                  color: r.color,
+                  placeName: r.placeName,
+                  placeLat: r.placeLat,
+                  placeLng: r.placeLng,
+                  startDate: r.startDate,
+                  endDate: r.endDate,
+                  classNames: ['calendar-done'],
+                  participant: r.participant,
+                  creator: r.creator,
+                  category: r.category,
+                }
+              }
               return {
                 cid: r.cid,
                 gid: payload,
-                completed: true,
+                completed: false,
                 title: r.title,
                 content: r.content,
-                start: r.startDate+'T'+r.startTime,
-                end: r.endDate+'T'+r.endTime,
+                start: r.startDate + 'T' + r.startTime,
+                end: r.endDate + 'T' + r.endTime,
                 color: r.color,
                 placeName: r.placeName,
                 placeLat: r.placeLat,
                 placeLng: r.placeLng,
                 startDate: r.startDate,
                 endDate: r.endDate,
-                classNames: ['calendar-done'],
                 participant: r.participant,
                 creator: r.creator,
                 category: r.category,
               }
-            }
-            return {
-              cid: r.cid,
-              gid: payload,
-              completed: false,
-              title: r.title,
-              content: r.content,
-              start: r.startDate+'T'+r.startTime,
-              end: r.endDate+'T'+r.endTime,
-              color: r.color,
-              placeName: r.placeName,
-              placeLat: r.placeLat,
-              placeLng: r.placeLng,
-              startDate: r.startDate,
-              endDate: r.endDate,
-              participant: r.participant,
-              creator: r.creator,
-              category: r.category,
-            }
-          })
-          commit('SETGROUPCALENDARDATA', res)
-          commit('CHECKGROUPCALENDARDATA')
+            })
+            commit('SETGROUPCALENDARDATA', res)
+            commit('CHECKGROUPCALENDARDATA')
+          }
         })
         .catch((error) => {
+          console.log(error)
           console.log(error.response)
-          if (error.response.status == 401 && error.response.data.error === "그룹 캘린더가 없습니다.") {
+          if (
+            error.response.status == 401 &&
+            error.response.data.error === '그룹 캘린더가 없습니다.'
+          ) {
             commit('SETGROUPCALENDARDATA', [])
             commit('CHECKGROUPCALENDARDATA')
           } else {
             console.log(error)
           }
         })
-
     },
-    setGroupModal ( { commit }, payload ) {
+    setGroupModal({ commit }, payload) {
       commit('SETGROUPMODAL', payload)
     },
-    setGroupCalendarApi ( { commit }, payload ) {
+    setGroupCalendarApi({ commit }, payload) {
       commit('SETGROUPCALENDARAPI', payload)
     },
-    deleteGroupCalendarData( { commit }, payload) {
+    deleteGroupCalendarData({ commit }, payload) {
       commit('DELETEGROUPCALENDARDATA', payload)
     },
-    pushGroupCalendarData ( { commit }, payload ) {
+    pushGroupCalendarData({ commit }, payload) {
       commit('PUSHGROUPCALENDARDATA', payload)
     },
-    refreshGroupCalendarData ( { commit }, payload ) {
+    refreshGroupCalendarData({ commit }, payload) {
       commit('REFRESHGROUPCALENDARDATA', payload)
     },
-    setGroupTodo ( { commit }, payload ) {
+    setGroupTodo({ commit }, payload) {
       commit('SETGROUPTODO', payload)
     },
   },
   modules: {},
   getters: {
-
     // user calendar
-    getModalDataFormat ( state ) {
+    getModalDataFormat(state) {
       // 날짜 정리하기
       // Fri Nov 26 2021 18:00:00 GMT+0900 (한국 표준시)
       const ModalDate = state.modalData
-      console.log(ModalDate)
+      // console.log(ModalDate)
       const start = ModalDate.start.toString().split(' ')
       // 시작하는 날
       const startDay = changeDateFormat(start, ModalDate.allDay)
       // 끝나는 날
       if (ModalDate.allDay) {
         return {
-        'ModalDate' : ModalDate,
-        'startDay' : startDay,
-        'endDay' : startDay
+          ModalDate: ModalDate,
+          startDay: startDay,
+          endDay: startDay,
         }
       }
       const end = ModalDate.end.toString().split(' ')
       const endDay = changeDateFormat(end, ModalDate.allDay)
       return {
-        'ModalDate' : ModalDate,
-        'startDay' : startDay,
-        'endDay' : endDay
+        ModalDate: ModalDate,
+        startDay: startDay,
+        endDay: endDay,
       }
     },
-    getTodayToDoList ( state ) {
-
-      const calData =  state.refreshData
+    getTodayToDoList(state) {
+      const calData = state.refreshData
       let date = dayjs()
       dayjs.extend(isBetween)
 
@@ -339,7 +349,7 @@ export default createStore({
       return todayList.sort(daySort)
     },
     // group calendar
-    getGroupModalDataFormat ( state ) {
+    getGroupModalDataFormat(state) {
       // 날짜 정리하기
       // Fri Nov 26 2021 18:00:00 GMT+0900 (한국 표준시)
       const ModalDate = state.groupModalData
@@ -349,22 +359,21 @@ export default createStore({
       // 끝나는 날
       if (ModalDate.allDay) {
         return {
-        'ModalDate' : ModalDate,
-        'startDay' : startDay,
-        'endDay' : startDay
+          ModalDate: ModalDate,
+          startDay: startDay,
+          endDay: startDay,
         }
       }
       const end = ModalDate.end.toString().split(' ')
       const endDay = changeDateFormat(end, ModalDate.allDay)
       return {
-        'ModalDate' : ModalDate,
-        'startDay' : startDay,
-        'endDay' : endDay
+        ModalDate: ModalDate,
+        startDay: startDay,
+        endDay: endDay,
       }
     },
-    getGroupTodayToDoList ( state ) {
-
-      const calData =  state.groupRefreshData
+    getGroupTodayToDoList(state) {
+      const calData = state.groupRefreshData
       let date = dayjs()
       dayjs.extend(isBetween)
 
@@ -391,7 +400,7 @@ export default createStore({
 
       return todayList.sort(daySort)
     },
-  }
+  },
 })
 
 function daySort(a, b) {
@@ -436,81 +445,79 @@ function changeDateFormat(date, allDay) {
   // 날짜 정리하기
   // Fri Nov 26 2021 18:00:00 GMT+0900 (한국 표준시)
 
-  let month = '';
-  let dow = '';
-  let time = '';
+  let month = ''
+  let dow = ''
+  let time = ''
 
   // 월 변환
-  switch(date[1]) {
+  switch (date[1]) {
     case 'Jan':
-      month = '1';
-      break;
+      month = '1'
+      break
     case 'Feb':
-      month = '2';
-      break;
+      month = '2'
+      break
     case 'Mar':
-      month = '3';
-      break;
+      month = '3'
+      break
     case 'Apr':
-      month = '4';
-      break;
+      month = '4'
+      break
     case 'May':
-      month = '5';
-      break;
+      month = '5'
+      break
     case 'Jun':
-      month = '6';
-      break;
+      month = '6'
+      break
     case 'Jul':
-      month = '7';
-      break;
+      month = '7'
+      break
     case 'Aug':
-      month = '8';
-      break;
+      month = '8'
+      break
     case 'Sep':
-      month = '9';
-      break;
+      month = '9'
+      break
     case 'Oct':
-      month = '10';
-      break;
+      month = '10'
+      break
     case 'Nov':
-      month = '11';
-      break;
+      month = '11'
+      break
     case 'Dec':
-      month = '12';
-      break;
+      month = '12'
+      break
   }
-  
+
   // 요일 변환
-  switch(date[0]) {
+  switch (date[0]) {
     case 'Mon':
-      dow = '월';
-      break;
+      dow = '월'
+      break
     case 'Tue':
-      dow = '화';
-      break;
+      dow = '화'
+      break
     case 'Wed':
-      dow = '수';
-      break;
+      dow = '수'
+      break
     case 'Thu':
-      dow = '목';
-      break;
+      dow = '목'
+      break
     case 'Fri':
-      dow = '금';
-      break;
+      dow = '금'
+      break
     case 'Sat':
-      dow = '토';
-      break;
+      dow = '토'
+      break
     case 'Sun':
-      dow = '일';
-      break;
+      dow = '일'
+      break
   }
 
   // 시간
-  if( !allDay ) {
-    time = date[4].slice(0,5)
+  if (!allDay) {
+    time = date[4].slice(0, 5)
     return `${date[3]}년 ${month}월 ${date[2]}일 (${dow}) ${time}`
-    
   }
   return `${date[3]}년 ${month}월 ${date[2]}일 (${dow})`
 }
-
