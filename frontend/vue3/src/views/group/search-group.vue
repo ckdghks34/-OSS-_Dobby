@@ -132,6 +132,14 @@ export default {
           info.groupLi = res.data.groups
           info.pageGroup = info.groupLi.slice(0, 8)
         })
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
     })
 
     const search = function() {
@@ -146,6 +154,14 @@ export default {
             info.groupLi = res.data.groups
             info.pageGroup = info.groupLi.slice(0, 8)
           })
+          .catch((err) => {
+            if (err.response.status === 401) {
+              alert('로그인이 만료되었습니다')
+              location.replace('/')
+              localStorage.removeItem('token')
+              localStorage.removeItem('uid')
+            }
+          })
       } else {
         axios
           .get('https://k5d105.p.ssafy.io:3030/group/getPublicGroups', {
@@ -156,6 +172,14 @@ export default {
           .then((res) => {
             info.groupLi = res.data.groups
             info.pageGroup = info.groupLi.slice(0, 8)
+          })
+          .catch((err) => {
+            if (err.response.status === 401) {
+              alert('로그인이 만료되었습니다')
+              location.replace('/')
+              localStorage.removeItem('token')
+              localStorage.removeItem('uid')
+            }
           })
       }
     }
@@ -178,6 +202,14 @@ export default {
           info.groupDes = res.data.group.description
           info.private = res.data.group.private
           info.searchDia = true
+        })
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
         })
     }
 
@@ -221,6 +253,14 @@ export default {
               info.message = `${info.groupName}에 가입되었습니다`
               info.dialogVisible = true
             })
+        })
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
         })
     }
 
