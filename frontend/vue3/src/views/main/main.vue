@@ -134,16 +134,13 @@ export default {
       firebase.initializeApp(firebaseConfig)
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
+
       signInWithPopup(auth, provider)
         .then((res) => {
-          const credential = GoogleAuthProvider.credentialFromResult(res)
-          const token = credential.accessToken
+          const token = res._tokenResponse.idToken
           const uid = res.user.uid
           localStorage.setItem('token', token)
           localStorage.setItem('uid', uid)
-          // console.log('result: ' + JSON.stringify(res))
-          // console.log('token: ' + token)
-          // console.log('uid: ' + uid)
           axios
             .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
               uid: uid,
@@ -160,33 +157,22 @@ export default {
         })
         .catch((err) => {
           const errorCode = err.code
-          // const errorMessage = error.message
-          // const email = error.email
-          // const credential = GoogleAuthProvider.credentialFromError(error)
-          // console.log('errorCode: ' + errorCode)
-          // console.log('errorMessage: ' + errorMessage)
-          // console.log('email: ' + email)
-          // console.log('credential: ' + credential)
           if (errorCode === 'auth/popup-blocked') {
             alert('팝업이 차단되었습니다')
           }
         })
     },
     facebookSignIn() {
-      console.log('facebook')
       firebase.initializeApp(firebaseConfig)
       const provider = new FacebookAuthProvider()
       const auth = getAuth()
       signInWithPopup(auth, provider)
         .then((res) => {
           const uid = res.user.uid
-          const credential = FacebookAuthProvider.credentialFromResult(res)
-          const token = credential.accessToken
+          const token = res._tokenResponse.idToken
+
           localStorage.setItem('token', token)
           localStorage.setItem('uid', uid)
-          // console.log('result: ' + JSON.stringify(result))
-          // console.log('user: ' + user)
-          // console.log('token: ' + token)
           axios
             .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
               uid: uid,
