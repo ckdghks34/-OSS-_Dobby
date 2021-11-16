@@ -80,7 +80,7 @@
         <br />
         <button class="blueBtn" @click="login">로그인</button>
       </div>
-      <div class="mainMobSocialLogin">
+      <!-- <div class="mainMobSocialLogin">
         <div @click="facebookSignIn">
           <img src="@/assets/facebook.png" alt="" /><span style="font-size:15px"
             >페이스북 로그인</span
@@ -91,10 +91,10 @@
           <img src="@/assets/google.png" alt="" />
           <span style="font-size:15px">구글 로그인</span>
         </div>
-      </div>
+      </div> -->
       <div class="mainMobSign">
         <h3>아직 회원이 아니신가요?</h3>
-        <router-link to="/selectsignup">회원가입</router-link>
+        <router-link to="/signup">회원가입</router-link>
       </div>
     </div>
   </div>
@@ -136,9 +136,9 @@ export default {
             .then((res) => {
               console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
-                this.$router.push('Calendar')
+                location.replace('/calendar')
               } else {
-                this.$router.push('SuccessSignup')
+                location.replace('/welcome')
               }
             })
             .catch((err) => console.log(err))
@@ -168,9 +168,9 @@ export default {
             .then((res) => {
               console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
-                this.$router.push('Calendar')
+                location.replace('/calendar')
               } else {
-                this.$router.push('SuccessSignup')
+                location.replace('/welcome')
               }
             })
         })

@@ -289,7 +289,7 @@ body,
 
 .routerView {
   display: table-cell;
-  width: 85vw;
+  width: 100vw;
   height: 90vh;
   vertical-align: middle;
   text-align: center;
