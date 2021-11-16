@@ -6,9 +6,14 @@
       <div>{{ info.userId }} 님</div>
       <br>
       <!-- <router-link to="/main">Login</router-link>  -->
-      <router-link to="/newgroup">New Group</router-link> 
-    
-      <p class="group-p" style=":not(:hover)">Group</p>
+      <!-- <router-link to="/newgroup">New Group</router-link>  -->
+      <router-link to="/calendar">Calendar</router-link> 
+      <!-- <router-link to="/schedule">Schedule</router-link>  -->
+      <router-link to="/chart">chart</router-link> 
+
+
+      <router-link to="/searchGroup">Group</router-link> 
+      <!-- <p class="group-p" style=":not(:hover)">Group</p> -->
       <!-- <i class="bi bi-gear-fill"></i> -->
 
         <div>
@@ -25,9 +30,6 @@
             </li>
           </ul>
         </div>
-      <router-link to="/calendar">Calendar</router-link> 
-      <!-- <router-link to="/schedule">Schedule</router-link>  -->
-      <router-link to="/chart">chart</router-link> 
       <button @click="logout" class="logoutButton">logout</button>
     </div> 
 
