@@ -140,15 +140,15 @@ async function login(req, res, next) {
  * 아이디 찾기
  */
 async function findID(req, res, next) {
-  const phone = req.body.phone;
+  const phoneNum = req.body.phone;
   const name = req.body.name;
 
-  if (phone == undefined || name == undefined) {
+  if (phoneNum == undefined || name == undefined) {
     return res.status(400).json({
       error: "필수 정보가 입력되지 않았습니다.",
     });
   } else {
-    var phone = "+82" + req.body.phone.substring(1);
+    var phone = "+82" + phoneNum.substring(1);
     const docRef = admin.collection("users");
     const querydata = await docRef
       .where("name", "==", req.body.name)
@@ -177,15 +177,15 @@ async function findID(req, res, next) {
  * 비밀번호 찾기
  */
 async function findPW(req, res, next) {
-  const phone = req.body.phone;
+  const phoneNum = req.body.phone;
   const email = req.body.email;
 
-  if (phone == undefined || email == undefined) {
+  if (phoneNum == undefined || email == undefined) {
     return res.status(400).json({
       error: "필수 정보가 입력되지 않았습니다.",
     });
   } else {
-    var phone = "+82" + req.body.phone.substring(1);
+    var phone = "+82" + phoneNum.substring(1);
     const docRef = admin.collection("users");
     const querydata = await docRef
       .where("email", "==", req.body.email)
