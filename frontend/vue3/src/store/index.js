@@ -27,6 +27,9 @@ export default createStore({
     groupRefreshData: [],
     groupCalAPI: {},
     groupToDo: {},
+    GroupCalendarMapGoal: {},
+    isGroupChoiceWay: false,
+    GroupChoiceWay: {},
   },
   mutations: {
     setCalendarData(state, payload) {
@@ -67,7 +70,7 @@ export default createStore({
       state.calendarMapGoal = payload
     },
     SETMAPMODALCHOICE ( state, payload) {
-      state.isChoiceWay = true,
+      state.isChoiceWay = true
       state.choiceWay = {
         distance : payload.distance,
         duration : payload.duration
@@ -103,6 +106,19 @@ export default createStore({
     SETGROUPTODO(state, payload) {
       state.groupToDo = payload
       state.isGroupTodoItem = true
+    },
+    SETGROUPCALENDARMAPGOAL ( state, payload ) {
+      state.GroupCalendarMapGoal = payload
+    },
+    SETGROUPMAPMODALCHOICE (state, payload) {
+      state.isGroupChoiceWay = true
+      state.groupChoiceWay = {
+        distance : payload.distance,
+        duration : payload.duration
+      }
+    },
+    DISABLEGROUPMAPMODALCHOICE ( state ) {
+      state.isGroupChoiceWay = false
     },
   },
   actions: {
@@ -310,6 +326,15 @@ export default createStore({
     setGroupTodo({ commit }, payload) {
       commit('SETGROUPTODO', payload)
     },
+    setGroupCalendarMapGoal ( { commit }, payload ) {
+      commit('SETGROUPCALENDARMAPGOAL', payload)
+    },
+    disableGroupMapModalChoice ( {commit}) {
+      commit('DISABLEGROUPMAPMODALCHOICE')
+    },
+    setGroupMapModalChoice ( {commit}, payload) {
+      commit('SETGROUPMAPMODALCHOICE', payload)
+    }
   },
   modules: {},
   getters: {

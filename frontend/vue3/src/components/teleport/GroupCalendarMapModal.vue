@@ -9,6 +9,7 @@
                 <div></div>
                 <div>
                   <i class="el-icon-place modalIcon" v-if="state.curDriveCourse || state.curFootCourse" @click="hide"></i>
+                  <!-- <el-icon><place /></el-icon> -->
                   <i class="el-icon-close modalIcon" @click="hide"></i>
                 </div>
               </div>
@@ -64,7 +65,7 @@
                 <l-map
                   v-model="state.zoom"
                   v-model:zoom="state.zoom"
-                  ref="userMap"
+                  ref="groupMap"
                   :center="[ state.latitude, state.longitude ]">
 
                   <l-tile-layer
@@ -142,7 +143,7 @@ export default {
     const store = useStore()
     
     const isOpen = ref(false)
-    const userMap = ref(null)
+    const groupMap = ref(null)
 
     const hide = () => {
       isOpen.value = false;
@@ -167,12 +168,12 @@ export default {
     onBeforeMount(() => {
       startMap()
 
-      window.addEventListener('resize', handleMapModalWindowSize)
-      handleMapModalWindowSize()
+      window.addEventListener('resize', handleGroupMapModalWindowSize)
+      handleGroupMapModalWindowSize()
     })
 
     onUnmounted(() => {
-      window.removeEventListener('resize', handleMapModalWindowSize)
+      window.removeEventListener('resize', handleGroupMapModalWindowSize)
     })
 
     const changeDistance = (dis) => {
@@ -203,7 +204,7 @@ export default {
       }
     }
 
-    const handleMapModalWindowSize = () => {
+    const handleGroupMapModalWindowSize = () => {
       if (window.innerWidth > 767) {
         state.isBig = true
       } else {
@@ -301,7 +302,7 @@ export default {
       } else if ( way === 'car') {
         state.curDriveCourse = data
       }
-      store.dispatch('setMapModalChoice', {
+      store.dispatch('setGroupMapModalChoice', {
         distance: changeDistance(course.distance),
         duration: changeSeconds(course.duration)
       })
@@ -312,7 +313,7 @@ export default {
     const state = reactive({
       latitude: 1.2,
       longitude: 1.3,
-      goal: computed(() => store.state.calendarMapGoal),
+      goal: computed(() => store.state.GroupCalendarMapGoal),
       zoom: 15,
       curWay: [],
       curFootCourse: [],
@@ -328,7 +329,7 @@ export default {
       show,
       findWayWalking,
       findWayCar,
-      userMap,
+      groupMap,
       choiceWay,
       changeDistance,
       changeSeconds,

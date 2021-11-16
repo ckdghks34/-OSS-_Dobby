@@ -41,72 +41,12 @@
       <label class="label" for="place">장소</label>
       <!-- <input class="web-input" type="text" id="place" v-model="state.placeName"> -->
       <GMapAutocomplete
-        placeholder="장소를 입력해주세요"
-        @place_changed="setPlace"
-        class="web-input"
-        ref="mapAutoComplete"
-      >
+          placeholder="장소를 입력해주세요"
+          @place_changed="setPlace"
+          class="web-input"
+          ref="mapAutoComplete">
       </GMapAutocomplete>
     </div>
-    <div>
-      <el-button v-if="state.placeName" round @click="showMapModal">경로탐색</el-button>
-      <!-- <el-button disabled round @click="showMapModal">경로탐색</el-button> -->
-      <el-button v-else disabled round @click="showMapModal">경로탐색</el-button>
-    </div>
-    <br />
-    <div class="userCalendar-schedule-category">
-      <label class="label" for="category">분류</label>
-      <div class="userCalendar-schedule-category-button-wrap">
-        <el-radio v-model="state.category" label="공부" border size="medium"
-          >공부</el-radio
-        >
-        <el-radio v-model="state.category" label="운동" border>운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border>업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border>취미</el-radio>
-      </div>
-    </div>
-    <br />
-    <div class="userCalendar-schedule-color-wrap">
-      <label class="label" for="radio">중요도</label>
-      <div class="userCalendar-schedule-color-box">
-        <label class="import-label" v-bind:class="{ red: true }"
-          ><input type="radio" value="#FF7C7C" v-model="state.color"
-        /></label>
-        <label class="import-label" v-bind:class="{ orange: true }"
-          ><input type="radio" value="#FECFA3" v-model="state.color"
-        /></label>
-        <label class="import-label" v-bind:class="{ yellow: true }"
-          ><input type="radio" value="#FFF972" v-model="state.color"
-        /></label>
-        <label class="import-label" v-bind:class="{ green: true }"
-          ><input type="radio" value="#B6FB81" v-model="state.color"
-        /></label>
-        <label class="import-label" v-bind:class="{ blue: true }"
-          ><input type="radio" value="#7886FF" v-model="state.color"
-        /></label>
-      </div>
-      </div>
-      <br>
-      <div class="userCalendar-schedule-row">
-          <label class="label" for="time">시간</label>
-          <input class="time-input" type="time" id="time" v-model="state.startTime"> ~ <input class="time-input" type="time" v-model="state.endTime">
-      </div>
-      <br>
-      <div class="userCalendar-schedule-allDay">
-          <label for="allDay" class="label">종일</label>
-          <input type="checkbox" v-model="state.allDay">
-      </div>
-      <br>
-      <div class="userCalendar-schedule-row">
-          <label class="label" for="place">장소</label>
-          <!-- <input class="web-input" type="text" id="place" v-model="state.placeName"> -->
-          <GMapAutocomplete
-              placeholder="장소를 입력해주세요"
-              @place_changed="setPlace"
-              class="web-input"
-              ref="mapAutoComplete">
-          </GMapAutocomplete>
-      </div>
       <br>
       <div class="userCalendar-schedule-row">
         <div class="label"></div>
