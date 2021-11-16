@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div  v-if="state.goal.Lat">
     <l-map
       v-model="zoom"
       v-model:zoom="zoom"
@@ -9,29 +9,27 @@
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       ></l-tile-layer>
       <l-control-layers />
-      <l-marker :lat-lng="[0, 0]" draggable @moveend="log('moveend')">
+      <!-- <l-marker :lat-lng="[0, 0]" draggable @moveend="log('moveend')"> -->
+
+      <l-marker :lat-lng="[state.latitude, state.longitude]" draggable>
         <l-tooltip>
           lol
         </l-tooltip>
       </l-marker>
 
-      <l-marker :lat-lng="[47.41322, -1.219482]">
-        <l-icon :icon-url="iconUrl" :icon-size="iconSize" />
+      <l-marker
+        :lat-lng="[state.goal.Lat, state.goal.Lng]">
+        <l-tooltip>
+          lol
+        </l-tooltip>
       </l-marker>
 
-      <l-marker :lat-lng="[50, 50]" draggable @moveend="log('moveend')">
-        <l-popup>
-          lol
-        </l-popup>
-      </l-marker>
 
       <l-polyline
+       
         :lat-lngs="[
-          [35.8553843, 128.4924],
-          [35.8554000, 128.4924],
-          [35.8564043, 128.4924],
-          [35.8574043, 128.4924],
-          [35.8554043, 128.4924],
+          [state.latitude, state.longitude],
+          [state.goal.Lat, state.goal.Lng]
         ]"
         color="green"
       ></l-polyline>
@@ -42,27 +40,24 @@
 <script>
 import {
   LMap,
-  LIcon,
   LTileLayer,
   LMarker,
   LControlLayers,
   LTooltip,
-  LPopup,
   LPolyline,
 } from "@vue-leaflet/vue-leaflet";
 import "leaflet/dist/leaflet.css";
-import { onBeforeMount, reactive } from 'vue';
+import { computed, onBeforeMount, onMounted, reactive } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'CalendarMap',
   components: {
     LMap,
-    LIcon,
     LTileLayer,
     LMarker,
     LControlLayers,
     LTooltip,
-    LPopup,
     LPolyline,
   },
   data() {
@@ -89,12 +84,18 @@ export default {
   
   setup() {
 
+    const store = useStore()
+    
+
     onBeforeMount(() => {
       startMap()
     })
 
+    onMounted(() => {
+    })
 
-    const startMap = () => {
+
+      const startMap = () => {
       if ("geolocation" in navigator) {	/* geolocation 사용 가능 */
 			navigator.geolocation.getCurrentPosition(function(data) {
 			
@@ -119,9 +120,12 @@ export default {
 		}
     }
 
+    
+
     const state = reactive({
       latitude: 1.2,
       longitude: 1.3,
+      goal: computed(() => store.state.calendarMapGoal)
     })
 
     return {

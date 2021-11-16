@@ -48,6 +48,11 @@
       >
       </GMapAutocomplete>
     </div>
+    <div>
+      <el-button v-if="state.placeName" round @click="showMapModal">경로탐색</el-button>
+      <!-- <el-button disabled round @click="showMapModal">경로탐색</el-button> -->
+      <el-button v-else disabled round @click="showMapModal">경로탐색</el-button>
+    </div>
     <br />
     <div class="userCalendar-schedule-category">
       <label class="label" for="category">분류</label>
@@ -206,6 +211,10 @@
       </button>
     </div>
   </div>
+
+  <teleport to="#destination">
+    <CalendarMapModal ref="mapModal" />
+  </teleport>
 </template>
 
 <script>
@@ -214,14 +223,19 @@ import { useRouter } from 'vue-router'
 import { reactive, onBeforeMount, ref } from 'vue'
 import { useStore } from 'vuex'
 
+import CalendarMapModal from '@/components/teleport/CalendarMapModal'
+
 export default {
   name: 'Schedule',
-  components: {},
+  components: {
+    CalendarMapModal,
+  },
   setup() {
     const router = useRouter()
     const store = useStore()
 
     const mapAutoComplete = ref(null)
+    const mapModal = ref(null)
 
     const state = reactive({
       uid: localStorage.getItem('uid'),
@@ -238,12 +252,16 @@ export default {
       color: '#FF7C7C',
       category: '공부',
       size: true,
+      latitude: 1.1,
+      longitude: 1.1,
+      falTest: false,
     })
 
     onBeforeMount(() => {
       if (window.innerWidth < 730) {
         state.size = false
       }
+      startMap()
     })
 
     window.addEventListener(
@@ -258,11 +276,50 @@ export default {
       true
     )
 
+    const showMapModal = function() {
+      mapModal.value.show()
+    }
+
     const setPlace = (e) => {
       state.placeName = e.name
       state.placeLat = e.geometry.location.lat()
-      state.placplaceLngeName = e.geometry.location.lng()
+      state.placeLng = e.geometry.location.lng()
+
+      findWay()
+      store.dispatch('setCalendarMapGoal', {
+        Lat: state.placeLat,
+        Lng: state.placeLng
+      })
     }
+
+    const findWay = () => {
+      axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.placeLng},${state.placeLat}?steps=true`)
+        .then((response) => {
+          console.log(response.data.routes)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      }
+
+    const startMap = () => {
+        if ("geolocation" in navigator) { /* geolocation 사용 가능 */
+          navigator.geolocation.getCurrentPosition(function(data) {
+          var latitude = data.coords.latitude;
+          var longitude = data.coords.longitude;
+          state.latitude = latitude
+          state.longitude = longitude
+        }, function(error) {
+          alert(error);
+        }, {
+          enableHighAccuracy: true,
+          timeout: Infinity,
+          maximumAge: 0
+        });
+      } else {  /* geolocation 사용 불가능 */
+        alert('geolocation 사용 불가능');
+      }
+      }
 
     const handleCancleSchedule = () => {
       router.push({ name: 'Calendar' })
@@ -401,18 +458,31 @@ export default {
     }
 
     return {
-      state,
-      addSchedule,
-      handleCancleSchedule,
-      setPlace,
-      mapAutoComplete,
-    }
-  },
+        state,
+        addSchedule,
+        handleCancleSchedule,
+        setPlace,
+        mapAutoComplete,
+        showMapModal,
+        mapModal,
+        // geojson,
+        // geojsonOptions
+    }}
 }
 </script>
 
 <style>
+.tt1 { 
+  width: 500px;
+}
+
+.tt2 {
+  width: 100%;
+  height: 100%;
+}
+
 .schedule-info {
+  /* 500 */
   width: 500px;
   margin: 0 auto;
 }
@@ -471,6 +541,11 @@ export default {
 .userCalendar-schedule-row {
   display: flex;
   align-items: center;
+}
+
+.userCalendar-schedule-map {
+  display: flex;
+  justify-content: center;
 }
 
 .web-input {
