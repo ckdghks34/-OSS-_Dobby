@@ -111,7 +111,7 @@ export default {
               })
             })
             .catch((err) => {
-              if (err.response.status === 403) {
+              if (err.response.status === 401) {
                 alert('로그인이 만료되었습니다')
                 router.push({ name: 'main' })
                 localStorage.removeItem('token')
