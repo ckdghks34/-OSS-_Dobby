@@ -470,9 +470,47 @@ async function checkUserWithProvider(req, res, next) {
         });
       });
   } else {
-    console.log("firestore에 이미 저장되어있습니다.");
-    res.status(203).json({
-      msg: "이미 등록된 회원입니다.",
+    new Promise(async (resolve, reject) => {
+      if (!tokens.empty) {
+        console.log("token collection not empty");
+        for (let docu of tokens.docs) {
+          if (docu.data().token == fcm) {
+            check = true;
+            break;
+          }
+        }
+      }
+      if (!check) {
+        console.log("저장된 토큰이 없어요");
+        const list = {
+          token: fcm,
+        };
+        const token = await tokenRef.add(list);
+        tokenRef
+          .doc(token.id)
+          .update({ tid: token.id })
+          .then(() => {
+            tokenRef
+              .doc(token.id)
+              .get()
+              .then(() => {
+                tokenMessage = "FCM 토큰 저장 성공";
+              });
+          })
+          .catch(() => {
+            tokenMessage = "FCM 토큰 저장 실패";
+          });
+      } else {
+        console.log("저장된 토큰이 있어요");
+        tokenMessage = "토큰이 이미 저장되어 있습니다.";
+      }
+      resolve();
+    }).then(() => {
+      console.log("firestore에 이미 저장되어있습니다.");
+      res.status(200).json({
+        msg: "이미 등록된 회원입니다.",
+        tokenMessage: tokenMessage,
+      });
     });
   }
 }
