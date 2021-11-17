@@ -9,31 +9,42 @@ async function userPush(fcmtoken, uid, msg) {
     console.log("No token found for user : ", uid);
     return false;
   } else {
+    const registrationTokens = [];
+    const topic = uid;
     new Promise(async (resolve, reject) => {
       for (let doc of user.docs) {
-        let message = {
-          notification: {
-            title: msg.title,
-            body: msg.body,
-          },
-          token: doc.data().token,
-          // token: fcmtoken,
-        };
-
-        console.log(message);
-
-        await firebase_admin
-          .messaging()
-          .send(message)
-          .then((res) => {
-            console.log("Successfully sent message : ", res);
-            // return true;
-          })
-          .catch((err) => {
-            console.log("Error Sending message! : ", err);
-            // return false;
-          });
+        registrationTokens.push(doc.data().token);
       }
+      await firebase_admin.messaging().subscribeToTopic(registrationTokens, topic)
+      .then((res) => {
+        console.log('Successfully subscribed to topic:', response);
+      })
+      .catch((error) => {
+        console.log('Error subscribing to topic:', error);
+      });
+
+      let message = {
+        notification: {
+          title: msg.title,
+          body: msg.body,
+        },
+        topic: topic,
+        // token: fcmtoken,
+      };
+
+      console.log(message);
+
+      await firebase_admin
+        .messaging()
+        .send(message)
+        .then((res) => {
+          console.log("Successfully sent message : ", res);
+          // return true;
+        })
+        .catch((err) => {
+          console.log("Error Sending message! : ", err);
+          // return false;
+        });
       resolve();
     });
   }
