@@ -249,9 +249,8 @@ export default {
               }
             )
             .then(() => {
-              info.searchDia = false
-              info.message = `${info.groupName}에 가입되었습니다`
-              info.dialogVisible = true
+              alert(`${info.groupName}에 가입되었습니다`)
+              location.replace(`/groupCalendar?gid=${info.groupGid}`)
             })
         })
         .catch((err) => {

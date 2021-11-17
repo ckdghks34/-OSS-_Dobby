@@ -393,7 +393,7 @@ export default {
         })
         .then(() => {
           alert('그룹이 삭제되었습니다')
-          router.push({ name: 'Calendar' })
+          location.replace('/calendar')
         })
         .catch((err) => {
           if (err.response.status === 401) {
@@ -415,7 +415,7 @@ export default {
         })
         .then(() => {
           alert(`${info.name}에서 탈퇴했습니다`)
-          router.push({ name: 'Calendar' })
+          location.replace('/calendar')
         })
         .catch((err) => {
           if (err.response.status === 401) {
