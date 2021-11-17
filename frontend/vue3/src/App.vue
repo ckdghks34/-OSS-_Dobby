@@ -4,7 +4,8 @@
 
     <div v-if="info.userId">
       <div>{{ info.userId }} 님</div>
-      <br />
+      <br>
+      <p @click="logout" style="cursor:pointer; color: white;">logout</p>
       <!-- <router-link to="/main">Login</router-link>  -->
       <!-- <router-link to="/newgroup">New Group</router-link>  -->
       <router-link to="/calendar">Calendar</router-link>
@@ -54,7 +55,7 @@
           </li>
         </ul>
       </div>
-      <button @click="logout" class="logoutButton">logout</button>
+      <!-- <button @click="logout" class="logoutButton">logout</button> -->
     </div>
 
     <div v-else>
@@ -120,18 +121,16 @@
                 </li>
               </ul>
             </div>
-            <el-dropdown-item
-              ><button @click="logout">logout</button>
-            </el-dropdown-item>
+            <el-dropdown-item><p @click="logout" style="cursor:pointer;">logout</p>  </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
     </div>
 
     <div v-else>
-      <el-dropdown-item
+      <!-- <el-dropdown-item
         ><router-link to="/group">Group</router-link>
-      </el-dropdown-item>
+      </el-dropdown-item> -->
     </div>
   </div>
 

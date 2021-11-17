@@ -221,6 +221,7 @@ export default createStore({
     },
     // group calendar
     getGroupCalendarData({ commit }, payload) {
+      // console.log('request g cal data')
       axios
         .get(`${BASE_URL}groupCalendar/getCalendar`, {
           // uid: localStorage.getItem('uid'),
@@ -268,6 +269,7 @@ export default createStore({
                   endDate: r.endDate,
                   classNames: ['calendar-done'],
                   participant: r.participant,
+                  allDay: r.allDay,
                   creator: r.creator,
                   category: r.category,
                 }
@@ -287,6 +289,7 @@ export default createStore({
                 startDate: r.startDate,
                 endDate: r.endDate,
                 participant: r.participant,
+                allDay: r.allDay,
                 creator: r.creator,
                 category: r.category,
               }
@@ -347,7 +350,7 @@ export default createStore({
       // 시작하는 날
       const startDay = changeDateFormat(start, ModalDate.allDay)
       // 끝나는 날
-      if (ModalDate.allDay) {
+      if (ModalDate.allDay && ModalDate.end === null) {
         return {
           ModalDate: ModalDate,
           startDay: startDay,
@@ -398,14 +401,14 @@ export default createStore({
       const start = ModalDate.start.toString().split(' ')
       // 시작하는 날
       const startDay = changeDateFormat(start, ModalDate.allDay)
-      // 끝나는 날
-      if (ModalDate.allDay) {
+      if (ModalDate.allDay && ModalDate.end === null) {
         return {
           ModalDate: ModalDate,
           startDay: startDay,
           endDay: startDay,
         }
       }
+      // 끝나는 날
       const end = ModalDate.end.toString().split(' ')
       const endDay = changeDateFormat(end, ModalDate.allDay)
       return {
