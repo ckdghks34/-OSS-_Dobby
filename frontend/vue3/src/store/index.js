@@ -232,7 +232,7 @@ export default createStore({
           },
         })
         .then((response) => {
-          console.log(response)
+          // console.log(response)
           if (response.data.msg === '그룹 캘린더가 없습니다.') {
             commit('SETGROUPCALENDARDATA', [])
             commit('CHECKGROUPCALENDARDATA')
