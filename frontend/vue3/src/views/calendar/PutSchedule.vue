@@ -129,13 +129,16 @@
     <br />
     <div>
       <label class="label" for="date">날짜</label>
-      <div>
-        <input
-          class="input"
-          type="date"
-          id="date"
-          v-model="state.startDate"
-        />~<input class="input" type="date" v-model="state.endDate" />
+      <div class="scheduleDate">
+        <div class="block">
+          <el-date-picker
+            class="datePicker"
+            v-model="state.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+          >
+          </el-date-picker>
+        </div>
       </div>
     </div>
     <br />
