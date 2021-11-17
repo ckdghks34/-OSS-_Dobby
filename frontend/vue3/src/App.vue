@@ -198,6 +198,7 @@ export default {
         message: payload.notification.body,
         type: 'success',
       })
+      reload();
     })
 
     onBeforeMount(() => {
@@ -307,6 +308,10 @@ export default {
         name: 'groupChart',
         params: { gid: gid },
       })
+    }
+
+    const reload = function() {
+      router.go();
     }
 
     return { info, logout, ToGroup, TogroupCallendar, handleToGChart }
