@@ -55,7 +55,7 @@
           </li>
         </ul>
       </div>
-      <button @click="logout" class="logoutButton">logout</button>
+      <!-- <button @click="logout" class="logoutButton">logout</button> -->
     </div>
 
     <div v-else>
