@@ -15,22 +15,20 @@ async function userPush(fcmtoken, uid, msg) {
       for (let doc of user.docs) {
         registrationTokens.push(doc.data().token);
       }
-      // await firebase_admin.messaging().subscribeToTopic(registrationTokens, topic)
-      // .then((res) => {
-      //   console.log('Successfully subscribed to topic:', res);
-      // })
-      // .catch((error) => {
-      //   console.log('Error subscribing to topic:', error);
-      // });
+      await firebase_admin.messaging().subscribeToTopic(registrationTokens, topic)
+      .then((res) => {
+        console.log('Successfully subscribed to topic:', res);
+      })
+      .catch((error) => {
+        console.log('Error subscribing to topic:', error);
+      });
 
       let message = {
         notification: {
           title: msg.title,
           body: msg.body,
         },
-        // topic: topic,
-        // token: fcmtoken,
-        registration_ids: registrationTokens,
+        topic: topic,
       };
 
       console.log(message);
