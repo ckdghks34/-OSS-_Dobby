@@ -38,7 +38,13 @@ async function userPush(fcmtoken, uid, msg) {
         .send(message)
         .then((res) => {
           console.log("Successfully sent message : ", res);
-          // return true;
+          await firebase_admin.messaging().unsubscribeFromTopic(registrationTokens, topic)
+          .then((res) => {
+            console.log('Successfully unsubscribed from topic:', res);
+          })
+          .catch((error) => {
+            console.log('Error unsubscribing from topic:', error);
+          });
         })
         .catch((err) => {
           console.log("Error Sending message! : ", err);
@@ -88,11 +94,16 @@ async function groupPush(gid, msg) {
       .send(message)
       .then((res) => {
         console.log("Successfully sent message : ", res);
-        // return true;
+        await firebase_admin.messaging().unsubscribeFromTopic(registrationTokens, topic)
+        .then((res) => {
+          console.log('Successfully unsubscribed from topic:', res);
+        })
+        .catch((error) => {
+          console.log('Error unsubscribing from topic:', error);
+        });
       })
       .catch((err) => {
         console.log("Error Sending message! : ", err);
-        // return false;
       });
     resolve();
   });
