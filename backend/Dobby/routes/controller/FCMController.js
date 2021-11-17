@@ -10,7 +10,7 @@ async function userPush(fcmtoken, uid, msg) {
     return false;
   } else {
     const registrationTokens = [];
-    const topic = uid;
+    const topic = "topic" + uid;
     new Promise(async (resolve, reject) => {
       for (let doc of user.docs) {
         registrationTokens.push(doc.data().token);
@@ -59,7 +59,7 @@ async function groupPush(gid, msg) {
   const member = await memberRef.get();
 
   const registrationTokens = [];
-  const topic = gid;
+  const topic = "topic" + gid;
 
   new Promise(async (resolve, reject) => {
     for (let doc of member.docs) {
