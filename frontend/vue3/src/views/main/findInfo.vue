@@ -88,7 +88,7 @@
         </div>
       </div>
 
-      <router-link to="/main"
+      <router-link to="/"
         ><button class="findCancelBtn redBtn">취소</button></router-link
       >
       <button

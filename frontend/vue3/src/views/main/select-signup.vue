@@ -25,7 +25,7 @@
         </div>
       </router-link>
       <br />
-      <router-link to="/main"
+      <router-link to="/"
         ><button class="blueBtn">돌아가기</button></router-link
       >
     </div>
@@ -65,21 +65,14 @@ export default {
             .then((res) => {
               console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
-                this.$router.push('Calendar')
+                location.replace('/calendar')
               } else {
-                this.$router.push('SuccessSignup')
+                location.replace('/welcome')
               }
             })
         })
         .catch((err) => {
           const errorCode = err.code
-          // const errorMessage = error.message
-          // const email = error.email
-          // const credential = GoogleAuthProvider.credentialFromError(error)
-          // console.log('errorCode: ' + errorCode)
-          // console.log('errorMessage: ' + errorMessage)
-          // console.log('email: ' + email)
-          // console.log('credential: ' + credential)
           if (errorCode === 'auth/popup-blocked') {
             alert('팝업이 차단되었습니다')
           }
@@ -107,21 +100,14 @@ export default {
             .then((res) => {
               console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
-                this.$router.push('Calendar')
+                location.replace('/calendar')
               } else {
-                this.$router.push('SuccessSignup')
+                location.replace('/welcome')
               }
             })
         })
         .catch((err) => {
           const errorCode = err.code
-          // const errorMessage = error.message
-          // const email = error.email
-          // const credential = FacebookAuthProvider.credentialFromError(error)
-          // console.log('errorCode: ' + errorCode)
-          // console.log('errorMessage: ' + errorMessage)
-          // console.log('email: ' + email)
-          // console.log('credential: ' + credential)
           if (errorCode === 'auth/popup-blocked') {
             alert('팝업이 차단되었습니다')
           }

@@ -71,18 +71,20 @@ export default {
 
     function showModal() {
       // VMmodal.vue에 접근하여 show 함수 실행
+      // console.log(modal.value)
       modal.value.show();
     }
 
-    const handleClickDate =  function () {
+    const handleClickDate =  function (clickInfo) {
+      // console.log(clickInfo)
       if ( confirm('일정을 추가하시겠습니까?') ) {
-        router.push({name: 'Schedule'})
+        router.push({name: 'Schedule', query: {start: clickInfo.dateStr}})
       }
     }
 
     const handleEventClick = (clickInfo) => {
       // vuex 상태전환
-      console.log(clickInfo)
+      // console.log(clickInfo)
       store.dispatch('setModal', clickInfo.event)
       // modal open
       showModal()
@@ -118,7 +120,7 @@ export default {
               endDate: c.endDate,
               category: c.category,
               classNames: ['calendar-done'],
-              allDay: c.allday
+              allDay: c.allDay
             }
           }
           else {
@@ -136,7 +138,7 @@ export default {
               startDate: c.startDate,
               endDate: c.endDate,
               category: c.category,
-              allDay: c.allday
+              allDay: c.allDay
             }
           }
         })
