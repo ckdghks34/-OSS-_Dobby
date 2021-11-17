@@ -481,7 +481,8 @@ export default {
                   endDate : res.endDate,
                   category: res.category,
                   allDay : res.allDay,
-                  participant : res.participant
+                  participant : res.participant,
+                  creator: res.creator,
                   }
                 
                 store.dispatch('pushGroupCalendarData', d)
@@ -533,7 +534,8 @@ export default {
                   endDate : res.endDate,
                   category: res.category,
                   allDay : res.allDay,
-                  participant : res.participant
+                  participant : res.participant,
+                  creator: res.creator,
                   }
 
                 store.dispatch('pushGroupCalendarData', day)
