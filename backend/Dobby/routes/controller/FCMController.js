@@ -10,28 +10,30 @@ async function userPush(fcmtoken, uid, msg) {
     return false;
   } else {
     new Promise(async (resolve, reject) => {
-      // for (let doc of user.docs) {
+      for (let doc of user.docs) {
         let message = {
           notification: {
             title: msg.title,
             body: msg.body,
           },
-          // token: doc.data().token,
-          token: fcmtoken,
+          token: doc.data().token,
+          // token: fcmtoken,
         };
+
+        console.log(message);
 
         await firebase_admin
           .messaging()
           .send(message)
           .then((res) => {
             console.log("Successfully sent message : ", res);
-            return true;
+            // return true;
           })
           .catch((err) => {
             console.log("Error Sending message! : ", err);
-            return false;
+            // return false;
           });
-      // }
+      }
       resolve();
     });
   }
@@ -53,6 +55,7 @@ async function groupPush(gid, msg) {
           },
           token: docu.data().token,
         };
+        console.log(message);
 
         await firebase_admin
           .messaging()
