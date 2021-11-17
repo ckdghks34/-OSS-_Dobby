@@ -149,22 +149,6 @@ export default {
     // teleportExample,
   },
   setup() {
-    if (localStorage.getItem('token')) {
-      axios
-        .post(
-          'https://k5d105.p.ssafy.io:3030/token/checkToken',
-          {},
-          {
-            headers: {
-              authorization: localStorage.getItem('token'),
-            },
-          }
-        )
-        .then(() => {
-          router.push({ name: 'Calendar' })
-        })
-    }
-
     const router = useRouter()
 
     // user 정보
