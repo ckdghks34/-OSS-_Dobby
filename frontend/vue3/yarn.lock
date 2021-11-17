@@ -908,6 +908,13 @@
   resolved "https://registry.yarnpkg.com/@element-plus/icons/-/icons-0.0.11.tgz#9b187c002774548b911850d17fa5fc2f9a515f57"
   integrity sha512-iKQXSxXu131Ai+I9Ymtcof9WId7kaXvB1+WRfAfpQCW7UiAMYgdNDqb/u0hgTo2Yq3MwC4MWJnNuTBEpG8r7+A==
 
+"@fawmi/vue-google-maps@^0.9.4":
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/@fawmi/vue-google-maps/-/vue-google-maps-0.9.4.tgz#80a157de4424b3c4048a3a1700e90297a7ab0c8f"
+  integrity sha512-NTQT0QXj2IFLZl/Dz7pLN4xB6TaLTBAWQsxsbRI21nNeoMcCGRumosUrMxxia1XMYBYyy/3Zoju6JLQ8ODg/LA==
+  dependencies:
+    "@googlemaps/markerclustererplus" "^1.2.3"
+
 "@firebase/analytics-compat@0.1.5":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@firebase/analytics-compat/-/analytics-compat-0.1.5.tgz#9fd587b1b6fa283354428a0f96a19db2389e7da4"
@@ -1325,6 +1332,11 @@
     "@fullcalendar/core" "~5.10.0"
     tslib "^2.1.0"
 
+"@googlemaps/markerclustererplus@^1.2.3":
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/@googlemaps/markerclustererplus/-/markerclustererplus-1.2.7.tgz#a6ddc809ed2153d570fdc860ceb203958eeced42"
+  integrity sha512-BR+JpHAgt7ao5NtCzHT7rTyIJaZ9r8lYaPthDs4D8paSf+0Wb9RgM330H6V6P+qEaCmAwC/yfdg8n40VeBIEIw==
+
 "@grpc/grpc-js@^1.3.2":
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.4.4.tgz#59336f13d77bc446bbdf2161564a32639288dc5b"
@@ -1639,6 +1651,11 @@
     "@types/webpack-sources" "*"
     anymatch "^3.0.0"
     source-map "^0.6.0"
+
+"@vue-leaflet/vue-leaflet@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@vue-leaflet/vue-leaflet/-/vue-leaflet-0.6.1.tgz#d731a5d2256d049e345f58330616180191d88b12"
+  integrity sha512-/sm0bdrdftXh5nSGEPsoKrJI1D/GtKiEsBo9X/TA2yu4lYTDcaem6U4t1Ea5CoLleiZRCNUrZr9PG/xHdUPXYA==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
   version "1.2.1"
@@ -5860,6 +5877,11 @@ launch-editor@^2.2.1:
   dependencies:
     chalk "^2.3.0"
     shell-quote "^1.6.1"
+
+leaflet@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.7.1.tgz#10d684916edfe1bf41d688a3b97127c0322a2a19"
+  integrity sha512-/xwPEBidtg69Q3HlqPdU3DnrXQOvQU/CCHA1tcDQVzOwm91YMYaILjNp7L4Eaw5Z4sOYdbBz6koWyibppd8Zqw==
 
 levn@^0.3.0, levn@~0.3.0:
   version "0.3.0"

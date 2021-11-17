@@ -33,15 +33,24 @@
         </template>
       </el-dialog>
       <img src="@/assets/dobby.png" alt="" />
-      <el-select v-model="info.value" @change="search">
-        <el-option
-          v-for="item in info.options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+      <div>
+        <el-select class="search" v-model="info.value" @change="search">
+          <el-option
+            v-for="item in info.options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <button
+          class="newGroupBtn blueBtn"
+          type="button"
+          @click="handleToCreate"
         >
-        </el-option>
-      </el-select>
+          그룹 생성
+        </button>
+      </div>
       <div
         class="groupLi"
         v-for="(group, index) in info.pageGroup"
@@ -83,9 +92,12 @@
 import { reactive, ref } from '@vue/reactivity'
 import axios from 'axios'
 import { onBeforeMount } from '@vue/runtime-core'
+import { useRouter } from 'vue-router'
+
 export default {
   name: 'searchGroup',
   setup() {
+    const router = useRouter()
     const info = reactive({
       dialogVisible: false,
       message: '',
@@ -111,7 +123,11 @@ export default {
 
     onBeforeMount(() => {
       axios
-        .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups')
+        .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups', {
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+        })
         .then((res) => {
           info.groupLi = res.data.groups
           info.pageGroup = info.groupLi.slice(0, 8)
@@ -121,14 +137,22 @@ export default {
     const search = function() {
       if (info.value === '전체 그룹') {
         axios
-          .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups')
+          .get('https://k5d105.p.ssafy.io:3030/group/getAllgroups', {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          })
           .then((res) => {
             info.groupLi = res.data.groups
             info.pageGroup = info.groupLi.slice(0, 8)
           })
       } else {
         axios
-          .get('https://k5d105.p.ssafy.io:3030/group/getPublicGroups')
+          .get('https://k5d105.p.ssafy.io:3030/group/getPublicGroups', {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          })
           .then((res) => {
             info.groupLi = res.data.groups
             info.pageGroup = info.groupLi.slice(0, 8)
@@ -136,11 +160,18 @@ export default {
       }
     }
 
+    const handleToCreate = function() {
+      router.push({ name: 'NewGroup' })
+    }
+
     const clickGroup = function(e) {
       info.groupGid = e
       axios
         .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
           params: { gid: info.groupGid },
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
         })
         .then((res) => {
           info.groupName = res.data.group.name
@@ -153,19 +184,17 @@ export default {
     const joinGroup = function() {
       console.log('join')
       axios
-        .get(
-          'https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup',
-          {
-            params: {
-              uid: localStorage.getItem('uid'),
-            },
-          },
-          {
+        .get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {
+          params: {
+            uid: localStorage.getItem('uid'),
             headers: {
               authorization: localStorage.getItem('token'),
             },
-          }
-        )
+          },
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+        })
         .then((res) => {
           for (var i in res.data.group) {
             if (res.data.group[i]['name'] === info.groupName) {
@@ -175,10 +204,18 @@ export default {
             }
           }
           axios
-            .post('https://k5d105.p.ssafy.io:3030/group/joinGroup', {
-              gid: info.groupGid,
-              uid: localStorage.getItem('uid'),
-            })
+            .post(
+              'https://k5d105.p.ssafy.io:3030/group/joinGroup',
+              {
+                gid: info.groupGid,
+                uid: localStorage.getItem('uid'),
+              },
+              {
+                headers: {
+                  authorization: localStorage.getItem('token'),
+                },
+              }
+            )
             .then(() => {
               info.searchDia = false
               info.message = `${info.groupName}에 가입되었습니다`
@@ -190,7 +227,14 @@ export default {
     const handleCurrentChange = function(val) {
       info.pageGroup = info.groupLi.slice((val - 1) * 8, (val - 1) * 8 + 8)
     }
-    return { info, search, clickGroup, joinGroup, handleCurrentChange }
+    return {
+      info,
+      search,
+      handleToCreate,
+      clickGroup,
+      joinGroup,
+      handleCurrentChange,
+    }
   },
 }
 </script>
@@ -214,9 +258,15 @@ export default {
   max-width: 600px;
 }
 
-.searchGroupDiv .el-select {
-  width: 100%;
+.search {
+  width: 80%;
   margin-bottom: 3%;
+}
+
+.newGroupBtn {
+  width: 15%;
+  height: 40px;
+  margin-left: 2%;
 }
 
 .searchGroupDiv .el-select:hover {
@@ -276,6 +326,17 @@ export default {
 } */
 
 @media screen and (max-width: 530px) {
+  .search {
+    width: 100%;
+    margin-bottom: 3%;
+  }
+
+  .newGroup {
+    width: 100%;
+    height: 40px;
+    margin-left: 0;
+  }
+
   .groupLi {
     width: 95%;
     height: 50px;

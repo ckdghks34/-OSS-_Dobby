@@ -42,7 +42,7 @@
           ></el-input>
         </el-form-item>
       </el-form>
-      <router-link to="/main"><button class="redBtn">취소</button></router-link>
+      <router-link to="/"><button class="redBtn">취소</button></router-link>
       <button class="blueBtn" type="button" @click="createNewGroup">
         생성
       </button>
@@ -103,9 +103,15 @@ export default {
                 },
               }
             )
-            .then(() => router.push({ name: 'Calendar' }))
+            .then((res) => {
+              console.log(res)
+              router.push({
+                name: 'GroupCalendar',
+                query: { gid: res.data.group.gid },
+              })
+            })
             .catch((err) => {
-              if (err.response.status === 403) {
+              if (err.response.status === 401) {
                 alert('로그인이 만료되었습니다')
                 router.push({ name: 'main' })
                 localStorage.removeItem('token')

@@ -39,7 +39,7 @@
               :percentage="
                 Math.floor((t.Num / info.totalCount).toFixed(2) * 100)
               "
-              :color="info.color[index % 2]"
+              :color="info.color[index % 5]"
               style="margin-bottom:3%"
             />
           </div>
@@ -48,7 +48,8 @@
       <div>
         <p>계획은 얼마나 달성했을까?</p>
         <p style="margin:0 0 3% 0">
-          평균 {{ (info.doneCount / info.totalCount).toFixed(2) * 100 }}%
+          평균
+          {{ Math.floor((info.doneCount / info.totalCount).toFixed(2) * 100) }}%
         </p>
         <div class="demo-progress" v-if="info.doneCount">
           <div v-for="(t, index) in info.categoryLi" :key="index">
@@ -60,7 +61,7 @@
               :text-inside="true"
               :stroke-width="20"
               :percentage="Math.floor((t.check / t.total).toFixed(2) * 100)"
-              :color="info.color[index % 2]"
+              :color="info.color[index % 5]"
               style="margin-bottom:3%"
             />
           </div>
@@ -75,7 +76,7 @@
               :text-inside="true"
               :stroke-width="20"
               :percentage="0"
-              :color="info.color[index % 2]"
+              :color="info.color[index % 5]"
               style="margin-bottom:3%"
             />
           </div>
@@ -100,7 +101,7 @@ export default {
       totalLi: [],
       doneCount: 0,
       categoryLi: [],
-      color: ['#a9c9de', '#F4EF50', '#C882D8', '#D2F276', '#5FCEC6'],
+      color: ['#a9c9de', '#80CBC4', '#5FCEC6', '#A5D6A7', '#C8E6C9'],
     })
 
     const state = reactive({

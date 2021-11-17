@@ -67,6 +67,23 @@
         </button>
         <div class="groupMember">
           <div v-for="(t, index) in info.member" :key="index">
+            <span
+              v-if="t.admin"
+              style="float: left; margin-left:2%; cursor: pointer;"
+              >👑</span
+            >
+            <span
+              v-else-if="t.writer"
+              style="float: left; margin-left:2%; cursor: pointer;"
+              @click="handleWriter(t.nickname, true)"
+              >✏</span
+            >
+            <span
+              v-else
+              style="color: lightgray; float: left; margin-left:2%; cursor: pointer;"
+              @click="handleWriter(t.nickname, false)"
+              >✏</span
+            >
             <p
               style="display:inline-block; margin: 4px 0; cursor:pointer"
               @click="changeAdminBtn(t.nickname)"
@@ -111,14 +128,15 @@
 <script>
 import { reactive } from '@vue/reactivity'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
-import { onBeforeMount } from '@vue/runtime-core'
+import { useRouter, useRoute } from 'vue-router'
+import { onBeforeMount, watch } from '@vue/runtime-core'
 
 export default {
   name: 'groupInfo',
   props: ['gid'],
   setup(props) {
     const router = useRouter()
+    const route = useRoute()
     const info = reactive({
       userEmail: '',
       userNick: '',
@@ -135,43 +153,30 @@ export default {
       inviteEmail: '',
       member: [],
     })
+
+    watch(
+      () => route.params,
+      (first) => {
+        props = first
+        getGroup()
+      }
+    )
+
     onBeforeMount(() => {
       axios
-        .get(
-          'https://k5d105.p.ssafy.io:3030/users/getUserInfo',
-          {
-            params: { uid: localStorage.getItem('uid') },
+        .get('https://k5d105.p.ssafy.io:3030/users/getUserInfo', {
+          params: { uid: localStorage.getItem('uid') },
+          headers: {
+            authorization: localStorage.getItem('token'),
           },
-          {
-            headers: {
-              authorization: localStorage.getItem('token'),
-            },
-          }
-        )
+        })
         .then((res) => {
           info.userEmail = res.data.user.email
           info.userNick = res.data.user.nickname
-          axios
-            .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-              params: { gid: props.gid },
-            })
-            .then((res) => {
-              console.log(res)
-              info.name = res.data.group.name
-              info.description = res.data.group.description
-              info.private = res.data.group.private
-              info.password = res.data.group.password
-              info.member = res.data.group.members
-              if (res.data.group.admin === info.userEmail) {
-                info.admin = true
-              } else {
-                info.admin = false
-              }
-              console.log(info.member)
-            })
+          getGroup()
         })
         .catch((err) => {
-          if (err.response.status === 403) {
+          if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
             router.push({ name: 'main' })
             localStorage.removeItem('token')
@@ -179,20 +184,49 @@ export default {
           }
         })
     })
+    const getGroup = function() {
+      axios
+        .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
+          params: { gid: props.gid },
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+        })
+        .then((res) => {
+          console.log(res)
+          info.name = res.data.group.name
+          info.description = res.data.group.description
+          info.private = res.data.group.private
+          info.password = res.data.group.password
+          info.member = res.data.group.members
+          if (res.data.group.admin === info.userEmail) {
+            info.admin = true
+          } else {
+            info.admin = false
+          }
+        })
+    }
 
     const changeInfo = function() {
-      axios
-        .put('https://k5d105.p.ssafy.io:3030/group/updateGroup', {
+      axios.put(
+        'https://k5d105.p.ssafy.io:3030/group/updateGroup',
+        {
           private: info.private,
           password: info.password,
           name: info.name,
           description: info.description,
           gid: props.gid,
-        })
-        .then(() => {
-          info.dialogVisible = true
-          info.message = '정보가 수정되었습니다'
-        })
+        },
+        {
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+        }
+      )
+      // .then(() => {
+      //   info.dialogVisible = true
+      //   info.message = '정보가 수정되었습니다'
+      // })
     }
 
     const changeAdminBtn = function(e) {
@@ -223,26 +257,33 @@ export default {
           alert(`그룹장이 ${info.changeAdmin} 님으로 변경되었습니다`)
           info.changeDia = false
           info.changeAdmin = ''
-          axios
-            .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-              params: { gid: props.gid },
-            })
-            .then((res) => {
-              console.log(res)
-              info.name = res.data.group.name
-              info.description = res.data.group.description
-              info.private = res.data.group.private
-              info.password = res.data.group.password
-              info.member = res.data.group.members
-              if (res.data.group.admin === info.userEmail) {
-                info.admin = true
-              } else {
-                info.admin = false
-              }
-              console.log(info.member)
-            })
+          getGroup()
         })
         .catch((err) => console.log(err))
+    }
+
+    const handleWriter = function(nickname, writer) {
+      axios
+        .put(
+          'https://k5d105.p.ssafy.io:3030/group/updateWriterAuth',
+          {
+            gid: props.gid,
+            nickname: nickname,
+            writer: !writer,
+          },
+          {
+            headers: { authorization: localStorage.getItem('token') },
+          }
+        )
+        .then((res) => {
+          console.log(res)
+          info.dialogVisible = true
+          info.message = '일정 작성 권한이 수정되었습니다'
+          getGroup()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
 
     const deleteMem = function(e) {
@@ -256,16 +297,10 @@ export default {
         .then(() => {
           info.dialogVisible = true
           info.message = '회원을 추방했습니다'
-          axios
-            .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-              params: { gid: props.gid },
-            })
-            .then((res) => {
-              info.member = res.data.group.members
-            })
+          getGroup()
         })
         .catch((err) => {
-          if (err.response.status === 403) {
+          if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
             router.push({ name: 'main' })
             localStorage.removeItem('token')
@@ -277,23 +312,20 @@ export default {
     const inviteMem = function() {
       if (info.inviteEmail) {
         axios
-          .put('https://k5d105.p.ssafy.io:3030/group/addMember', {
-            gid: props.gid,
-            email: info.inviteEmail,
-          })
+          .put(
+            'https://k5d105.p.ssafy.io:3030/group/addMember',
+            {
+              gid: props.gid,
+              email: info.inviteEmail,
+            },
+            {
+              headers: { authorization: localStorage.getItem('token') },
+            }
+          )
           .then(() => {
-            info.dialogVisible = true
-            info.message = '회원을 초대했습니다'
             info.inviteDia = false
             info.inviteEmail = ''
-            axios
-              .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-                params: { gid: props.gid },
-              })
-              .then((res) => {
-                info.member = res.data.group.members
-                console.log(info.member)
-              })
+            getGroup()
           })
           .catch(() => {
             info.dialogVisible = true
@@ -317,7 +349,7 @@ export default {
           router.push({ name: 'Calendar' })
         })
         .catch((err) => {
-          if (err.response.status === 403) {
+          if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
             router.push({ name: 'main' })
             localStorage.removeItem('token')
@@ -339,7 +371,7 @@ export default {
           router.push({ name: 'Calendar' })
         })
         .catch((err) => {
-          if (err.response.status === 403) {
+          if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
             router.push({ name: 'main' })
             localStorage.removeItem('token')
@@ -350,7 +382,9 @@ export default {
 
     return {
       info,
+      getGroup,
       changeInfo,
+      handleWriter,
       deleteMem,
       changeAdminBtn,
       changeAdmin,

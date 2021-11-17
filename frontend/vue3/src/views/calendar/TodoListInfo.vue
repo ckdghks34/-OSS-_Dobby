@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-space wrap direction="vertical">
-      <el-card v-for="i in today" :key="i" class="box-card todoList-card" @click="changeTodo(i)">
+      <el-card v-for="i in state.mData" :key="i" class="box-card todoList-card" @click="changeTodo(i)">
         <el-row v-if="isToday(i.start)">
           <el-col :span="10" class="todoList-card-time">
             {{ `${i.start.toString().split(' ')[4].substring(0, 2)}시` }}
@@ -45,7 +45,6 @@ export default {
       const tTime = dayjs();
       return tTime.isSame(time, 'day')
     }
-
 
     const state = reactive({
       mData: computed(() => store.getters.getTodayToDoList)

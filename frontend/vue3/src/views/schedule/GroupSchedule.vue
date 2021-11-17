@@ -42,7 +42,13 @@
     <br>
     <div class="userCalendar-schedule-row">
       <label class="label" for="place">장소</label>
-      <input class="web-input" type="text" id="place" v-model="state.placeName">
+      <!-- <input class="web-input" type="text" id="place" v-model="state.placeName"> -->
+      <GMapAutocomplete
+                placeholder="장소를 입력해주세요"
+                @place_changed="setPlace"
+                class="web-input"
+                ref="mapAutoComplete">
+      </GMapAutocomplete>
     </div>
     <br>
     <div class="userCalendar-schedule-category">
@@ -122,7 +128,11 @@
     <br>
     <div>
       <label class="label" for="place">장소</label>
-      <input class="input" type="text" id="place" v-model="state.placeName">
+      <GMapAutocomplete
+                placeholder="장소를 입력해주세요"
+                @place_changed="setPlace"
+                ref="mapAutoComplete">
+      </GMapAutocomplete>
     </div>
     <br>
     <div>
@@ -178,7 +188,7 @@ export default {
       uid: localStorage.getItem('uid'),
       title:'',
       content:'',
-      startDate:'',
+      startDate: route.query.start,
       endDate:'',
       startTime:'',
       endTime:'',
@@ -263,6 +273,7 @@ export default {
       if ( state.allDay ) {
         const aDay = {
           uid : state.uid,
+          gid: route.query.gid,
           title : state.title,
           content : state.content,
           startDate : state.startDate,
@@ -290,7 +301,6 @@ export default {
               const d = {
                 cid : res.cid,
                 gid: route.query.gid,
-                completed: res.completed,
                 title : res.title,
                 content : res.content,
                 start: res.startDate+'T'+res.startTime,
@@ -305,7 +315,7 @@ export default {
                 allDay : res.allDay,
                 participant : res.participant
                 }
-
+              
               store.dispatch('pushGroupCalendarData', d)
               router.push({name: 'GroupCalendar', query : {gid: route.query.gid}})
             })
@@ -358,6 +368,7 @@ export default {
                   allDay : res.allDay,
                   participant : res.participant
                   }
+
                 store.dispatch('pushGroupCalendarData', day)
                 router.push({name: 'GroupCalendar', query : {gid: route.query.gid}})
               })
