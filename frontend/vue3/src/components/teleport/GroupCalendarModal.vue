@@ -17,8 +17,8 @@
                   <span v-else style="fontSize: 1.5rem">{{ state.mData.ModalDate.title }}</span>
                 </div>
                 <div>
-                  <i v-if="checkWriter() && state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
-                  <i v-if="checkWriter() && !state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
+                  <i v-if="checkPartipants() && state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
+                  <i v-if="checkPartipants() && !state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
 
                   <i v-if="checkWriter()" class="el-icon-edit modalIcon" @click="modalPut"></i>
 
@@ -225,8 +225,8 @@ export default {
     }
 
     const modalSuccess = function () {
-      if ( !checkWriter() ) {
-        alert('일정을 수정할수 있는 권한이 없습니다.')
+      if ( !checkPartipants() ) {
+        alert('일정을 완료할수 있는 권한이 없습니다.')
         router.push({name: 'GroupCalendar', query: { gid: route.query.gid }})
       } else {
         axios.
@@ -307,7 +307,6 @@ export default {
         })
         .catch((error) => {
           console.log(error)
-          console.log(error.response)
         })
       }
     }
@@ -323,6 +322,20 @@ export default {
       return false
     }
 
+    const checkPartipants = () => {
+      if ( state.mData ) {
+        const parts = state.mData.ModalDate.extendedProps.participant
+        const res = parts.find((p) => p.uid === localStorage.getItem('uid'))
+        if (res === undefined) {
+          // 없다
+          return false 
+        } else {
+          return true
+        }
+      }
+      return false
+    }
+
     const state = reactive({
       mData: computed(() => store.getters.getGroupModalDataFormat),
       calendar: computed(() => store.state.groupCalAPI),
@@ -331,7 +344,7 @@ export default {
       writer: false,
     })
 
-    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess, checkWriter};
+    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess, checkWriter, checkPartipants};
   },
   data() {
     return {
