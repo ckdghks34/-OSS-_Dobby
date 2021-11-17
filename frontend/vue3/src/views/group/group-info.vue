@@ -12,7 +12,9 @@
       ></el-input>
       <template #footer>
         <span class="dialog-footer">
-          <el-button class="redBtn" @click="info.inviteDia = false"
+          <el-button
+            class="redBtn"
+            @click=";(info.inviteDia = false), (info.inviteEmail = '')"
             >취소</el-button
           >
           <el-button class="blueBtn" @click="inviteMem">초대</el-button>
@@ -302,7 +304,12 @@ export default {
           getGroup()
         })
         .catch((err) => {
-          console.log(err)
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
         })
     }
 
@@ -342,20 +349,27 @@ export default {
               headers: { authorization: localStorage.getItem('token') },
             }
           )
-          .then(() => {
-            info.inviteDia = false
-            info.inviteEmail = ''
-            getGroup()
+          .then((res) => {
+            if (res.data.msg === '존재하지 않는 유저입니다.') {
+              info.dialogVisible = true
+              info.message = '이메일을 확인해 주세요'
+            } else if (res.data.msg === '이미 존재하는 유저입니다.') {
+              info.dialogVisible = true
+              info.message = '이미 존재하는 유저입니다'
+            } else {
+              console.log(res)
+              info.inviteDia = false
+              info.inviteEmail = ''
+              getGroup()
+            }
           })
           .catch((err) => {
+            console.log(err)
             if (err.response.status === 401) {
               alert('로그인이 만료되었습니다')
               location.replace('/')
               localStorage.removeItem('token')
               localStorage.removeItem('uid')
-            } else {
-              info.dialogVisible = true
-              info.message = '이메일을 확인해 주세요'
             }
           })
       }
