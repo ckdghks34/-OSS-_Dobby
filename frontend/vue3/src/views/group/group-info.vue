@@ -289,32 +289,34 @@ export default {
     }
 
     const handleWriter = function(nickname, writer) {
-      axios
-        .put(
-          'https://k5d105.p.ssafy.io:3030/group/updateWriterAuth',
-          {
-            gid: props.gid,
-            nickname: nickname,
-            writer: !writer,
-          },
-          {
-            headers: { authorization: localStorage.getItem('token') },
-          }
-        )
-        .then((res) => {
-          console.log(res)
-          info.dialogVisible = true
-          info.message = '일정 작성 권한이 수정되었습니다'
-          getGroup()
-        })
-        .catch((err) => {
-          if (err.response.status === 401) {
-            alert('로그인이 만료되었습니다')
-            location.replace('/')
-            localStorage.removeItem('token')
-            localStorage.removeItem('uid')
-          }
-        })
+      if (info.admin) {
+        axios
+          .put(
+            'https://k5d105.p.ssafy.io:3030/group/updateWriterAuth',
+            {
+              gid: props.gid,
+              nickname: nickname,
+              writer: !writer,
+            },
+            {
+              headers: { authorization: localStorage.getItem('token') },
+            }
+          )
+          .then((res) => {
+            console.log(res)
+            info.dialogVisible = true
+            info.message = '일정 작성 권한이 수정되었습니다'
+            getGroup()
+          })
+          .catch((err) => {
+            if (err.response.status === 401) {
+              alert('로그인이 만료되었습니다')
+              location.replace('/')
+              localStorage.removeItem('token')
+              localStorage.removeItem('uid')
+            }
+          })
+      }
     }
 
     const deleteMem = function(e) {
