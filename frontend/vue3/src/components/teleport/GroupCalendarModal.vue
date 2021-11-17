@@ -1,5 +1,6 @@
 <template>
   <div class="modal" v-if="isOpen">
+    
     <el-card class="box-card modal-content">
       <template #header>
         <div v-if="state.isBig">
@@ -16,10 +17,12 @@
                   <span v-else style="fontSize: 1.5rem">{{ state.mData.ModalDate.title }}</span>
                 </div>
                 <div>
-                  <i v-if="state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
-                  <i v-if="!state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
-                  <i class="el-icon-edit modalIcon" @click="modalPut"></i>
-                  <i class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
+                  <i v-if="checkPartipants() && state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
+                  <i v-if="checkPartipants() && !state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
+
+                  <i v-if="checkWriter()" class="el-icon-edit modalIcon" @click="modalPut"></i>
+
+                  <i v-if="checkWriter()" class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
                   <i class="el-icon-close modalIcon" @click="hide"></i>
                 </div>
               </div>
@@ -30,10 +33,12 @@
         <div v-if="!state.isBig">
           <el-row class="modal-content-body-contents-row">
             <div class="modal-content-header" style="width: 100%">
-              <i v-if="state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
-              <i v-if="!state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
-              <i class="el-icon-edit modalIcon" @click="modalPut"></i>
-              <i class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
+              <i v-if="checkPartipants() && state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
+              <i v-if="checkPartipants() && !state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
+
+              <i v-if="checkWriter()" class="el-icon-edit modalIcon" @click="modalPut"></i>
+
+              <i v-if="checkWriter()" class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
               <i class="el-icon-close modalIcon" @click="hide"></i>
             </div>
           </el-row>
@@ -116,7 +121,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="state.dialogVisible = false">취소</el-button>
-          <el-button type="danger" @click="delEvent" >삭제</el-button>
+          <el-button  v-if="checkWriter()" type="danger" @click="delEvent" >삭제</el-button>
         </span>
       </template>
     </el-dialog>
@@ -180,25 +185,32 @@ export default {
     }
 
     const modalPut = () => {
-      router.push({name: 'GroupCalendarPutSchedule', query: { gid: route.query.gid }})
+      if ( !checkWriter() ) {
+        alert('일정을 수정할수 있는 권한이 없습니다.')
+        router.push({name: 'GroupCalendar', query: { gid: route.query.gid }})
+      } else {
+        router.push({name: 'GroupCalendarPutSchedule', query: { gid: route.query.gid }})
+      }
     }
 
     const delEvent = () => {
-      state.dialogVisible = false    
+      if ( !checkWriter() ) {
+        alert('일정을 삭제할수 있는 권한이 없습니다.')
+        router.push({name: 'GroupCalendar', query: { gid: route.query.gid }})
+      } else {
+        state.dialogVisible = false    
       // 삭제 axios 요청
       axios
-        .delete('https://k5d105.p.ssafy.io:3030/groupCalendar/deleteCalendar',
-          { 
+        .delete('https://k5d105.p.ssafy.io:3030/groupCalendar/deleteCalendar',{ 
             data: {
               uid: localStorage.getItem('uid'),
               cid: state.mData.ModalDate.extendedProps.cid,
               gid: route.query.gid,
-            }
-          },
-          {
+            },
             headers: {
-              authorization: localStorage.getItem('token')
-            }
+            authorization: localStorage.getItem('token'),
+            FCMtoken: localStorage.getItem('FCMtoken'),
+            },
           })
           .then(() => {
             state.mData.ModalDate.remove()
@@ -207,15 +219,20 @@ export default {
           .catch((error) => {
             console.log(error)
           })
+      }
     }
 
     const modalSuccess = function () {
-      axios.
+      if ( !checkPartipants() ) {
+        alert('일정을 완료할수 있는 권한이 없습니다.')
+        router.push({name: 'GroupCalendar', query: { gid: route.query.gid }})
+      } else {
+        axios.
         put('https://k5d105.p.ssafy.io:3030/groupCalendar/checkCalendar',
         {
           uid: localStorage.getItem('uid'),
           cid: state.mData.ModalDate.extendedProps.cid,
-          gid: state.mData.ModalDate.extendedProps.gid,
+          gid: route.query.gid,
         },
         {
           headers: {
@@ -289,17 +306,43 @@ export default {
         .catch((error) => {
           console.log(error)
         })
+      }
     }
 
+    const checkWriter = () => {
+      if ( state.mData ) {
+        if ( localStorage.getItem('uid') === state.mData.ModalDate.extendedProps.creator) {
+          return true
+        } else {
+          return false
+        }
+      } 
+      return false
+    }
+
+    const checkPartipants = () => {
+      if ( state.mData ) {
+        const parts = state.mData.ModalDate.extendedProps.participant
+        const res = parts.find((p) => p.uid === localStorage.getItem('uid'))
+        if (res === undefined) {
+          // 없다
+          return false 
+        } else {
+          return true
+        }
+      }
+      return false
+    }
 
     const state = reactive({
       mData: computed(() => store.getters.getGroupModalDataFormat),
       calendar: computed(() => store.state.groupCalAPI),
       dialogVisible: ref(false),
-      isAuthority: computed(() => localStorage.getItem('uid') === state.mData.ModalDate.extendedProps.creator)
+      isAuthority: computed(() => localStorage.getItem('uid') === state.mData.ModalDate.extendedProps.creator),
+      writer: false,
     })
 
-    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess};
+    return { isOpen, hide, show, modalPut, state, delEvent, calData, modalSuccess, checkWriter, checkPartipants};
   },
   data() {
     return {

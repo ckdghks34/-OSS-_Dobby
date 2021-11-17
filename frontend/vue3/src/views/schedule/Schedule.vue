@@ -13,12 +13,23 @@
     <br />
     <div class="userCalendar-schedule-row">
       <label class="label" for="date">날짜</label>
-      <input
+      <!-- <input
         class="date-input"
         type="date"
         id="date"
         v-model="state.startDate"
-      />~<input class="date-input" type="date" v-model="state.endDate" />
+      />~<input class="date-input" type="date" v-model="state.endDate" /> -->
+      <div class="scheduleDate">
+        <div class="block">
+          <el-date-picker
+            class="datePicker"
+            v-model="state.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+          >
+          </el-date-picker>
+        </div>
+      </div>
     </div>
     <br />
     <div class="userCalendar-schedule-row">
@@ -48,10 +59,28 @@
       >
       </GMapAutocomplete>
     </div>
-    <div>
-      <el-button v-if="state.placeName" round @click="showMapModal">경로탐색</el-button>
-      <!-- <el-button disabled round @click="showMapModal">경로탐색</el-button> -->
-      <el-button v-else disabled round @click="showMapModal">경로탐색</el-button>
+    <br />
+    <div class="userCalendar-schedule-row">
+      <div class="label"></div>
+      <div>
+        <el-button
+          v-if="state.placeName"
+          round
+          @click="showMapModal"
+          type="info"
+          >경로탐색</el-button
+        >
+        <el-button v-else disabled round @click="showMapModal" type="info"
+          >경로탐색</el-button
+        >
+      </div>
+      <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+        <!-- <span class="userCalendar-choice-">
+            {{ `시간 : ${state.choiceWay.duration}  거리 : ${state.choiceWay.distance}` }}
+          </span> -->
+        <el-button round size="small">{{ state.choiceWay.duration }}</el-button>
+        <el-button round size="small">{{ state.choiceWay.distance }}</el-button>
+      </div>
     </div>
     <br />
     <div class="userCalendar-schedule-category">
@@ -104,7 +133,6 @@
         style="margin-left:30px"
         type="button"
         @click="addSchedule"
-        v-bind:disabled="title == ''"
       >
         추가
       </button>
@@ -126,12 +154,17 @@
     <div>
       <label class="label" for="date">날짜</label>
       <div>
-        <input
-          class="input"
-          type="date"
-          id="date"
-          v-model="state.startDate"
-        />~<input class="input" type="date" v-model="state.endDate" />
+        <div class="scheduleDate">
+          <div class="block">
+            <el-date-picker
+              class="datePicker"
+              v-model="state.date"
+              type="daterange"
+              value-format="YYYY-MM-DD"
+            >
+            </el-date-picker>
+          </div>
+        </div>
       </div>
     </div>
     <br />
@@ -163,10 +196,10 @@
       <label class="label" for="category">분류</label>
       <!-- <span class="label">분류</span> -->
       <div>
-        <el-radio v-model="staet.category" label="공부" border>공부</el-radio>
-        <el-radio v-model="staet.category" label="운동" border>운동</el-radio>
-        <el-radio v-model="staet.category" label="업무" border>업무</el-radio>
-        <el-radio v-model="staet.category" label="취미" border>취미</el-radio>
+        <el-radio v-model="state.category" label="공부" border>공부</el-radio>
+        <el-radio v-model="state.category" label="운동" border>운동</el-radio>
+        <el-radio v-model="state.category" label="업무" border>업무</el-radio>
+        <el-radio v-model="state.category" label="취미" border>취미</el-radio>
       </div>
     </div>
     <br />
@@ -219,30 +252,34 @@
 
 <script>
 import axios from 'axios'
-import { useRouter } from 'vue-router'
-import { reactive, onBeforeMount, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { reactive, onBeforeMount, ref, computed } from 'vue'
 import { useStore } from 'vuex'
 
+// component
 import CalendarMapModal from '@/components/teleport/CalendarMapModal'
 
 export default {
   name: 'Schedule',
   components: {
+    // LMap,
+    // LGeoJson,
     CalendarMapModal,
   },
   setup() {
     const router = useRouter()
+    const route = useRoute()
     const store = useStore()
 
     const mapAutoComplete = ref(null)
     const mapModal = ref(null)
+    console.log(route.query.start)
 
     const state = reactive({
       uid: localStorage.getItem('uid'),
       title: '',
       content: '',
-      startDate: '',
-      endDate: '',
+      date: [route.query.start, route.query.start],
       startTime: '',
       endTime: '',
       placeName: '',
@@ -255,9 +292,11 @@ export default {
       latitude: 1.1,
       longitude: 1.1,
       falTest: false,
+      isChoiceWay: computed(() => store.state.isChoiceWay),
+      choiceWay: computed(() => store.state.choiceWay),
     })
 
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
       if (window.innerWidth < 730) {
         state.size = false
       }
@@ -281,67 +320,84 @@ export default {
     }
 
     const setPlace = (e) => {
+      // console.log(mapAutoComplete.value)
       state.placeName = e.name
       state.placeLat = e.geometry.location.lat()
       state.placeLng = e.geometry.location.lng()
 
-      findWay()
+      // findWay()
+
+      // mapModal.value.findWayCar()
+      // mapModal.value.choiceWay(mapModal.value.state.curWay[0], 'car')
+      store.dispatch('disableMapModalChocie')
       store.dispatch('setCalendarMapGoal', {
         Lat: state.placeLat,
-        Lng: state.placeLng
+        Lng: state.placeLng,
       })
+
+      // provide('plcaeLat', state.placeLat)
+      // provide('placeLng', state.placeLng)
     }
 
-    const findWay = () => {
-      axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.placeLng},${state.placeLat}?steps=true`)
-        .then((response) => {
-          console.log(response.data.routes)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-      }
+    // const findWay = () => {
+    //   // car driving
+    //   axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
+    //     .then((response) => {
+    //       console.log(response.data.routes)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // }
 
     const startMap = () => {
-        if ("geolocation" in navigator) { /* geolocation 사용 가능 */
-          navigator.geolocation.getCurrentPosition(function(data) {
-          var latitude = data.coords.latitude;
-          var longitude = data.coords.longitude;
-          state.latitude = latitude
-          state.longitude = longitude
-        }, function(error) {
-          alert(error);
-        }, {
-          enableHighAccuracy: true,
-          timeout: Infinity,
-          maximumAge: 0
-        });
-      } else {  /* geolocation 사용 불가능 */
-        alert('geolocation 사용 불가능');
+      if ('geolocation' in navigator) {
+        /* geolocation 사용 가능 */
+        navigator.geolocation.getCurrentPosition(
+          function(data) {
+            var latitude = data.coords.latitude
+            var longitude = data.coords.longitude
+            state.latitude = latitude
+            state.longitude = longitude
+          },
+          function(error) {
+            alert(error)
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: Infinity,
+            maximumAge: 0,
+          }
+        )
+      } else {
+        /* geolocation 사용 불가능 */
+        alert('geolocation 사용 불가능')
       }
-      }
+    }
 
     const handleCancleSchedule = () => {
       router.push({ name: 'Calendar' })
     }
 
     const addSchedule = function() {
+      let startDate = state.date[0]
+      let endDate = state.date[1]
       if (state.allDay) {
         if (
           state.title &&
           state.content &&
-          state.startDate &&
-          state.endDate &&
+          startDate &&
+          endDate &&
           state.placeName
         ) {
           const aDay = {
             uid: state.uid,
             title: state.title,
             content: state.content,
-            startDate: state.startDate,
-            endDate: state.endDate,
+            startDate: startDate,
+            endDate: endDate,
             startTime: '00:00',
-            endTime: '24:00',
+            endTime: '23:59',
             placeName: state.placeName,
             placeLat: state.placeLat,
             placeLng: state.placeLng,
@@ -393,8 +449,8 @@ export default {
         if (
           state.title &&
           state.content &&
-          state.startDate &&
-          state.endDate &&
+          startDate &&
+          endDate &&
           state.placeName &&
           state.startTime &&
           state.endTime
@@ -403,8 +459,8 @@ export default {
             uid: state.uid,
             title: state.title,
             content: state.content,
-            startDate: state.startDate,
-            endDate: state.endDate,
+            startDate: startDate,
+            endDate: endDate,
             startTime: state.startTime,
             endTime: state.endTime,
             placeName: state.placeName,
@@ -458,29 +514,21 @@ export default {
     }
 
     return {
-        state,
-        addSchedule,
-        handleCancleSchedule,
-        setPlace,
-        mapAutoComplete,
-        showMapModal,
-        mapModal,
-        // geojson,
-        // geojsonOptions
-    }}
+      state,
+      addSchedule,
+      handleCancleSchedule,
+      setPlace,
+      mapAutoComplete,
+      showMapModal,
+      mapModal,
+      // geojson,
+      // geojsonOptions
+    }
+  },
 }
 </script>
 
 <style>
-.tt1 { 
-  width: 500px;
-}
-
-.tt2 {
-  width: 100%;
-  height: 100%;
-}
-
 .schedule-info {
   /* 500 */
   width: 500px;
@@ -538,6 +586,15 @@ export default {
 }
 
 /* 웹화면 */
+.scheduleDate,
+.scheduleDate .el-range-editor.el-input__inner {
+  margin: 0;
+}
+
+.scheduleDate .el-range-editor.el-input__inner {
+  border: 2px solid #a9c9de;
+}
+
 .userCalendar-schedule-row {
   display: flex;
   align-items: center;

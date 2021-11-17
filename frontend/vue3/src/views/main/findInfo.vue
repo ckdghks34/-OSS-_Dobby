@@ -114,13 +114,11 @@
 <script>
 import { reactive, ref } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
 
 export default {
   name: 'findInfo',
 
   setup() {
-    const router = useRouter()
     const changePwForm = ref(null)
 
     const info = reactive({
@@ -214,7 +212,7 @@ export default {
               state.form.password = ''
               state.form.checkPw = ''
               alert('비밀번호가 변경되었습니다')
-              router.push({ name: 'main' })
+              location.replace('/')
             })
         }
       })

@@ -52,13 +52,11 @@
 
 <script>
 import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 export default {
   name: 'new-group',
   setup() {
-    const router = useRouter()
     const newGroupForm = ref(null)
 
     const state = reactive({
@@ -105,15 +103,12 @@ export default {
             )
             .then((res) => {
               console.log(res)
-              router.push({
-                name: 'GroupCalendar',
-                query: { gid: res.data.group.gid },
-              })
+              location.replace(`/groupCalendar?gid=${res.data.group.gid}`)
             })
             .catch((err) => {
               if (err.response.status === 401) {
                 alert('로그인이 만료되었습니다')
-                router.push({ name: 'main' })
+                location.replace('/')
                 localStorage.removeItem('token')
                 localStorage.removeItem('uid')
               }
