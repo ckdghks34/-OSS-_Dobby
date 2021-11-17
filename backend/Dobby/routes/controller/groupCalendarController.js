@@ -461,7 +461,7 @@ async function checkWriter(req, res, next) {
       const memberRef = admin
         .collection("groups")
         .doc(gid)
-        .collection("member");
+        .collection("members");
       const member = await memberRef.get();
       let flag = false;
       let writer = false;

@@ -52,34 +52,48 @@ async function groupPush(gid, msg) {
   const memberRef = admin.collection("groups").doc(gid).collection("members");
   const member = await memberRef.get();
 
+  const registrationTokens = [];
+  const topic = gid;
+
   new Promise(async (resolve, reject) => {
     for (let doc of member.docs) {
       var tokenRef = admin.collection("users").doc(doc.data().uid).collection("tokens");
       var token = await tokenRef.get();
 
       for (let docu of token.docs) {
-        let message = {
-          notification: {
-            title: msg.title,
-            body: msg.body,
-          },
-          token: docu.data().token,
-        };
-        console.log(message);
-
-        await firebase_admin
-          .messaging()
-          .send(message)
-          .then((res) => {
-            console.log("Successfully sent message : ", res);
-            return true;
-          })
-          .catch((err) => {
-            console.log("Error Sending message! : ", err);
-            return false;
-          });
+        registrationTokens.push(docu.data().token);
       }
     }
+
+    await firebase_admin.messaging().subscribeToTopic(registrationTokens, topic)
+      .then((res) => {
+        console.log('Successfully subscribed to topic:', res);
+      })
+      .catch((error) => {
+        console.log('Error subscribing to topic:', error);
+      });
+
+    let message = {
+      notification: {
+        title: msg.title,
+        body: msg.body,
+      },
+      // token: docu.data().token,
+      topic: topic,
+    };
+    console.log(message);
+
+    await firebase_admin
+      .messaging()
+      .send(message)
+      .then((res) => {
+        console.log("Successfully sent message : ", res);
+        // return true;
+      })
+      .catch((err) => {
+        console.log("Error Sending message! : ", err);
+        // return false;
+      });
     resolve();
   });
 }
