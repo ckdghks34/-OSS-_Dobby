@@ -31,6 +31,7 @@ async function userPush(fcmtoken, uid, msg) {
             return false;
           });
       }
+      resolve();
     });
   }
 }
