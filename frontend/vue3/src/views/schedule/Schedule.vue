@@ -41,74 +41,58 @@
       <label class="label" for="place">장소</label>
       <!-- <input class="web-input" type="text" id="place" v-model="state.placeName"> -->
       <GMapAutocomplete
-        placeholder="장소를 입력해주세요"
-        @place_changed="setPlace"
-        class="web-input"
-        ref="mapAutoComplete"
-      >
+          placeholder="장소를 입력해주세요"
+          @place_changed="setPlace"
+          class="web-input"
+          ref="mapAutoComplete">
       </GMapAutocomplete>
     </div>
-    <div>
-      <el-button v-if="state.placeName" round @click="showMapModal">경로탐색</el-button>
-      <!-- <el-button disabled round @click="showMapModal">경로탐색</el-button> -->
-      <el-button v-else disabled round @click="showMapModal">경로탐색</el-button>
-    </div>
-    <br />
-    <div class="userCalendar-schedule-category">
-      <label class="label" for="category">분류</label>
-      <div class="userCalendar-schedule-category-button-wrap">
-        <el-radio v-model="state.category" label="공부" border size="medium"
-          >공부</el-radio
-        >
-        <el-radio v-model="state.category" label="운동" border>운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border>업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border>취미</el-radio>
+      <br>
+      <div class="userCalendar-schedule-row">
+        <div class="label"></div>
+        <div>
+          <el-button v-if="state.placeName" round @click="showMapModal" type="info">경로탐색</el-button>
+          <el-button v-else disabled round @click="showMapModal" type="info">경로탐색</el-button>
+        </div>
+        <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+          <!-- <span class="userCalendar-choice-">
+            {{ `시간 : ${state.choiceWay.duration}  거리 : ${state.choiceWay.distance}` }}
+          </span> -->
+          <el-button round size="small">{{state.choiceWay.duration}}</el-button>
+          <el-button round size="small">{{state.choiceWay.distance}}</el-button>
+        </div>
       </div>
-    </div>
-    <br />
-    <div class="userCalendar-schedule-color-wrap">
-      <label class="label" for="radio">중요도</label>
-      <div class="userCalendar-schedule-color-box">
-        <label class="import-label" v-bind:class="{ red: true }"
-          ><input type="radio" value="#FF7C7C" v-model="state.color"
-        /></label>
-        <label class="import-label" v-bind:class="{ orange: true }"
-          ><input type="radio" value="#FECFA3" v-model="state.color"
-        /></label>
-        <label class="import-label" v-bind:class="{ yellow: true }"
-          ><input type="radio" value="#FFF972" v-model="state.color"
-        /></label>
-        <label class="import-label" v-bind:class="{ green: true }"
-          ><input type="radio" value="#B6FB81" v-model="state.color"
-        /></label>
-        <label class="import-label" v-bind:class="{ blue: true }"
-          ><input type="radio" value="#7886FF" v-model="state.color"
-        /></label>
+      <br>
+      <div class="userCalendar-schedule-category">
+          <label class="label" for="category">분류</label>
+          <div class="userCalendar-schedule-category-button-wrap">
+              <el-radio v-model="state.category" label="공부" border size="medium">공부</el-radio>
+              <el-radio v-model="state.category" label="운동" border>운동</el-radio>
+              <el-radio v-model="state.category" label="업무" border>업무</el-radio>
+              <el-radio v-model="state.category" label="취미" border>취미</el-radio>
+          </div>
       </div>
-    </div>
-    <br />
-    <div class="userCalendar-schedule-row">
-      <label class="label">내용</label>
-      <input
-        class="web-memo"
-        v-bind:class="{ 'memo-content': true, input: true }"
-        type="text"
-        v-model="state.content"
-      />
-    </div>
-    <br />
-    <div>
-      <button class="web-button-red" @click="handleCancleSchedule">취소</button>
-      <button
-        class="web-button-blue"
-        style="margin-left:30px"
-        type="button"
-        @click="addSchedule"
-        v-bind:disabled="title == ''"
-      >
-        추가
-      </button>
-    </div>
+      <br>
+      <div class="userCalendar-schedule-color-wrap">
+          <label class="label" for="radio">중요도</label>
+          <div class="userCalendar-schedule-color-box">
+              <label class="import-label" v-bind:class="{'red':true}"><input type="radio" value="#FF7C7C" v-model="state.color"></label>
+              <label class="import-label" v-bind:class="{'orange':true}"><input type="radio" value="#FECFA3" v-model="state.color"></label>
+              <label class="import-label" v-bind:class="{'yellow':true}"><input type="radio" value="#FFF972" v-model="state.color"></label>
+              <label class="import-label" v-bind:class="{'green':true}"><input type="radio" value="#B6FB81" v-model="state.color"></label>
+              <label class="import-label" v-bind:class="{'blue':true}"><input type="radio" value="#7886FF" v-model="state.color"></label>
+          </div>
+      </div>
+      <br>
+      <div class="userCalendar-schedule-row">
+          <label class="label">내용</label>
+          <input class="web-memo" v-bind:class="{'memo-content':true, 'input':true}" type="text" v-model="state.content">
+      </div>
+      <br>
+      <div>
+          <button class="web-button-red" @click="handleCancleSchedule">취소</button> 
+          <button class="web-button-blue" style="margin-left:30px" type="button" @click="addSchedule">추가</button>
+      </div> 
   </div>
 
   <div class="mobile-schedule-main" v-else>
@@ -218,108 +202,131 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { useRouter } from 'vue-router'
-import { reactive, onBeforeMount, ref } from 'vue'
-import { useStore } from 'vuex'
+import axios from 'axios';
+import { useRoute, useRouter } from 'vue-router';
+import { reactive, onBeforeMount, ref, computed } from 'vue'
+import { useStore } from 'vuex';
 
-import CalendarMapModal from '@/components/teleport/CalendarMapModal'
+// component
+import CalendarMapModal from'@/components/teleport/CalendarMapModal'
+
 
 export default {
-  name: 'Schedule',
-  components: {
-    CalendarMapModal,
-  },
-  setup() {
-    const router = useRouter()
-    const store = useStore()
+    name: 'Schedule',
+    components : {
+        // LMap,
+        // LGeoJson,
+      CalendarMapModal,
+    },
+    setup() {
+        const router = useRouter()
+        const route = useRoute()
+        const store = useStore()
 
-    const mapAutoComplete = ref(null)
-    const mapModal = ref(null)
+        const mapAutoComplete = ref(null)
+        const mapModal = ref(null)
 
-    const state = reactive({
-      uid: localStorage.getItem('uid'),
-      title: '',
-      content: '',
-      startDate: '',
-      endDate: '',
-      startTime: '',
-      endTime: '',
-      placeName: '',
-      placeLat: '',
-      placeLng: '',
-      allDay: false,
-      color: '#FF7C7C',
-      category: '공부',
-      size: true,
-      latitude: 1.1,
-      longitude: 1.1,
-      falTest: false,
-    })
+        const state = reactive({
+            uid: localStorage.getItem('uid'),
+            title:'',
+            content:'',
+            startDate: route.query.start,
+            endDate:'',
+            startTime:'',
+            endTime:'',
+            placeName: '',
+            placeLat: '',
+            placeLng: '',
+            allDay: false,
+            color: '#FF7C7C',
+            category: '',
+            size: true,
+            latitude: 1.1,
+            longitude: 1.1,
+            falTest: false,
+            isChoiceWay: computed(() => store.state.isChoiceWay),
+            choiceWay: computed(() => store.state.choiceWay),
+        })
 
-    onBeforeMount(() => {
-      if (window.innerWidth < 730) {
-        state.size = false
-      }
-      startMap()
-    })
+        onBeforeMount(async () => {
+            if (window.innerWidth < 730) {
+                state.size = false
+            }
+            startMap()
+        })
 
-    window.addEventListener(
-      'resize',
-      function() {
-        if (window.innerWidth < 730) {
-          state.size = false
-        } else {
-          state.size = true
-        }
-      },
-      true
-    )
+        window.addEventListener(
+            'resize',
+            function() {
+                if (window.innerWidth < 730) {
+                state.size = false
+                } else {
+                state.size = true
+                }
+            },
+            true
+        )
 
     const showMapModal = function() {
       mapModal.value.show()
     }
 
     const setPlace = (e) => {
-      state.placeName = e.name
-      state.placeLat = e.geometry.location.lat()
-      state.placeLng = e.geometry.location.lng()
 
-      findWay()
-      store.dispatch('setCalendarMapGoal', {
-        Lat: state.placeLat,
-        Lng: state.placeLng
-      })
+        // console.log(mapAutoComplete.value)
+        state.placeName = e.name
+        state.placeLat = e.geometry.location.lat()
+        state.placeLng = e.geometry.location.lng()
+
+        // findWay()
+
+        // mapModal.value.findWayCar()
+        // mapModal.value.choiceWay(mapModal.value.state.curWay[0], 'car')
+        store.dispatch('disableMapModalChocie')
+        store.dispatch('setCalendarMapGoal', {
+          Lat: state.placeLat,
+          Lng: state.placeLng
+        })
+
+        // provide('plcaeLat', state.placeLat)
+        // provide('placeLng', state.placeLng)
     }
 
-    const findWay = () => {
-      axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.placeLng},${state.placeLat}?steps=true`)
-        .then((response) => {
-          console.log(response.data.routes)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-      }
+    // const findWay = () => {
+    //   // car driving
+    //   axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
+    //     .then((response) => {
+    //       console.log(response.data.routes)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // }
 
     const startMap = () => {
-        if ("geolocation" in navigator) { /* geolocation 사용 가능 */
-          navigator.geolocation.getCurrentPosition(function(data) {
-          var latitude = data.coords.latitude;
-          var longitude = data.coords.longitude;
-          state.latitude = latitude
-          state.longitude = longitude
-        }, function(error) {
-          alert(error);
-        }, {
-          enableHighAccuracy: true,
-          timeout: Infinity,
-          maximumAge: 0
-        });
-      } else {  /* geolocation 사용 불가능 */
-        alert('geolocation 사용 불가능');
+      if ('geolocation' in navigator) {
+        /* geolocation 사용 가능 */
+        navigator.geolocation.getCurrentPosition(
+          function(data) {
+            var latitude = data.coords.latitude
+            var longitude = data.coords.longitude
+            state.latitude = latitude
+            state.longitude = longitude
+          },
+          function(error) {
+            alert(error)
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: Infinity,
+            maximumAge: 0,
+          }
+        )
+      } else {
+        /* geolocation 사용 불가능 */
+        alert('geolocation 사용 불가능')
       }
-      }
+    }
 
     const handleCancleSchedule = () => {
       router.push({ name: 'Calendar' })
@@ -341,7 +348,7 @@ export default {
             startDate: state.startDate,
             endDate: state.endDate,
             startTime: '00:00',
-            endTime: '24:00',
+            endTime: '23:59',
             placeName: state.placeName,
             placeLat: state.placeLat,
             placeLng: state.placeLng,
@@ -458,29 +465,21 @@ export default {
     }
 
     return {
-        state,
-        addSchedule,
-        handleCancleSchedule,
-        setPlace,
-        mapAutoComplete,
-        showMapModal,
-        mapModal,
-        // geojson,
-        // geojsonOptions
-    }}
+      state,
+      addSchedule,
+      handleCancleSchedule,
+      setPlace,
+      mapAutoComplete,
+      showMapModal,
+      mapModal,
+      // geojson,
+      // geojsonOptions
+    }
+  },
 }
 </script>
 
 <style>
-.tt1 { 
-  width: 500px;
-}
-
-.tt2 {
-  width: 100%;
-  height: 100%;
-}
-
 .schedule-info {
   /* 500 */
   width: 500px;

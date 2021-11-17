@@ -120,7 +120,7 @@ export default {
               endDate: c.endDate,
               category: c.category,
               classNames: ['calendar-done'],
-              allDay: c.allday
+              allDay: c.allDay
             }
           }
           else {
@@ -138,7 +138,7 @@ export default {
               startDate: c.startDate,
               endDate: c.endDate,
               category: c.category,
-              allDay: c.allday
+              allDay: c.allDay
             }
           }
         })

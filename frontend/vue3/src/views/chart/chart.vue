@@ -127,7 +127,6 @@ export default {
           }
         )
         .then((res) => {
-          console.log(res)
           info.totalCount = res.data.totalNum
           info.totalLi = res.data.totalCategory
           info.doneCount = res.data.checkNum
@@ -135,11 +134,12 @@ export default {
           console.log(info.totalLi)
         })
         .catch((err) => {
-          console.log(err)
-          info.totalCount = ''
-          info.totalLi = ''
-          info.doneCount = ''
-          info.categoryLi = ''
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
         })
     }
     return { info, state, changeDate }

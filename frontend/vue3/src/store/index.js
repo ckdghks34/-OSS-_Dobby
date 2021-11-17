@@ -17,6 +17,8 @@ export default createStore({
     toDo: {},
     calAPI: {},
     calendarMapGoal: {},
+    isChoiceWay: false,
+    choiceWay: {},
     // group calendar
     isGroupData: false,
     isGroupTodoItem: false,
@@ -25,6 +27,9 @@ export default createStore({
     groupRefreshData: [],
     groupCalAPI: {},
     groupToDo: {},
+    GroupCalendarMapGoal: {},
+    isGroupChoiceWay: false,
+    GroupChoiceWay: {},
   },
   mutations: {
     setCalendarData(state, payload) {
@@ -61,8 +66,18 @@ export default createStore({
         return c.cid != payload
       })
     },
-    SETCALENDARMAPGOAL ( state, payload) {
+    SETCALENDARMAPGOAL(state, payload) {
       state.calendarMapGoal = payload
+    },
+    SETMAPMODALCHOICE ( state, payload) {
+      state.isChoiceWay = true
+      state.choiceWay = {
+        distance : payload.distance,
+        duration : payload.duration
+      }
+    },
+    DISABLEMAPMODALCHOICE(state) {
+      state.isChoiceWay = false
     },
     // 그룹 캘린더
     SETGROUPCALENDARDATA(state, payload) {
@@ -92,12 +107,24 @@ export default createStore({
       state.groupToDo = payload
       state.isGroupTodoItem = true
     },
+    SETGROUPCALENDARMAPGOAL ( state, payload ) {
+      state.GroupCalendarMapGoal = payload
+    },
+    SETGROUPMAPMODALCHOICE (state, payload) {
+      state.isGroupChoiceWay = true
+      state.groupChoiceWay = {
+        distance : payload.distance,
+        duration : payload.duration
+      }
+    },
+    DISABLEGROUPMAPMODALCHOICE ( state ) {
+      state.isGroupChoiceWay = false
+    },
   },
   actions: {
     // user calendar
     getCalendarData({ commit }) {
       // console.log('store axios')
-
       axios
         .post(
           `${BASE_URL}calendar/getCalendar`,
@@ -111,8 +138,30 @@ export default createStore({
           }
         )
         .then((response) => {
-          const res = response.data.calendar.map((r) => {
-            if (r.completed) {
+          if (response.data.msg === '일정 정보가 없습니다.') {
+            commit('setCalendarData', [])
+            commit('CHECKEMPTYCALENDARDATA')
+          } else {
+            const res = response.data.calendar.map((r) => {
+              if (r.completed) {
+                return {
+                  cid: r.cid,
+                  completed: r.completed,
+                  title: r.title,
+                  content: r.content,
+                  start: r.startDate + 'T' + r.startTime,
+                  end: r.endDate + 'T' + r.endTime,
+                  color: r.color,
+                  placeName: r.placeName,
+                  placeLat: r.placeLat,
+                  placeLng: r.placeLng,
+                  startDate: r.startDate,
+                  endDate: r.endDate,
+                  category: r.category,
+                  allDay: r.allDay,
+                  classNames: ['calendar-done'],
+                }
+              }
               return {
                 cid: r.cid,
                 completed: r.completed,
@@ -128,38 +177,18 @@ export default createStore({
                 endDate: r.endDate,
                 category: r.category,
                 allDay: r.allDay,
-                classNames: ['calendar-done'],
               }
-            }
-            return {
-              cid: r.cid,
-              completed: r.completed,
-              title: r.title,
-              content: r.content,
-              start: r.startDate + 'T' + r.startTime,
-              end: r.endDate + 'T' + r.endTime,
-              color: r.color,
-              placeName: r.placeName,
-              placeLat: r.placeLat,
-              placeLng: r.placeLng,
-              startDate: r.startDate,
-              endDate: r.endDate,
-              category: r.category,
-              allDay: r.allDay,
-            }
-          })
-          commit('setCalendarData', res)
-          commit('checkCalendarData')
+            })
+            commit('setCalendarData', res)
+            commit('checkCalendarData')
+          }
         })
-        .catch((error) => {
-          if (
-            error.response.status == 401 &&
-            error.response.data.msg === '일정 정보가 없습니다.'
-          ) {
-            commit('setCalendarData', [])
-            commit('CHECKEMPTYCALENDARDATA')
-          } else {
-            console.log(error.response)
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
           }
         })
     },
@@ -181,8 +210,14 @@ export default createStore({
     deleteCalendarData({ commit }, payload) {
       commit('DELETECALENDARDATA', payload)
     },
-    setCalendarMapGoal ( {commit}, payload ) {
-      commit( 'SETCALENDARMAPGOAL', payload)
+    setCalendarMapGoal({ commit }, payload) {
+      commit('SETCALENDARMAPGOAL', payload)
+    },
+    setMapModalChoice ( {commit} , payload) {
+      commit('SETMAPMODALCHOICE', payload)
+    },
+    disableMapModalChocie ( {commit} ) {
+      commit('DISABLEMAPMODALCHOICE')
     },
     // group calendar
     getGroupCalendarData({ commit }, payload) {
@@ -260,19 +295,17 @@ export default createStore({
             commit('CHECKGROUPCALENDARDATA')
           }
         })
-        .catch((error) => {
-          console.log(error)
-          console.log(error.response)
-          if (
-            error.response.status == 401 &&
-            error.response.data.error === '그룹 캘린더가 없습니다.'
-          ) {
-            commit('SETGROUPCALENDARDATA', [])
-            commit('CHECKGROUPCALENDARDATA')
-          } else {
-            console.log(error)
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
           }
         })
+    },  
+    getChangeGroupCalendarData( {commit}, payload) {
+      commit('SETGROUPCALENDARDATA', payload)
     },
     setGroupModal({ commit }, payload) {
       commit('SETGROUPMODAL', payload)
@@ -292,6 +325,15 @@ export default createStore({
     setGroupTodo({ commit }, payload) {
       commit('SETGROUPTODO', payload)
     },
+    setGroupCalendarMapGoal ( { commit }, payload ) {
+      commit('SETGROUPCALENDARMAPGOAL', payload)
+    },
+    disableGroupMapModalChoice ( {commit}) {
+      commit('DISABLEGROUPMAPMODALCHOICE')
+    },
+    setGroupMapModalChoice ( {commit}, payload) {
+      commit('SETGROUPMAPMODALCHOICE', payload)
+    }
   },
   modules: {},
   getters: {

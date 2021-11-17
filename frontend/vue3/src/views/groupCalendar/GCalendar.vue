@@ -31,7 +31,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 
 // component
 import GroupCalendarModal from '@/components/teleport/GroupCalendarModal'
@@ -40,6 +40,7 @@ import GroupTodoList from '@/views/groupCalendar/GroupTodoList'
 
 //utils
 import dayjs from 'dayjs'
+import axios from 'axios'
 
 export default {
   name: 'GCalendar',
@@ -60,6 +61,17 @@ export default {
     const groupfullCalendar = ref(null)
     const groupModal = ref(null)
 
+    watch(
+      () => route.query,
+      () => {
+        watchquery()
+      }
+    )
+
+    const watchquery = function() {
+      changeQuery()
+    }
+
     const showGroupModal = function() {
       groupModal.value.show()
     }
@@ -69,6 +81,96 @@ export default {
       store.dispatch('setGroupCalendarApi', groupfullCalendar.value)
       initData()
     })
+
+    const changeQuery = () => {
+      axios
+        .get(`https://k5d105.p.ssafy.io:3030/groupCalendar/getCalendar`, {
+          // uid: localStorage.getItem('uid'),
+          params: {
+            gid: route.query.gid,
+          },
+          headers: {
+            authorization: localStorage.getItem('token'),
+          },
+        })
+        .then((response) => {
+          if (response.data.msg === '그룹 캘린더가 없습니다.') {
+            store.dispatch('getChangeGroupCalendarData', [])
+            initData()
+          } else {
+            const res = response.data.calendar.map((r) => {
+              // participants completed check
+              let checkCompleted = false
+
+              for (let par of r.participant) {
+                if (par.uid === localStorage.getItem('uid')) {
+                  if (par.completed) {
+                    checkCompleted = true
+                  }
+                  break
+                }
+              }
+
+              if (checkCompleted) {
+                // completed 된 것
+                return {
+                  cid: r.cid,
+                  gid: route.query.gid,
+                  completed: true,
+                  title: r.title,
+                  content: r.content,
+                  start: r.startDate + 'T' + r.startTime,
+                  end: r.endDate + 'T' + r.endTime,
+                  color: r.color,
+                  placeName: r.placeName,
+                  placeLat: r.placeLat,
+                  placeLng: r.placeLng,
+                  startDate: r.startDate,
+                  endDate: r.endDate,
+                  classNames: ['calendar-done'],
+                  participant: r.participant,
+                  creator: r.creator,
+                  category: r.category,
+                }
+              }
+              return {
+                cid: r.cid,
+                gid: route.query.gid,
+                completed: false,
+                title: r.title,
+                content: r.content,
+                start: r.startDate + 'T' + r.startTime,
+                end: r.endDate + 'T' + r.endTime,
+                color: r.color,
+                placeName: r.placeName,
+                placeLat: r.placeLat,
+                placeLng: r.placeLng,
+                startDate: r.startDate,
+                endDate: r.endDate,
+                participant: r.participant,
+                creator: r.creator,
+                category: r.category,
+              }
+            })
+            store.dispatch('getChangeGroupCalendarData', res)
+            initData()
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+          console.log(error.response)
+          if (
+            error.response.status == 401 &&
+            error.response.data.error === '그룹 캘린더가 없습니다.'
+          ) {
+            store.dispatch('getChangeGroupCalendarData', [])
+            initData()
+          } else {
+            console.log(error)
+          }
+        })
+      
+    }
 
 
     const handleClickDate =  function (clickInfo) {
@@ -87,14 +189,15 @@ export default {
     }
 
     const initData = function () {
+      console.log('g init')
       let calendarApi = groupfullCalendar.value.getApi()
       const data = calendarApi.getEvents()
 
       // 중복을 방지하기 위해서!
       if (data.length) {
-        data.map(
-          d => d.remove()
-        )
+        data.forEach(element => {
+          element.remove()
+        });
       }
 
       // state 와 동기화 해주기
