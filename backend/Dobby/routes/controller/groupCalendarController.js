@@ -446,6 +446,60 @@ async function checkCalendar(req, res, next) {
   }
 }
 
+async function checkWriter(req, res, next) {
+  const valid = await Auth.verifyToken(req.headers.authorization);
+
+  if (valid) {
+    const gid = req.body.gid;
+    const uid = req.body.uid;
+    if (gid === undefined || uid === undefined) {
+      res.status(400).json({
+        msg: "요청에서 유저 정보 또는 그룹 정보가 빠져있습니다.",
+      });
+    } 
+    else {
+      const memberRef = admin
+        .collection("groups")
+        .doc(gid)
+        .collection("member");
+      const member = await memberRef.get();
+      let flag = false;
+      let writer = false;
+      if(!member.empty){
+        for (let doc of member.docs) {
+          if (doc.data().uid == uid) {
+            flag = true;
+            if(doc.data().writer){
+              writer = true;
+            }
+          }
+        }
+        if(flag){      
+          res.json({
+          writer: writer,
+          msg: "쓰기 권한 조회 성공",
+          });
+        }
+        else{
+          res.json({
+            msg: "그룹 멤버에서 찾을 수 없습니다.",
+          });
+        }
+      }
+      else{
+        res.json({
+          msg: "그룹 멤버가 없습니다.",
+        });
+      }
+    }
+  }
+  else {
+    res.status(401).json({
+      error: "Token is not vaild",
+    });
+  }
+}
+
 module.exports = {
   getGroup,
   getCalendar,
@@ -453,4 +507,5 @@ module.exports = {
   updateCalendar,
   deleteCalendar,
   checkCalendar,
+  checkWriter,
 };
