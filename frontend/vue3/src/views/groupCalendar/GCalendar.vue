@@ -64,23 +64,19 @@ export default {
     watch(
       () => route.query,
       () => {
-        watchquery()
+        changeQuery()
       }
     )
-
-    const watchquery = function() {
-      changeQuery()
-    }
-
-    const showGroupModal = function() {
-      groupModal.value.show()
-    }
 
     onMounted(() => {
       handleViewTitle()
       store.dispatch('setGroupCalendarApi', groupfullCalendar.value)
       initData()
     })
+
+    const showGroupModal = function() {
+      groupModal.value.show()
+    }
 
     const changeQuery = () => {
       axios
@@ -158,15 +154,17 @@ export default {
         })
         .catch((error) => {
           console.log(error)
-          console.log(error.response)
-          if (
-            error.response.status == 401 &&
-            error.response.data.error === '그룹 캘린더가 없습니다.'
-          ) {
-            store.dispatch('getChangeGroupCalendarData', [])
-            initData()
-          } else {
-            console.log(error)
+          // console.log(error.response)
+          if(error.response) {
+            if (
+              error.response.status == 401 &&
+              error.response.data.error === '그룹 캘린더가 없습니다.'
+            ) {
+              store.dispatch('getChangeGroupCalendarData', [])
+              initData()
+            } else {
+              console.log(error)
+            }
           }
         })
       
