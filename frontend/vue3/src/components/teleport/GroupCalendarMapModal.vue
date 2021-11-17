@@ -234,7 +234,8 @@ export default {
     }
 
     const findWayWalking = () => {
-      axios.get(`http://k5d105.p.ssafy.io:5010/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
+      // axios.get(`http://k5d105.p.ssafy.io:5010/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
+      axios.get(`https://routing.openstreetmap.de/routed-foot/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
         .then((response) => {
           // console.log(response.data.routes)
 
@@ -262,7 +263,8 @@ export default {
     }
 
     const findWayCar = () => {
-      axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
+      // axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
+      axios.get(`https://routing.openstreetmap.de/routed-car/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
         .then((response) => {
 
           const data = [];
