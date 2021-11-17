@@ -13,12 +13,23 @@
     <br />
     <div class="userCalendar-schedule-row">
       <label class="label" for="date">날짜</label>
-      <input
+      <!-- <input
         class="date-input"
         type="date"
         id="date"
         v-model="state.startDate"
-      />~<input class="date-input" type="date" v-model="state.endDate" />
+      />~<input class="date-input" type="date" v-model="state.endDate" /> -->
+      <div class="scheduleDate">
+        <div class="block">
+          <el-date-picker
+            class="datePicker"
+            v-model="state.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+          >
+          </el-date-picker>
+        </div>
+      </div>
     </div>
     <br />
     <div class="userCalendar-schedule-row">
@@ -143,12 +154,17 @@
     <div>
       <label class="label" for="date">날짜</label>
       <div>
-        <input
-          class="input"
-          type="date"
-          id="date"
-          v-model="state.startDate"
-        />~<input class="input" type="date" v-model="state.endDate" />
+        <div class="scheduleDate">
+          <div class="block">
+            <el-date-picker
+              class="datePicker"
+              v-model="state.date"
+              type="daterange"
+              value-format="YYYY-MM-DD"
+            >
+            </el-date-picker>
+          </div>
+        </div>
       </div>
     </div>
     <br />
@@ -180,10 +196,10 @@
       <label class="label" for="category">분류</label>
       <!-- <span class="label">분류</span> -->
       <div>
-        <el-radio v-model="staet.category" label="공부" border>공부</el-radio>
-        <el-radio v-model="staet.category" label="운동" border>운동</el-radio>
-        <el-radio v-model="staet.category" label="업무" border>업무</el-radio>
-        <el-radio v-model="staet.category" label="취미" border>취미</el-radio>
+        <el-radio v-model="state.category" label="공부" border>공부</el-radio>
+        <el-radio v-model="state.category" label="운동" border>운동</el-radio>
+        <el-radio v-model="state.category" label="업무" border>업무</el-radio>
+        <el-radio v-model="state.category" label="취미" border>취미</el-radio>
       </div>
     </div>
     <br />
@@ -257,13 +273,13 @@ export default {
 
     const mapAutoComplete = ref(null)
     const mapModal = ref(null)
+    console.log(route.query.start)
 
     const state = reactive({
       uid: localStorage.getItem('uid'),
       title: '',
       content: '',
-      startDate: route.query.start,
-      endDate: '',
+      date: [route.query.start, route.query.start],
       startTime: '',
       endTime: '',
       placeName: '',
@@ -364,20 +380,22 @@ export default {
     }
 
     const addSchedule = function() {
+      let startDate = state.date[0]
+      let endDate = state.date[1]
       if (state.allDay) {
         if (
           state.title &&
           state.content &&
-          state.startDate &&
-          state.endDate &&
+          startDate &&
+          endDate &&
           state.placeName
         ) {
           const aDay = {
             uid: state.uid,
             title: state.title,
             content: state.content,
-            startDate: state.startDate,
-            endDate: state.endDate,
+            startDate: startDate,
+            endDate: endDate,
             startTime: '00:00',
             endTime: '23:59',
             placeName: state.placeName,
@@ -431,8 +449,8 @@ export default {
         if (
           state.title &&
           state.content &&
-          state.startDate &&
-          state.endDate &&
+          startDate &&
+          endDate &&
           state.placeName &&
           state.startTime &&
           state.endTime
@@ -441,8 +459,8 @@ export default {
             uid: state.uid,
             title: state.title,
             content: state.content,
-            startDate: state.startDate,
-            endDate: state.endDate,
+            startDate: startDate,
+            endDate: endDate,
             startTime: state.startTime,
             endTime: state.endTime,
             placeName: state.placeName,
@@ -568,6 +586,15 @@ export default {
 }
 
 /* 웹화면 */
+.scheduleDate,
+.scheduleDate .el-range-editor.el-input__inner {
+  margin: 0;
+}
+
+.scheduleDate .el-range-editor.el-input__inner {
+  border: 2px solid #a9c9de;
+}
+
 .userCalendar-schedule-row {
   display: flex;
   align-items: center;

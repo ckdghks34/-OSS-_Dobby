@@ -208,6 +208,10 @@ export default {
         .then(() => {
           router.push({ name: 'Calendar' })
         })
+        .catch(() => {
+          localStorage.removeItem('token')
+          localStorage.removeItem('uid')
+        })
     }
 
     onBeforeMount(() => {
