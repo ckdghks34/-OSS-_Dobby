@@ -9,33 +9,31 @@ async function userPush(fcmtoken, uid, msg) {
     console.log("No token found for user : ", uid);
     return false;
   } else {
-    const token = [];
     new Promise(async (resolve, reject) => {
       for (let doc of user.docs) {
-        token.push(doc.data().token);
+        let message = {
+          notification: {
+            title: msg.title,
+            body: msg.body,
+          },
+          token: doc.data().token,
+          // token: fcmtoken,
+        };
+
+        console.log(message);
+
+        await firebase_admin
+          .messaging()
+          .send(message)
+          .then((res) => {
+            console.log("Successfully sent message : ", res);
+            // return true;
+          })
+          .catch((err) => {
+            console.log("Error Sending message! : ", err);
+            // return false;
+          });
       }
-      let message = {
-        notification: {
-          title: msg.title,
-          body: msg.body,
-        },
-        token: token,
-        // token: fcmtoken,
-      };
-
-      console.log(message);
-
-      await firebase_admin
-        .messaging()
-        .send(message)
-        .then((res) => {
-          console.log("Successfully sent message : ", res);
-          // return true;
-        })
-        .catch((err) => {
-          console.log("Error Sending message! : ", err);
-          // return false;
-        });
       resolve();
     });
   }
