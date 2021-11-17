@@ -13,12 +13,23 @@
     <br />
     <div class="userCalendar-schedule-row">
       <label class="label" for="date">날짜</label>
-      <input
+      <div class="scheduleDate">
+        <div class="block">
+          <el-date-picker
+            class="datePicker"
+            v-model="state.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+          >
+          </el-date-picker>
+        </div>
+      </div>
+      <!-- <input
         class="date-input"
         type="date"
         id="date"
         v-model="state.startDay"
-      />~<input class="date-input" type="date" v-model="state.endDay" />
+      />~<input class="date-input" type="date" v-model="state.endDay" /> -->
     </div>
     <br />
     <div class="userCalendar-schedule-row">
@@ -236,6 +247,8 @@ export default {
     }
 
     const putSchedule = function() {
+      let startDay = state.date[0]
+      let endDay = state.date[1]
       axios
         .put(
           `https://k5d105.p.ssafy.io:3030/calendar/updateCalendar`,
@@ -244,12 +257,12 @@ export default {
             uid: localStorage.getItem('uid'),
             title: state.title,
             content: state.content,
-            startDate: state.startDay,
-            endDate: state.endDay,
+            startDate: startDay,
+            endDate: endDay,
             startTime: state.startTime,
             endTime: state.endTime,
             placeName: state.placeName,
-            category : state.category,
+            category: state.category,
             placeLat: state.placeLat,
             placeLng: state.placeLng,
             allDay: state.allDay,
@@ -324,12 +337,16 @@ export default {
       placeName: initData.value.ModalDate.extendedProps.placeName,
       placeLat: initData.value.ModalDate.extendedProps.placeLat,
       placeLng: initData.value.ModalDate.extendedProps.placeLng,
-      startDay: initData.value.ModalDate.extendedProps.startDate,
+      date: [
+        initData.value.ModalDate.extendedProps.startDate,
+        initData.value.ModalDate.extendedProps.endDate,
+      ],
+
       startTime: initData.value.ModalDate.start
         .toString()
         .split(' ')[4]
         .substring(0, 5),
-      endDay: initData.value.ModalDate.extendedProps.endDate,
+
       endTime: initData.value.ModalDate.end
         .toString()
         .split(' ')[4]
