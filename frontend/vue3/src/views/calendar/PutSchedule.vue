@@ -249,6 +249,7 @@ export default {
             startTime: state.startTime,
             endTime: state.endTime,
             placeName: state.placeName,
+            category : state.category,
             placeLat: state.placeLat,
             placeLng: state.placeLng,
             allDay: state.allDay,
