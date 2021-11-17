@@ -72,6 +72,7 @@ export default {
       handleViewTitle()
       store.dispatch('setGroupCalendarApi', groupfullCalendar.value)
       initData()
+      checkWriter()
     })
 
     const showGroupModal = function() {
@@ -172,11 +173,15 @@ export default {
 
 
     const handleClickDate =  function (clickInfo) {
-      if ( confirm('일정을 추가하시겠습니까?') ) {
-        router.push({name: 'GroupCalendarCreateSchedule', query: {
-          gid: route.query.gid,
-          start: clickInfo.dateStr
-        }})
+      if (!state.writer) {
+        alert('일정을 추가할 수 있는 권한이 없습니다.')
+      } else {
+        if ( confirm('일정을 추가하시겠습니까?') ) {
+          router.push({name: 'GroupCalendarCreateSchedule', query: {
+            gid: route.query.gid,
+            start: clickInfo.dateStr
+          }})
+        }
       }
     }
 
@@ -289,6 +294,24 @@ export default {
       }
     }
 
+    const checkWriter = () => {
+      axios
+        .post('https://k5d105.p.ssafy.io:3030/groupCalendar/checkWriter',{
+          uid : localStorage.getItem('uid'),
+          gid: route.query.gid
+        },{
+          headers: {
+            authorization: localStorage.getItem('token')
+          }
+        })
+          .then((response)=>{
+            state.writer = response.data.writer
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+    }
+
 
     const calendarOptions = {
         plugins: [ 
@@ -315,6 +338,7 @@ export default {
     const state = reactive({
       calendarView: '월',
       currentMonth: '',
+      writer: false,
     })
 
     return {

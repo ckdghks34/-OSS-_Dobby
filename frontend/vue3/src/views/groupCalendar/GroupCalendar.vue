@@ -12,7 +12,6 @@ import { useStore } from 'vuex'
 // component
 import GCalendar from '@/views/groupCalendar/GCalendar'
 
-
 export default {
   name: 'GroupCalendar',
   components:{
