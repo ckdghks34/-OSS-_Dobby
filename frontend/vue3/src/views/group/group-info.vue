@@ -102,11 +102,13 @@
           </div>
         </div>
         <div>
-          <router-link to="/calendar"
-            ><button class="blueBtn" style="margin-right: 4%; width: 48%;">
-              돌아가기
-            </button></router-link
+          <button
+            class="blueBtn"
+            @click="handleToGroupCal"
+            style="margin-right: 4%; width: 48%;"
           >
+            돌아가기
+          </button>
 
           <button
             class="blueBtn"
@@ -187,34 +189,36 @@ export default {
         })
     })
     const getGroup = function() {
-      axios
-        .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
-          params: { gid: props.gid },
-          headers: {
-            authorization: localStorage.getItem('token'),
-          },
-        })
-        .then((res) => {
-          console.log(res)
-          info.name = res.data.group.name
-          info.description = res.data.group.description
-          info.private = res.data.group.private
-          info.password = res.data.group.password
-          info.member = res.data.group.members
-          if (res.data.group.admin === info.userEmail) {
-            info.admin = true
-          } else {
-            info.admin = false
-          }
-        })
-        .catch((err) => {
-          if (err.response.status === 401) {
-            alert('로그인이 만료되었습니다')
-            location.replace('/')
-            localStorage.removeItem('token')
-            localStorage.removeItem('uid')
-          }
-        })
+      if (props.gid) {
+        axios
+          .get('https://k5d105.p.ssafy.io:3030/group/getGroup', {
+            params: { gid: props.gid },
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          })
+          .then((res) => {
+            console.log(res)
+            info.name = res.data.group.name
+            info.description = res.data.group.description
+            info.private = res.data.group.private
+            info.password = res.data.group.password
+            info.member = res.data.group.members
+            if (res.data.group.admin === info.userEmail) {
+              info.admin = true
+            } else {
+              info.admin = false
+            }
+          })
+          .catch((err) => {
+            if (err.response.status === 401) {
+              alert('로그인이 만료되었습니다')
+              location.replace('/')
+              localStorage.removeItem('token')
+              localStorage.removeItem('uid')
+            }
+          })
+      }
     }
 
     const changeInfo = function() {
@@ -285,32 +289,34 @@ export default {
     }
 
     const handleWriter = function(nickname, writer) {
-      axios
-        .put(
-          'https://k5d105.p.ssafy.io:3030/group/updateWriterAuth',
-          {
-            gid: props.gid,
-            nickname: nickname,
-            writer: !writer,
-          },
-          {
-            headers: { authorization: localStorage.getItem('token') },
-          }
-        )
-        .then((res) => {
-          console.log(res)
-          info.dialogVisible = true
-          info.message = '일정 작성 권한이 수정되었습니다'
-          getGroup()
-        })
-        .catch((err) => {
-          if (err.response.status === 401) {
-            alert('로그인이 만료되었습니다')
-            location.replace('/')
-            localStorage.removeItem('token')
-            localStorage.removeItem('uid')
-          }
-        })
+      if (info.admin) {
+        axios
+          .put(
+            'https://k5d105.p.ssafy.io:3030/group/updateWriterAuth',
+            {
+              gid: props.gid,
+              nickname: nickname,
+              writer: !writer,
+            },
+            {
+              headers: { authorization: localStorage.getItem('token') },
+            }
+          )
+          .then((res) => {
+            console.log(res)
+            info.dialogVisible = true
+            info.message = '일정 작성 권한이 수정되었습니다'
+            getGroup()
+          })
+          .catch((err) => {
+            if (err.response.status === 401) {
+              alert('로그인이 만료되었습니다')
+              location.replace('/')
+              localStorage.removeItem('token')
+              localStorage.removeItem('uid')
+            }
+          })
+      }
     }
 
     const deleteMem = function(e) {
@@ -387,7 +393,7 @@ export default {
         })
         .then(() => {
           alert('그룹이 삭제되었습니다')
-          router.push({ name: 'Calendar' })
+          location.replace('/calendar')
         })
         .catch((err) => {
           if (err.response.status === 401) {
@@ -409,7 +415,7 @@ export default {
         })
         .then(() => {
           alert(`${info.name}에서 탈퇴했습니다`)
-          router.push({ name: 'Calendar' })
+          location.replace('/calendar')
         })
         .catch((err) => {
           if (err.response.status === 401) {
@@ -419,6 +425,9 @@ export default {
             localStorage.removeItem('uid')
           }
         })
+    }
+    const handleToGroupCal = function() {
+      router.push({ name: 'GroupCalendar', query: { gid: props.gid } })
     }
 
     return {
@@ -432,6 +441,7 @@ export default {
       inviteMem,
       deleteGroup,
       deleteGroupMem,
+      handleToGroupCal,
     }
   },
 }

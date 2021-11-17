@@ -59,22 +59,7 @@
       >
         <div>
           <span class="groupName">{{ group.name }}</span>
-          <svg
-            v-if="group.private"
-            class="lock"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1024 1024"
-            data-v-394d1fd8=""
-          >
-            <path
-              fill="currentColor"
-              d="M224 448a32 32 0 0 0-32 32v384a32 32 0 0 0 32 32h576a32 32 0 0 0 32-32V480a32 32 0 0 0-32-32H224zm0-64h576a96 96 0 0 1 96 96v384a96 96 0 0 1-96 96H224a96 96 0 0 1-96-96V480a96 96 0 0 1 96-96z"
-            ></path>
-            <path
-              fill="currentColor"
-              d="M512 544a32 32 0 0 1 32 32v192a32 32 0 1 1-64 0V576a32 32 0 0 1 32-32zm192-160v-64a192 192 0 1 0-384 0v64h384zM512 64a256 256 0 0 1 256 256v128H256V320A256 256 0 0 1 512 64z"
-            ></path>
-          </svg>
+          <span class="lock" v-if="group.private">🔒</span>
         </div>
       </div>
       <el-pagination
@@ -249,9 +234,8 @@ export default {
               }
             )
             .then(() => {
-              info.searchDia = false
-              info.message = `${info.groupName}에 가입되었습니다`
-              info.dialogVisible = true
+              alert(`${info.groupName}에 가입되었습니다`)
+              location.replace(`/groupCalendar?gid=${info.groupGid}`)
             })
         })
         .catch((err) => {
