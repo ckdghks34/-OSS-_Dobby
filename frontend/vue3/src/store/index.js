@@ -269,6 +269,7 @@ export default createStore({
                   endDate: r.endDate,
                   classNames: ['calendar-done'],
                   participant: r.participant,
+                  allDay: r.allDay,
                   creator: r.creator,
                   category: r.category,
                 }
@@ -288,6 +289,7 @@ export default createStore({
                 startDate: r.startDate,
                 endDate: r.endDate,
                 participant: r.participant,
+                allDay: r.allDay,
                 creator: r.creator,
                 category: r.category,
               }
@@ -399,7 +401,6 @@ export default createStore({
       const start = ModalDate.start.toString().split(' ')
       // 시작하는 날
       const startDay = changeDateFormat(start, ModalDate.allDay)
-
       if (ModalDate.allDay && ModalDate.end === null) {
         return {
           ModalDate: ModalDate,
