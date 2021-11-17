@@ -33,13 +33,13 @@
         <div v-if="!state.isBig">
           <el-row class="modal-content-body-contents-row">
             <div class="modal-content-header" style="width: 100%">
-              <i v-if="checkWriter() && state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
-                  <i v-if="checkWriter() && !state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
+              <i v-if="checkPartipants() && state.mData.ModalDate.extendedProps.completed" class="el-icon-refresh-left modalIcon" @click="modalSuccess"></i>
+              <i v-if="checkPartipants() && !state.mData.ModalDate.extendedProps.completed" class="el-icon-check modalIcon" @click="modalSuccess"></i>
 
-                  <i v-if="checkWriter()" class="el-icon-edit modalIcon" @click="modalPut"></i>
+              <i v-if="checkWriter()" class="el-icon-edit modalIcon" @click="modalPut"></i>
 
-                  <i v-if="checkWriter()" class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
-                  <i class="el-icon-close modalIcon" @click="hide"></i>
+              <i v-if="checkWriter()" class="el-icon-delete modalIcon" @click="state.dialogVisible = true"></i>
+              <i class="el-icon-close modalIcon" @click="hide"></i>
             </div>
           </el-row>
 
