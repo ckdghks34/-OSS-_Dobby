@@ -382,133 +382,137 @@ export default {
     const addSchedule = function() {
       let startDate = state.date[0]
       let endDate = state.date[1]
-      if (state.allDay) {
-        if (
-          state.title &&
-          state.content &&
-          startDate &&
-          endDate &&
-          state.placeName
-        ) {
-          const aDay = {
-            uid: state.uid,
-            title: state.title,
-            content: state.content,
-            startDate: startDate,
-            endDate: endDate,
-            startTime: '00:00',
-            endTime: '23:59',
-            placeName: state.placeName,
-            placeLat: state.placeLat,
-            placeLng: state.placeLng,
-            allDay: state.allDay,
-            color: state.color,
-            category: state.category,
-          }
-          axios
-            .post(
-              `https://k5d105.p.ssafy.io:3030/calendar/createCalendar`,
-              aDay,
-              {
-                headers: {
-                  FCMtoken: localStorage.getItem('FCMtoken'),
-                  authorization: localStorage.getItem('token'),
-                },
-              }
-            )
-            .then((response) => {
-              const res = response.data.calendar
-
-              const d = {
-                cid: res.cid,
-                completed: res.completed,
-                title: res.title,
-                content: res.content,
-                start: res.startDate + 'T' + res.startTime,
-                end: res.endDate + 'T' + res.endTime,
-                color: res.color,
-                placeName: res.placeName,
-                placeLat: res.placeLat,
-                placeLng: res.placeLng,
-                startDate: res.startDate,
-                endDate: res.endDate,
-                category: res.category,
-                allDay: res.allDay,
-              }
-
-              store.dispatch('pushCalendarData', d)
-              router.push({ name: 'Calendar' })
-            })
-            .catch((error) => {
-              console.log(error)
-            })
-        } else {
-          alert('시간을 제외한 모든 항목을 입력해 주세요')
-        }
+      if (startDate === endDate && state.startTime > state.endTime) {
+        alert('종료 시간은 시작 시간보다 빠를 수 없습니다')
       } else {
-        if (
-          state.title &&
-          state.content &&
-          startDate &&
-          endDate &&
-          state.placeName &&
-          state.startTime &&
-          state.endTime
-        ) {
-          const day = {
-            uid: state.uid,
-            title: state.title,
-            content: state.content,
-            startDate: startDate,
-            endDate: endDate,
-            startTime: state.startTime,
-            endTime: state.endTime,
-            placeName: state.placeName,
-            placeLat: state.placeLat,
-            placeLng: state.placeLng,
-            allDay: state.allDay,
-            color: state.color,
-            category: state.category,
+        if (state.allDay) {
+          if (
+            state.title &&
+            state.content &&
+            startDate &&
+            endDate &&
+            state.placeName
+          ) {
+            const aDay = {
+              uid: state.uid,
+              title: state.title,
+              content: state.content,
+              startDate: startDate,
+              endDate: endDate,
+              startTime: '00:00',
+              endTime: '23:59',
+              placeName: state.placeName,
+              placeLat: state.placeLat,
+              placeLng: state.placeLng,
+              allDay: state.allDay,
+              color: state.color,
+              category: state.category,
+            }
+            axios
+              .post(
+                `https://k5d105.p.ssafy.io:3030/calendar/createCalendar`,
+                aDay,
+                {
+                  headers: {
+                    FCMtoken: localStorage.getItem('FCMtoken'),
+                    authorization: localStorage.getItem('token'),
+                  },
+                }
+              )
+              .then((response) => {
+                const res = response.data.calendar
+
+                const d = {
+                  cid: res.cid,
+                  completed: res.completed,
+                  title: res.title,
+                  content: res.content,
+                  start: res.startDate + 'T' + res.startTime,
+                  end: res.endDate + 'T' + res.endTime,
+                  color: res.color,
+                  placeName: res.placeName,
+                  placeLat: res.placeLat,
+                  placeLng: res.placeLng,
+                  startDate: res.startDate,
+                  endDate: res.endDate,
+                  category: res.category,
+                  allDay: res.allDay,
+                }
+
+                store.dispatch('pushCalendarData', d)
+                router.push({ name: 'Calendar' })
+              })
+              .catch((error) => {
+                console.log(error)
+              })
+          } else {
+            alert('시간을 제외한 모든 항목을 입력해 주세요')
           }
-          axios
-            .post(
-              `https://k5d105.p.ssafy.io:3030/calendar/createCalendar`,
-              day,
-              {
-                headers: {
-                  FCMtoken: localStorage.getItem('FCMtoken'),
-                  authorization: localStorage.getItem('token'),
-                },
-              }
-            )
-            .then((response) => {
-              const res = response.data.calendar
-
-              const day = {
-                cid: res.cid,
-                completed: res.completed,
-                title: res.title,
-                content: res.content,
-                start: res.startDate + 'T' + res.startTime,
-                end: res.endDate + 'T' + res.endTime,
-                color: res.color,
-                placeName: res.placeName,
-                placeLat: res.placeLat,
-                placeLng: res.placeLng,
-                startDate: res.startDate,
-                endDate: res.endDate,
-                category: res.category,
-                allDay: res.allDay,
-              }
-
-              store.dispatch('pushCalendarData', day)
-              router.push({ name: 'Calendar' })
-            })
-            .catch((error) => {
-              console.log(error)
-            })
         } else {
-          alert('모든 항목을 입력해 주세요')
+          if (
+            state.title &&
+            state.content &&
+            startDate &&
+            endDate &&
+            state.placeName &&
+            state.startTime &&
+            state.endTime
+          ) {
+            const day = {
+              uid: state.uid,
+              title: state.title,
+              content: state.content,
+              startDate: startDate,
+              endDate: endDate,
+              startTime: state.startTime,
+              endTime: state.endTime,
+              placeName: state.placeName,
+              placeLat: state.placeLat,
+              placeLng: state.placeLng,
+              allDay: state.allDay,
+              color: state.color,
+              category: state.category,
+            }
+            axios
+              .post(
+                `https://k5d105.p.ssafy.io:3030/calendar/createCalendar`,
+                day,
+                {
+                  headers: {
+                    FCMtoken: localStorage.getItem('FCMtoken'),
+                    authorization: localStorage.getItem('token'),
+                  },
+                }
+              )
+              .then((response) => {
+                const res = response.data.calendar
+
+                const day = {
+                  cid: res.cid,
+                  completed: res.completed,
+                  title: res.title,
+                  content: res.content,
+                  start: res.startDate + 'T' + res.startTime,
+                  end: res.endDate + 'T' + res.endTime,
+                  color: res.color,
+                  placeName: res.placeName,
+                  placeLat: res.placeLat,
+                  placeLng: res.placeLng,
+                  startDate: res.startDate,
+                  endDate: res.endDate,
+                  category: res.category,
+                  allDay: res.allDay,
+                }
+
+                store.dispatch('pushCalendarData', day)
+                router.push({ name: 'Calendar' })
+              })
+              .catch((error) => {
+                console.log(error)
+              })
+          } else {
+            alert('모든 항목을 입력해 주세요')
+          }
         }
       }
     }
