@@ -9,6 +9,7 @@ router.post("/createCalendar", groupCalendarController.createCalendar);
 router.put("/updateCalendar", groupCalendarController.updateCalendar);
 router.delete("/deleteCalendar", groupCalendarController.deleteCalendar);
 router.put("/checkCalendar", groupCalendarController.checkCalendar);
+router.post("/checkWriter", groupCalendarController.checkWriter);
 
 
 module.exports = router;
