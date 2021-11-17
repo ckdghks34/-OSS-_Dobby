@@ -32,17 +32,23 @@
       </div>
     </div>
     <br />
-    <div class="userCalendar-schedule-row">
-      <label class="label" for="time">시간</label>
-      <input
-        class="time-input"
-        type="time"
-        id="time"
-        v-model="state.startTime"
-      />
-      ~ <input class="time-input" type="time" v-model="state.endTime" />
-    </div>
-    <br />
+
+    <transition name="slide-fade">
+      <div v-if="!state.allDay">
+        <div  class="userCalendar-schedule-row">
+          <label class="label" for="time">시간</label>
+          <input
+            class="time-input"
+            type="time"
+            id="time"
+            v-model="state.startTime"
+          />
+          ~ <input class="time-input" type="time" v-model="state.endTime" />
+        </div>
+        <br />
+      </div>
+    </transition>
+    
     <div class="userCalendar-schedule-allDay">
       <label for="allDay" class="label">종일</label>
       <input type="checkbox" v-model="state.allDay" />
@@ -189,13 +195,17 @@
       </div>
     </div>
     <br />
-    <div>
-      <!--v-if -->
-      <label class="label" for="time">시간</label>
-      <input class="input" type="time" id="time" v-model="state.startTime" /> ~
-      <input class="input" type="time" v-model="state.endTime" />
-    </div>
-    <br />
+    <transition name="slide-fade">
+      <div v-if="!state.allDay">
+        <div>
+          <label class="label" for="time">시간</label>
+          <input class="input" type="time" id="time" v-model="state.startTime" /> ~
+          <input class="input" type="time" v-model="state.endTime" />
+        </div>
+        <br />
+      </div>
+    </transition>
+
     <div>
       <label for="allDay" class="label">종일</label>
       <input type="checkbox" v-model="state.allDay" />
@@ -292,9 +302,7 @@
       <button
         class="blueBtn"
         type="button"
-        @click="addGroupSchedule"
-        v-bind:disabled="title == ''"
-      >
+        @click="addGroupSchedule">
         추가
       </button>
     </div>
@@ -436,8 +444,8 @@ export default {
             gid: route.query.gid,
             title : state.title,
             content : state.content,
-            startDate : state.startDate,
-            endDate : state.endDate,
+            startDate : state.date[0],
+            endDate : state.date[1],
             startTime : '00:00',
             endTime : '24:00',
             placeName : state.placeName,
@@ -488,8 +496,8 @@ export default {
             gid: route.query.gid,
             title : state.title,
             content : state.content,
-            startDate : state.startDate,
-            endDate : state.endDate,
+            startDate : state.date[0],
+            endDate : state.date[1],
             startTime : state.startTime,
             endTime : state.endTime,
             placeName : state.placeName,
@@ -549,7 +557,6 @@ export default {
         Lng: state.placeLng,
       })
     }
-
 
     const checkWriter = () => {
       axios
