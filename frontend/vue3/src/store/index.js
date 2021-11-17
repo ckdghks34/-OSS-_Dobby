@@ -345,7 +345,7 @@ export default createStore({
       // 날짜 정리하기
       // Fri Nov 26 2021 18:00:00 GMT+0900 (한국 표준시)
       const ModalDate = state.modalData
-      // console.log(ModalDate)
+
       const start = ModalDate.start.toString().split(' ')
       // 시작하는 날
       const startDay = changeDateFormat(start, ModalDate.allDay)
