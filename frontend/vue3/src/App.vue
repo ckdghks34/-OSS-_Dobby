@@ -1,7 +1,7 @@
 <template>
-  <div class="icon-bar" v-if="info.size"> 
-  <!-- id="nav" -->
-    
+  <div class="icon-bar" v-if="info.size">
+    <!-- id="nav" -->
+
     <div v-if="info.userId">
       <div>{{ info.userId }} 님</div>
       <br>
@@ -31,21 +31,20 @@
           </ul>
         </div>
       <button @click="logout" class="logoutButton">logout</button>
-    </div> 
+    </div>
 
     <div v-else>
-      <router-link to="/main">Login</router-link>
+      <router-link to="/">Login</router-link>
     </div>
   </div>
 
-
   <div v-else>
     <div v-if="info.userId">
-      <el-dropdown class="list-button" >
+      <el-dropdown class="list-button">
         <el-button btn-sm icon="el-icon-notebook-2">
-        <el-icon class="el-icon--right"><arrow-down /></el-icon>
+          <el-icon class="el-icon--right"><arrow-down /></el-icon>
         </el-button>
-        
+
         <template #dropdown>
           <el-dropdown-menu>
             <!-- <el-dropdown-item><router-link to="/newgroup">New Group</router-link> </el-dropdown-item> -->
@@ -74,24 +73,24 @@
     </div>
 
     <div v-else>
-      <el-dropdown-item><router-link to="/group">Group</router-link> </el-dropdown-item>
+      <el-dropdown-item
+        ><router-link to="/group">Group</router-link>
+      </el-dropdown-item>
     </div>
-
   </div>
 
-  <div class="teleport-modal">
+  <!-- <div class="teleport-modal">
     <teleportExample />
-  </div>
+  </div> -->
 
   <div class="routerView">
     <router-view />
   </div>
-
 </template>
 
 <script>
 // teleport
-import teleportExample from '@/components/teleport/teleportExample'
+// import teleportExample from '@/components/teleport/teleportExample'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { reactive, onBeforeMount } from 'vue'
@@ -102,7 +101,7 @@ import { ElNotification } from 'element-plus'
 
 export default {
   components: {
-    teleportExample,
+    // teleportExample,
   },
   setup() {
     const router = useRouter()
@@ -147,14 +146,12 @@ export default {
 
     onBeforeMount(() => {
       axios
-        .get('https://k5d105.p.ssafy.io:3030/users/getUserInfo', 
-        {
+        .get('https://k5d105.p.ssafy.io:3030/users/getUserInfo', {
           params: { uid: localStorage.getItem('uid') },
           headers: {
             authorization: localStorage.getItem('token'),
           },
-        }
-        )
+        })
         .then((response) => {
           // console.log(response)
           info.userId = response.data.user.nickname
@@ -173,15 +170,12 @@ export default {
 
       // groupLists
       axios
-        .get(
-          'https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup',
-        {
+        .get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {
           params: { uid: localStorage.getItem('uid') },
           headers: {
             authorization: localStorage.getItem('token'),
           },
-        }
-        )
+        })
         .then((response) => {
           // console.log(response)
           info.groupLists = response.data.group
@@ -222,7 +216,7 @@ export default {
           localStorage.removeItem('token')
           localStorage.removeItem('uid')
           localStorage.removeItem('FCMtoken')
-          location.replace('/main')
+          location.replace('/')
           // router.push({ name: 'main' })
         })
       // .catch((err) => {
@@ -284,11 +278,11 @@ body,
 
 .routerView {
   display: table-cell;
-  width: 85vw;
-  /* float: left; */
+  width: 100vw;
   height: 90vh;
   vertical-align: middle;
   text-align: center;
+  /* float: left; */
 }
 
 * {
@@ -327,7 +321,7 @@ body,
   display: block;
   text-align: center;
   padding: 4px;
-  transition: all 0.3s ease; 
+  transition: all 0.3s ease;
   color: white;
   font-size: 20px;
 }
@@ -351,17 +345,16 @@ body,
   font-size: 1.5rem;
 }
 
-
 .icon-bar a {
   text-decoration: none;
 }
 
 .icon-bar p:hover {
-  background-color: #DEB4B4;
+  background-color: #deb4b4;
 }
 
 .icon-bar svg:hover {
-  background-color: #DEB4B4;
+  background-color: #deb4b4;
 }
 
 .mulit-line-ellipsis:before {

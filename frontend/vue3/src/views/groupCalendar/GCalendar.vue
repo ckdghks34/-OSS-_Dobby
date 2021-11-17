@@ -71,10 +71,11 @@ export default {
     })
 
 
-    const handleClickDate =  function () {
+    const handleClickDate =  function (clickInfo) {
       if ( confirm('일정을 추가하시겠습니까?') ) {
         router.push({name: 'GroupCalendarCreateSchedule', query: {
-          gid: route.query.gid
+          gid: route.query.gid,
+          start: clickInfo.dateStr
         }})
       }
     }

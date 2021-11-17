@@ -13,7 +13,7 @@
         <span>다</span>
         <span style="color: rgb(255, 155, 155)">♥</span>
       </h3>
-      <router-link to="/main"
+      <router-link to="/"
         ><button class="toLogin">로그인하고 DOBBY 만나기</button></router-link
       >
     </div>
