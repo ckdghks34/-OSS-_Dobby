@@ -10,13 +10,14 @@ async function userPush(fcmtoken, uid, msg) {
     return false;
   } else {
     new Promise(async (resolve, reject) => {
-      for (let doc of user.docs) {
+      // for (let doc of user.docs) {
         let message = {
           notification: {
             title: msg.title,
             body: msg.body,
           },
-          token: doc.data().token,
+          // token: doc.data().token,
+          token: fcmtoken,
         };
 
         await firebase_admin
@@ -30,7 +31,7 @@ async function userPush(fcmtoken, uid, msg) {
             console.log("Error Sending message! : ", err);
             return false;
           });
-      }
+      // }
       resolve();
     });
   }
