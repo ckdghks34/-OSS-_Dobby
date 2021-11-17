@@ -215,7 +215,7 @@ export default {
         {
           uid: localStorage.getItem('uid'),
           cid: state.mData.ModalDate.extendedProps.cid,
-          gid: state.mData.ModalDate.extendedProps.gid,
+          gid: route.query.gid,
         },
         {
           headers: {
@@ -288,6 +288,7 @@ export default {
         })
         .catch((error) => {
           console.log(error)
+          console.log(error.response)
         })
     }
 
