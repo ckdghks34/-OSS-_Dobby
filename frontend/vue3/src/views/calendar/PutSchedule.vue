@@ -347,14 +347,20 @@ export default {
         .split(' ')[4]
         .substring(0, 5),
 
-      endTime: initData.value.ModalDate.end
-        .toString()
-        .split(' ')[4]
-        .substring(0, 5),
+      endTime: '',
       allDay: initData.value.ModalDate.allDay,
       category: initData.value.ModalDate.extendedProps.category,
       isBig: false,
     })
+    if (initData.value.ModalDate.end) {
+      state.endTime = initData.value.ModalDate.end
+        .toString()
+        .split(' ')[4]
+        .substring(0, 5)
+    } else {
+      state.endTime = '23:59'
+    }
+    console.log(state.endTime)
 
     return {
       state,
