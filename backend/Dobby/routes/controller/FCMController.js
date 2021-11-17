@@ -36,7 +36,7 @@ async function userPush(fcmtoken, uid, msg) {
       await firebase_admin
         .messaging()
         .send(message)
-        .then((res) => {
+        .then(async (res) => {
           console.log("Successfully sent message : ", res);
           await firebase_admin.messaging().unsubscribeFromTopic(registrationTokens, topic)
           .then((res) => {
@@ -92,7 +92,7 @@ async function groupPush(gid, msg) {
     await firebase_admin
       .messaging()
       .send(message)
-      .then((res) => {
+      .then(async (res) => {
         console.log("Successfully sent message : ", res);
         await firebase_admin.messaging().unsubscribeFromTopic(registrationTokens, topic)
         .then((res) => {
