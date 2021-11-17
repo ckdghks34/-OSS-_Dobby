@@ -51,6 +51,21 @@
       </GMapAutocomplete>
     </div>
     <br>
+    <div class="userCalendar-schedule-row">
+      <div class="label"></div>
+      <div>
+        <el-button v-if="state.placeName" round @click="showGroupMapModal" type="info">경로탐색</el-button>
+        <el-button v-else disabled round @click="showGroupMapModal" type="info">경로탐색</el-button>
+      </div>
+      <div v-if="state.isGroupChoiceWay" style="margin-left: 1rem;">
+          <!-- <span class="userCalendar-choice-">
+            {{ `시간 : ${state.choiceWay.duration}  거리 : ${state.choiceWay.distance}` }}
+          </span> -->
+          <el-button round size="small">{{state.groupChoiceWay.duration}}</el-button>
+          <el-button round size="small">{{state.groupChoiceWay.distance}}</el-button>
+        </div>
+    </div>
+    <br>
     <div class="userCalendar-schedule-category">
       <label class="label" for="category">분류</label>
       <div class="userCalendar-schedule-category-button-wrap">
@@ -79,7 +94,7 @@
     <br>
     <div>
       <button class="web-button-red" @click="handleCancleSchedule">취소</button> 
-      <button class="web-button-blue" style="margin-left:30px" type="button" @click="addGroupSchedule" v-bind:disabled="title==''">추가</button>
+      <button class="web-button-blue" style="margin-left:30px" type="button" @click="addGroupSchedule">추가</button>
     </div> 
   </div>
 
@@ -129,10 +144,18 @@
     <div>
       <label class="label" for="place">장소</label>
       <GMapAutocomplete
-                placeholder="장소를 입력해주세요"
-                @place_changed="setPlace"
-                ref="mapAutoComplete">
+        placeholder="장소를 입력해주세요"
+        @place_changed="setPlace"
+        ref="mapAutoComplete">
       </GMapAutocomplete>
+    </div>
+    <br>
+    <div class="userCalendar-schedule-row">
+      <div class="label"></div>
+      <div>
+        <el-button v-if="state.placeName" round @click="showGroupMapModal" type="info">경로탐색</el-button>
+        <el-button v-else disabled round @click="showGroupMapModal" type="info">경로탐색</el-button>
+      </div>
     </div>
     <br>
     <div>
@@ -165,24 +188,31 @@
       <button class="blueBtn" type="button" @click="addGroupSchedule" v-bind:disabled="title==''">추가</button>
     </div> 
   </div>
-
+  <teleport to="#destination">
+    <GroupCalendarMapModal ref="groupMapModal" />
+  </teleport>
 </template>
 
 <script>
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
-import { reactive, onBeforeMount, onUnmounted } from 'vue'
+import { reactive, onBeforeMount, onUnmounted, ref, computed } from 'vue'
 import { useStore } from 'vuex';
+
+// components
+import GroupCalendarMapModal from '@/components/teleport/GroupCalendarMapModal'
 
 export default {
   name: 'Schedule',
   components : {
-        
+    GroupCalendarMapModal,
   },
   setup() {
     const router = useRouter()
     const route = useRoute()
     const store = useStore()
+
+    const groupMapModal = ref(null)
 
     const state = reactive({
       uid: localStorage.getItem('uid'),
@@ -202,6 +232,8 @@ export default {
       participantsOption: [],
       groupMember: [],
       participants: [],
+      isGroupChoiceWay: computed(() => store.state.isGroupChoiceWay),
+      groupChoiceWay: computed(() => store.state.groupChoiceWay),
     })
 
     onBeforeMount(() => {
@@ -213,6 +245,11 @@ export default {
     onUnmounted(() => {
         window.removeEventListener('resize', handleGroupCalendarCreateSchedule)
       })
+
+
+    const showGroupMapModal = function () {
+      groupMapModal.value.show()
+    }
 
     const handleGroupCalendarCreateSchedule = () => {
       if (window.innerWidth < 730) {
@@ -378,10 +415,25 @@ export default {
         }
       }
 
+    const setPlace = (e) => {
+      state.placeName = e.name
+      state.placeLat = e.geometry.location.lat()
+      state.placeLng = e.geometry.location.lng()
+
+      store.dispatch('disableGroupMapModalChoice')
+      store.dispatch('setGroupCalendarMapGoal', {
+        Lat: state.placeLat,
+        Lng: state.placeLng
+      })
+    }
+
       return {
         state,
         addGroupSchedule,
         handleCancleSchedule,
+        showGroupMapModal,
+        groupMapModal,
+        setPlace,
       }
     }
 }
