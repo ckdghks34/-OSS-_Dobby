@@ -12,7 +12,9 @@
       ></el-input>
       <template #footer>
         <span class="dialog-footer">
-          <el-button class="redBtn" @click="info.inviteDia = false"
+          <el-button
+            class="redBtn"
+            @click=";(info.inviteDia = false), (info.inviteEmail = '')"
             >취소</el-button
           >
           <el-button class="blueBtn" @click="inviteMem">초대</el-button>
@@ -74,15 +76,15 @@
             >
             <span
               v-else-if="t.writer"
-              style="float: left; margin-left:2%; cursor: pointer;"
+              style="float: left; margin-left:2%; cursor: pointer;font-weight: 900; font-size: 20px;"
               @click="handleWriter(t.nickname, true)"
-              >✏</span
+              >🖍</span
             >
             <span
               v-else
-              style="color: lightgray; float: left; margin-left:2%; cursor: pointer;"
+              style="color: lightgray; float: left; margin-left:2%; cursor: pointer; font-weight: 900; font-size: 20px;"
               @click="handleWriter(t.nickname, false)"
-              >✏</span
+              >🖍</span
             >
             <p
               style="display:inline-block; margin: 4px 0; cursor:pointer"
@@ -178,7 +180,7 @@ export default {
         .catch((err) => {
           if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
-            router.push({ name: 'main' })
+            location.replace('/')
             localStorage.removeItem('token')
             localStorage.removeItem('uid')
           }
@@ -205,28 +207,41 @@ export default {
             info.admin = false
           }
         })
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
     }
 
     const changeInfo = function() {
-      axios.put(
-        'https://k5d105.p.ssafy.io:3030/group/updateGroup',
-        {
-          private: info.private,
-          password: info.password,
-          name: info.name,
-          description: info.description,
-          gid: props.gid,
-        },
-        {
-          headers: {
-            authorization: localStorage.getItem('token'),
+      axios
+        .put(
+          'https://k5d105.p.ssafy.io:3030/group/updateGroup',
+          {
+            private: info.private,
+            password: info.password,
+            name: info.name,
+            description: info.description,
+            gid: props.gid,
           },
-        }
-      )
-      // .then(() => {
-      //   info.dialogVisible = true
-      //   info.message = '정보가 수정되었습니다'
-      // })
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
     }
 
     const changeAdminBtn = function(e) {
@@ -259,7 +274,14 @@ export default {
           info.changeAdmin = ''
           getGroup()
         })
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
     }
 
     const handleWriter = function(nickname, writer) {
@@ -282,7 +304,12 @@ export default {
           getGroup()
         })
         .catch((err) => {
-          console.log(err)
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
         })
     }
 
@@ -302,7 +329,7 @@ export default {
         .catch((err) => {
           if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
-            router.push({ name: 'main' })
+            location.replace('/')
             localStorage.removeItem('token')
             localStorage.removeItem('uid')
           }
@@ -322,14 +349,28 @@ export default {
               headers: { authorization: localStorage.getItem('token') },
             }
           )
-          .then(() => {
-            info.inviteDia = false
-            info.inviteEmail = ''
-            getGroup()
+          .then((res) => {
+            if (res.data.msg === '존재하지 않는 유저입니다.') {
+              info.dialogVisible = true
+              info.message = '이메일을 확인해 주세요'
+            } else if (res.data.msg === '이미 존재하는 유저입니다.') {
+              info.dialogVisible = true
+              info.message = '이미 존재하는 유저입니다'
+            } else {
+              console.log(res)
+              info.inviteDia = false
+              info.inviteEmail = ''
+              getGroup()
+            }
           })
-          .catch(() => {
-            info.dialogVisible = true
-            info.message = '이메일을 확인해 주세요'
+          .catch((err) => {
+            console.log(err)
+            if (err.response.status === 401) {
+              alert('로그인이 만료되었습니다')
+              location.replace('/')
+              localStorage.removeItem('token')
+              localStorage.removeItem('uid')
+            }
           })
       }
     }
@@ -351,7 +392,7 @@ export default {
         .catch((err) => {
           if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
-            router.push({ name: 'main' })
+            location.replace('/')
             localStorage.removeItem('token')
             localStorage.removeItem('uid')
           }
@@ -373,7 +414,7 @@ export default {
         .catch((err) => {
           if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
-            router.push({ name: 'main' })
+            location.replace('/')
             localStorage.removeItem('token')
             localStorage.removeItem('uid')
           }

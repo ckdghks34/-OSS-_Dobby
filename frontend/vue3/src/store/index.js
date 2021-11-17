@@ -61,7 +61,7 @@ export default createStore({
         return c.cid != payload
       })
     },
-    SETCALENDARMAPGOAL ( state, payload) {
+    SETCALENDARMAPGOAL(state, payload) {
       state.calendarMapGoal = payload
     },
     // 그룹 캘린더
@@ -111,8 +111,30 @@ export default createStore({
           }
         )
         .then((response) => {
-          const res = response.data.calendar.map((r) => {
-            if (r.completed) {
+          if (response.data.msg === '일정 정보가 없습니다.') {
+            commit('setCalendarData', [])
+            commit('CHECKEMPTYCALENDARDATA')
+          } else {
+            const res = response.data.calendar.map((r) => {
+              if (r.completed) {
+                return {
+                  cid: r.cid,
+                  completed: r.completed,
+                  title: r.title,
+                  content: r.content,
+                  start: r.startDate + 'T' + r.startTime,
+                  end: r.endDate + 'T' + r.endTime,
+                  color: r.color,
+                  placeName: r.placeName,
+                  placeLat: r.placeLat,
+                  placeLng: r.placeLng,
+                  startDate: r.startDate,
+                  endDate: r.endDate,
+                  category: r.category,
+                  allDay: r.allDay,
+                  classNames: ['calendar-done'],
+                }
+              }
               return {
                 cid: r.cid,
                 completed: r.completed,
@@ -128,38 +150,18 @@ export default createStore({
                 endDate: r.endDate,
                 category: r.category,
                 allDay: r.allDay,
-                classNames: ['calendar-done'],
               }
-            }
-            return {
-              cid: r.cid,
-              completed: r.completed,
-              title: r.title,
-              content: r.content,
-              start: r.startDate + 'T' + r.startTime,
-              end: r.endDate + 'T' + r.endTime,
-              color: r.color,
-              placeName: r.placeName,
-              placeLat: r.placeLat,
-              placeLng: r.placeLng,
-              startDate: r.startDate,
-              endDate: r.endDate,
-              category: r.category,
-              allDay: r.allDay,
-            }
-          })
-          commit('setCalendarData', res)
-          commit('checkCalendarData')
+            })
+            commit('setCalendarData', res)
+            commit('checkCalendarData')
+          }
         })
-        .catch((error) => {
-          if (
-            error.response.status == 401 &&
-            error.response.data.msg === '일정 정보가 없습니다.'
-          ) {
-            commit('setCalendarData', [])
-            commit('CHECKEMPTYCALENDARDATA')
-          } else {
-            console.log(error.response)
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
           }
         })
     },
@@ -181,8 +183,8 @@ export default createStore({
     deleteCalendarData({ commit }, payload) {
       commit('DELETECALENDARDATA', payload)
     },
-    setCalendarMapGoal ( {commit}, payload ) {
-      commit( 'SETCALENDARMAPGOAL', payload)
+    setCalendarMapGoal({ commit }, payload) {
+      commit('SETCALENDARMAPGOAL', payload)
     },
     // group calendar
     getGroupCalendarData({ commit }, payload) {
@@ -260,17 +262,12 @@ export default createStore({
             commit('CHECKGROUPCALENDARDATA')
           }
         })
-        .catch((error) => {
-          console.log(error)
-          console.log(error.response)
-          if (
-            error.response.status == 401 &&
-            error.response.data.error === '그룹 캘린더가 없습니다.'
-          ) {
-            commit('SETGROUPCALENDARDATA', [])
-            commit('CHECKGROUPCALENDARDATA')
-          } else {
-            console.log(error)
+        .catch((err) => {
+          if (err.response.status === 401) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
           }
         })
     },
