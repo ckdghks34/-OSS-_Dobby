@@ -112,6 +112,7 @@ import {
   FacebookAuthProvider,
 } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
+import { useRouter } from 'vue-router'
 import './main.css'
 
 export default {
@@ -183,6 +184,8 @@ export default {
     },
   },
   setup() {
+    const router = useRouter()
+
     const info = reactive({
       size: true,
       userEmail: '',
@@ -190,6 +193,23 @@ export default {
       dialogVisible: false,
       message: '',
     })
+
+    if (localStorage.getItem('token')) {
+      axios
+        .post(
+          'https://k5d105.p.ssafy.io:3030/token/checkToken',
+          {},
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .then(() => {
+          router.push({ name: 'Calendar' })
+        })
+    }
+
     onBeforeMount(() => {
       if (window.innerWidth < 890) {
         info.size = false

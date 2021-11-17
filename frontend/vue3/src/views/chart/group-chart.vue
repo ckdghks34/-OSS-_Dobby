@@ -76,12 +76,15 @@
 <script>
 import { reactive } from '@vue/reactivity'
 import axios from 'axios'
+import { watch } from 'vue-demi'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'chart',
   props: ['gid'],
   setup(props) {
     console.log(props)
+    const route = useRoute()
     const info = reactive({
       totalCount: 0,
       totalLi: [],
@@ -93,6 +96,15 @@ export default {
     const state = reactive({
       date: '',
     })
+
+    watch(
+      () => route.params,
+      (first) => {
+        props = first
+        state.date = ''
+        info.totalCount = 0
+      }
+    )
 
     const changeDate = function() {
       let startDate = state.date[0]
