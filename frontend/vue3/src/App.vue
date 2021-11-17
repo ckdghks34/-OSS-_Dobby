@@ -160,8 +160,7 @@ export default {
             },
           }
         )
-        .then((res) => {
-          console.log(res)
+        .then(() => {
           router.push({ name: 'Calendar' })
         })
     }
