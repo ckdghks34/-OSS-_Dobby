@@ -13,12 +13,23 @@
     <br />
     <div class="userCalendar-schedule-row">
       <label class="label" for="date">날짜</label>
-      <input
+      <!-- <input
         class="date-input"
         type="date"
         id="date"
         v-model="state.startDate"
-      />~<input class="date-input" type="date" v-model="state.endDate" />
+      />~<input class="date-input" type="date" v-model="state.endDate" /> -->
+      <div class="scheduleDate">
+        <div class="block">
+          <el-date-picker
+            class="datePicker"
+            v-model="state.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+          >
+          </el-date-picker>
+        </div>
+      </div>
     </div>
     <br />
     <div class="userCalendar-schedule-row">
@@ -165,13 +176,16 @@
     <br />
     <div>
       <label class="label" for="date">날짜</label>
-      <div>
-        <input
-          class="input"
-          type="date"
-          id="date"
-          v-model="state.startDate"
-        />~<input class="input" type="date" v-model="state.endDate" />
+      <div class="scheduleDate">
+        <div class="block">
+          <el-date-picker
+            class="datePicker"
+            v-model="state.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+          >
+          </el-date-picker>
+        </div>
       </div>
     </div>
     <br />
@@ -315,8 +329,7 @@ export default {
       uid: localStorage.getItem('uid'),
       title: '',
       content: '',
-      startDate: route.query.start,
-      endDate: '',
+      date: [route.query.start, route.query.start],
       startTime: '',
       endTime: '',
       placeName: '',
@@ -406,14 +419,17 @@ export default {
         }
       })
 
+      let startDate = state.date[0]
+      let endDate = state.date[1]
+
       if (state.allDay) {
         const aDay = {
           uid: state.uid,
           gid: route.query.gid,
           title: state.title,
           content: state.content,
-          startDate: state.startDate,
-          endDate: state.endDate,
+          startDate: startDate,
+          endDate: endDate,
           startTime: '00:00',
           endTime: '24:00',
           placeName: state.placeName,
@@ -469,8 +485,8 @@ export default {
           gid: route.query.gid,
           title: state.title,
           content: state.content,
-          startDate: state.startDate,
-          endDate: state.endDate,
+          startDate: startDate,
+          endDate: endDate,
           startTime: state.startTime,
           endTime: state.endTime,
           placeName: state.placeName,

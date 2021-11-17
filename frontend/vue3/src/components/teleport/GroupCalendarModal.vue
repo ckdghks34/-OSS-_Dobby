@@ -187,18 +187,16 @@ export default {
       state.dialogVisible = false    
       // 삭제 axios 요청
       axios
-        .delete('https://k5d105.p.ssafy.io:3030/groupCalendar/deleteCalendar',
-          { 
+        .delete('https://k5d105.p.ssafy.io:3030/groupCalendar/deleteCalendar',{ 
             data: {
               uid: localStorage.getItem('uid'),
               cid: state.mData.ModalDate.extendedProps.cid,
               gid: route.query.gid,
-            }
-          },
-          {
+            },
             headers: {
-              authorization: localStorage.getItem('token')
-            }
+            authorization: localStorage.getItem('token'),
+            FCMtoken: localStorage.getItem('FCMtoken'),
+            },
           })
           .then(() => {
             state.mData.ModalDate.remove()
