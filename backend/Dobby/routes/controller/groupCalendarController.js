@@ -383,6 +383,7 @@ async function checkCalendar(req, res, next) {
     const gid = req.body.gid;
     const uid = req.body.uid;
     const cid = req.body.cid;
+    const fcmtoken = "";
     if (gid === undefined || uid === undefined || cid === undefined) {
       res.status(400).json({
         msg: "요청에서 유저 정보 또는 그룹 정보 또는 일정 정보가 빠져있습니다.",
@@ -420,7 +421,7 @@ async function checkCalendar(req, res, next) {
                   title: "그룹 일정 상태 변경 알림",
                   body: doc.data().title + "의 상태가 업데이트 되었습니다.",
                 };
-                await FCMCon.groupPush(gid, msg);
+                await FCMCon.userPush(fcmtoken,uid, msg);
                 res.json({
                   calendar: doc.data(),
                   msg: "그룹 일정 완료여부 변경 성공",
