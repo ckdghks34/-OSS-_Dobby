@@ -54,7 +54,7 @@
       </div>
 
       <div v-else>
-        <div v-if="info.find">
+        <div class="findEmailResult" v-if="info.find">
           <span>이메일: {{ info.userEmail }}</span>
         </div>
         <div v-else>
@@ -288,6 +288,13 @@ export default {
 
 .findInfo .el-dialog__body {
   word-break: keep-all;
+}
+
+.findEmailResult {
+  height: 100px;
+  line-height: 6;
+  background: #f0f2f5;
+  border-radius: 4px;
 }
 
 @media screen and (max-width: 950px) {
