@@ -527,8 +527,29 @@ async function checkUserWithProvider(req, res, next) {
                     tokenMessage = "FCM 토큰 저장 실패";
                   });
               } else {
-                console.log("저장된 토큰이 있어요");
-                tokenMessage = "토큰이 이미 저장되어 있습니다.";
+                if(fcm === undefined){
+                  const list = {
+                    token: "null",
+                  };
+                  const token = await tokenRef.add(list);
+                  tokenRef
+                    .doc(token.id)
+                    .update({ tid: token.id })
+                    .then(() => {
+                      tokenRef
+                        .doc(token.id)
+                        .get()
+                        .then(() => {
+                          tokenMessage = "FCM 토큰 저장 성공";
+                        });
+                    })
+                    .catch(() => {
+                      tokenMessage = "FCM 토큰 저장 실패";
+                    });
+                }else{
+                  console.log("저장된 토큰이 있어요");
+                  tokenMessage = "토큰이 이미 저장되어 있습니다.";
+                }
               }
               resolve();
             }).then(() => {
