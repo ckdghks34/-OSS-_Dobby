@@ -6,9 +6,9 @@
 
 <script>
 // vue
-import { mapActions, useStore } from 'vuex'
+import { useStore } from 'vuex'
 import UserCalendar from '@/views/calendar/UserCalendar'
-import { computed, reactive } from 'vue'
+import { computed, onBeforeMount, reactive } from 'vue'
 
 export default {
   name: 'Calendar',
@@ -18,6 +18,10 @@ export default {
   setup() {
     const store = useStore()
 
+    onBeforeMount(() => {
+      store.dispatch('getCalendarData')
+    })
+
     const state = reactive({
       waitData: computed(() => store.state.isData)
     })
@@ -26,15 +30,6 @@ export default {
       state
     }
   },
-  methods: {
-    ...mapActions([
-      'getCalendarData',
-    ]),
-  },
-  beforeMount() {
-    this.getCalendarData()
-  },
-
 }
 </script>
 

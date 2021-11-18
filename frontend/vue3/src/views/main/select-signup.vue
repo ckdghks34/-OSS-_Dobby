@@ -10,22 +10,22 @@
           <p>Dobby 회원가입</p>
         </div>
       </router-link>
-      <router-link class="signupRouter" to="/sign">
-        <div>
-          <img src="@/assets/naver.png" alt="" />
+      <router-link class="signupRouter" to="/selectsignup">
+        <div @click="facebookSignIn">
+          <img src="@/assets/facebook.png" alt="" />
           <br />
-          <p>네이버 회원가입</p>
+          <p>페이스북 회원가입</p>
         </div>
       </router-link>
-      <router-link class="signupRouter" to="/sign">
-        <div>
+      <router-link class="signupRouter" to="/selectsignup">
+        <div @click="googleSignIn">
           <img src="@/assets/google.png" alt="" />
           <br />
           <p>구글 회원가입</p>
         </div>
       </router-link>
       <br />
-      <router-link to="/main"
+      <router-link to="/"
         ><button class="blueBtn">돌아가기</button></router-link
       >
     </div>
@@ -33,8 +33,96 @@
 </template>
 
 <script>
+import firebase from 'firebase/compat/app'
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+} from 'firebase/auth'
+import firebaseConfig from '../../../firebaseConfig'
+import axios from 'axios'
+
 export default {
   name: 'SelectSignup',
+  methods: {
+    googleSignIn() {
+      firebase.initializeApp(firebaseConfig)
+      const provider = new GoogleAuthProvider()
+      const auth = getAuth()
+      signInWithPopup(auth, provider)
+        .then((res) => {
+          const credential = GoogleAuthProvider.credentialFromResult(res)
+          const token = credential.accessToken
+          const uid = res.user.uid
+          localStorage.setItem('token', token)
+          localStorage.setItem('uid', uid)
+          axios
+            .post(
+              'https://k5d105.p.ssafy.io:3030/users/checkUserProvider',
+              {
+                uid: uid,
+              },
+              {
+                headers: { FCMtoken: localStorage.getItem('FCMtoken') },
+              }
+            )
+            .then((res) => {
+              if (res.data.msg === '이미 등록된 회원입니다.') {
+                location.replace('/calendar')
+              } else {
+                localStorage.removeItem('token', token)
+                localStorage.removeItem('uid', uid)
+                location.replace('/welcome')
+              }
+            })
+        })
+        .catch((err) => {
+          const errorCode = err.code
+          if (errorCode === 'auth/popup-blocked') {
+            alert('팝업이 차단되었습니다')
+          }
+        })
+    },
+    facebookSignIn() {
+      firebase.initializeApp(firebaseConfig)
+      const provider = new FacebookAuthProvider()
+      const auth = getAuth()
+      signInWithPopup(auth, provider)
+        .then((res) => {
+          const uid = res.user.uid
+          const credential = FacebookAuthProvider.credentialFromResult(res)
+          const token = credential.accessToken
+          localStorage.setItem('token', token)
+          localStorage.setItem('uid', uid)
+          axios
+            .post(
+              'https://k5d105.p.ssafy.io:3030/users/checkUserProvider',
+              {
+                uid: uid,
+              },
+              {
+                headers: { FCMtoken: localStorage.getItem('FCMtoken') },
+              }
+            )
+            .then((res) => {
+              if (res.data.msg === '이미 등록된 회원입니다.') {
+                location.replace('/calendar')
+              } else {
+                localStorage.removeItem('token', token)
+                localStorage.removeItem('uid', uid)
+                location.replace('/welcome')
+              }
+            })
+        })
+        .catch((err) => {
+          const errorCode = err.code
+          if (errorCode === 'auth/popup-blocked') {
+            alert('팝업이 차단되었습니다')
+          }
+        })
+    },
+  },
 }
 </script>
 
@@ -74,7 +162,7 @@ export default {
 }
 
 .signupRouter > div:hover {
-  box-shadow: 0 0 10px #719ece;
+  box-shadow: 0 0 10px #a9c9de;
 }
 
 .signupRouter > div > p {

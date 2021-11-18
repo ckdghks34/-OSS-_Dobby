@@ -11,13 +11,26 @@
         :rules="state.rules"
         ref="signupForm"
         :label-position="state.form.align"
-        label-width="103px"
+        label-width="105px"
       >
         <el-form-item label="이름" prop="userName">
           <el-input v-model="state.form.userName" maxlength="8"></el-input>
         </el-form-item>
         <el-form-item label="전화번호" prop="userPhone">
-          <el-input v-model="state.form.userPhone" maxlength="11"></el-input>
+          <el-input
+            class="duplInput"
+            v-model="state.form.userPhone"
+            maxlength="11"
+          ></el-input>
+          <button
+            class="checkDuplBtn blueBtn"
+            @click="checkPhoneDupl"
+            type="button"
+            :disabled="info.checkPhone"
+            @input="info.checkPhone = false"
+          >
+            중복 확인
+          </button>
         </el-form-item>
         <el-form-item label="이메일" prop="email">
           <el-input
@@ -62,10 +75,24 @@
           <el-input v-model="state.form.checkPw" type="password"></el-input>
         </el-form-item>
         <el-form-item label="주소" prop="address">
-          <el-input v-model="state.form.address" type="email"></el-input>
+          <el-input
+            class="duplInput"
+            v-model="state.form.address"
+            type="text"
+            @click="findAddress"
+            :disabled="info.addressInput"
+          ></el-input
+          ><button
+            class="checkDuplBtn blueBtn"
+            @click="findAddress"
+            type="button"
+          >
+            주소 검색
+          </button>
         </el-form-item>
       </el-form>
-      <router-link to="/main"
+
+      <router-link to="/"
         ><button class="signupCancel redBtn">취소</button></router-link
       >
       <button class="signupBtn blueBtn" @click="clickSignup" type="button">
@@ -91,6 +118,8 @@ export default {
       dialogVisible: false,
       checkNick: false,
       checkEmail: false,
+      checkPhone: false,
+      addressInput: false,
     })
 
     const state = reactive({
@@ -109,7 +138,7 @@ export default {
         userPhone: [
           { required: true, message: '필수 입력 항목입니다' },
           {
-            pattern: /^01[0-1]{1}[0-9]{3,4}[0-9]{4}/,
+            pattern: /^01[0-1]{1}[0-9]{4}[0-9]{4}/,
             message: '유효하지 않은 전화번호입니다',
           },
         ],
@@ -152,6 +181,33 @@ export default {
       },
     })
 
+    const checkPhoneDupl = function() {
+      if (
+        state.form.userPhone &&
+        state.form.userPhone.match(/^01[0-1]{1}[0-9]{4}[0-9]{4}/)
+      ) {
+        axios
+          .get('https://k5d105.p.ssafy.io:3030/users/checkDuplicatePhone', {
+            params: {
+              phone: state.form.userPhone,
+            },
+          })
+          .then((res) => {
+            if (res.data.valid) {
+              info.dialogVisible = true
+              info.message = '사용 가능한 전화번호입니다'
+              info.checkPhone = true
+            } else {
+              info.dialogVisible = true
+              info.message = '이미 등록된 전화번호입니다'
+            }
+          })
+      } else {
+        info.dialogVisible = true
+        info.message = '올바른 전화번호를 입력해 주세요'
+      }
+    }
+
     const checkEmailDupl = function() {
       if (state.form.email) {
         axios
@@ -192,10 +248,19 @@ export default {
       }
     }
 
+    const findAddress = function() {
+      new window.daum.Postcode({
+        oncomplete: function(data) {
+          state.form.address = data.address
+          info.addressInput = true
+        },
+      }).open()
+    }
+
     const clickSignup = function() {
       signupForm.value.validate((valid) => {
         if (valid) {
-          if (info.checkNick && info.checkEmail) {
+          if (info.checkPhone && info.checkNick && info.checkEmail) {
             axios
               .post('https://k5d105.p.ssafy.io:3030/users/signup', {
                 name: state.form.userName,
@@ -206,7 +271,6 @@ export default {
                 address: state.form.address,
               })
               .then(() => router.push({ name: 'SuccessSignup' }))
-              .catch((err) => console.log(err))
           } else {
             info.dialogVisible = true
             info.message = '중복 확인을 해 주세요'
@@ -222,8 +286,10 @@ export default {
       signupForm,
       info,
       state,
+      checkPhoneDupl,
       checkEmailDupl,
       checkNickDupl,
+      findAddress,
       clickSignup,
     }
   },
@@ -240,6 +306,13 @@ export default {
 .signupDiv > div > div > .el-dialog {
   width: 20%;
   top: 20%;
+}
+
+.signupDiv .el-input.is-disabled .el-input__inner {
+  color: #606266;
+  background-color: rgb(247, 247, 247);
+  border-color: #a9c9de;
+  cursor: auto;
 }
 
 .signup {
@@ -264,7 +337,7 @@ export default {
 }
 
 .checkDuplBtn:disabled {
-  background-color: rgb(211, 211, 211);
+  background-color: rgb(211, 211, 211) !important;
 }
 
 .signupCancel,

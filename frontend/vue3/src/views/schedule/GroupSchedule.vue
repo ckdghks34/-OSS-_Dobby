@@ -32,20 +32,47 @@
       </div>
     </div>
     <br />
-    <div class="userCalendar-schedule-row">
-      <label class="label" for="time">시간</label>
-      <input
-        class="time-input"
-        type="time"
-        id="time"
-        v-model="state.startTime"
-      />
-      ~ <input class="time-input" type="time" v-model="state.endTime" />
-    </div>
-    <br />
+
+    <transition name="slide-fade">
+      <div v-if="!state.allDay">
+        <div class="userCalendar-schedule-row">
+          <label class="label" for="time">시간</label>
+          <input
+            class="time-input"
+            type="time"
+            id="time"
+            v-model="state.startTime"
+          />
+          ~ <input class="time-input" type="time" v-model="state.endTime" />
+        </div>
+        <br />
+      </div>
+    </transition>
+
     <div class="userCalendar-schedule-allDay">
       <label for="allDay" class="label">종일</label>
       <input type="checkbox" v-model="state.allDay" />
+    </div>
+    <br />
+    <div class="userCalendar-schedule-row">
+      <label class="label" for="participant">참가자</label>
+      <el-select
+        v-model="state.participants"
+        multiple
+        filterable
+        allow-create
+        default-first-option
+        placeholder="참가자를 선택해주세요"
+        class="groupCalendar-schedule-participant"
+      >
+        <el-option
+          v-for="member in state.participantsOption"
+          :key="member.value"
+          :label="member.label"
+          :value="member.value"
+        >
+        </el-option>
+      </el-select>
     </div>
     <br />
     <div class="userCalendar-schedule-row">
@@ -66,20 +93,24 @@
         <el-button
           v-if="state.placeName"
           round
-          @click="showMapModal"
+          @click="showGroupMapModal"
           type="info"
           >경로탐색</el-button
         >
-        <el-button v-else disabled round @click="showMapModal" type="info"
+        <el-button v-else disabled round @click="showGroupMapModal" type="info"
           >경로탐색</el-button
         >
       </div>
-      <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+      <div v-if="state.isGroupChoiceWay" style="margin-left: 1rem;">
         <!-- <span class="userCalendar-choice-">
             {{ `시간 : ${state.choiceWay.duration}  거리 : ${state.choiceWay.distance}` }}
           </span> -->
-        <el-button round size="small">{{ state.choiceWay.duration }}</el-button>
-        <el-button round size="small">{{ state.choiceWay.distance }}</el-button>
+        <el-button round size="small">{{
+          state.groupChoiceWay.duration
+        }}</el-button>
+        <el-button round size="small">{{
+          state.groupChoiceWay.distance
+        }}</el-button>
       </div>
     </div>
     <br />
@@ -132,7 +163,7 @@
         class="web-button-blue"
         style="margin-left:30px"
         type="button"
-        @click="addSchedule"
+        @click="addGroupSchedule"
       >
         추가
       </button>
@@ -153,36 +184,63 @@
     <br />
     <div>
       <label class="label" for="date">날짜</label>
-      <div>
-        <div class="scheduleDate">
-          <div class="block">
-            <el-date-picker
-              class="datePicker"
-              v-model="state.date"
-              type="daterange"
-              value-format="YYYY-MM-DD"
-            >
-            </el-date-picker>
-          </div>
+      <div class="scheduleDate">
+        <div class="block">
+          <el-date-picker
+            class="datePicker"
+            v-model="state.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+          >
+          </el-date-picker>
         </div>
       </div>
     </div>
     <br />
-    <div>
-      <!--v-if -->
-      <label class="label" for="time">시간</label>
-      <input class="input" type="time" id="time" v-model="state.startTime" /> ~
-      <input class="input" type="time" v-model="state.endTime" />
-    </div>
-    <br />
+    <transition name="slide-fade">
+      <div v-if="!state.allDay">
+        <div>
+          <label class="label" for="time">시간</label>
+          <input
+            class="input"
+            type="time"
+            id="time"
+            v-model="state.startTime"
+          />
+          ~
+          <input class="input" type="time" v-model="state.endTime" />
+        </div>
+        <br />
+      </div>
+    </transition>
+
     <div>
       <label for="allDay" class="label">종일</label>
       <input type="checkbox" v-model="state.allDay" />
     </div>
     <br />
+    <div class="userCalendar-schedule-row">
+      <label class="label" for="participant">참가자</label>
+      <el-select
+        v-model="state.participants"
+        multiple
+        filterable
+        allow-create
+        default-first-option
+        placeholder="참가자를 선택해주세요"
+      >
+        <el-option
+          v-for="member in state.participantsOption"
+          :key="member.value"
+          :label="member.label"
+          :value="member.value"
+        >
+        </el-option>
+      </el-select>
+    </div>
+    <br />
     <div>
       <label class="label" for="place">장소</label>
-      <!-- <input class="input" type="text" id="place" v-model="state.placeName"> -->
       <GMapAutocomplete
         placeholder="장소를 입력해주세요"
         @place_changed="setPlace"
@@ -191,26 +249,30 @@
       </GMapAutocomplete>
     </div>
     <br />
-    <div class="userCalendar-schedule-row">
+       <div class="userCalendar-schedule-row">
       <div class="label"></div>
       <div>
         <el-button
           v-if="state.placeName"
           round
-          @click="showMapModal"
+          @click="showGroupMapModal"
           type="info"
-          size="mini">
-          경로탐색</el-button>
-        <el-button v-else disabled round @click="showMapModal" type="info" size="mini">
-          경로탐색
-        </el-button>
+          >경로탐색</el-button
+        >
+        <el-button v-else disabled round @click="showGroupMapModal" type="info"
+          >경로탐색</el-button
+        >
       </div>
-      <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+      <div v-if="state.isGroupChoiceWay" style="margin-left: 1rem;">
         <!-- <span class="userCalendar-choice-">
             {{ `시간 : ${state.choiceWay.duration}  거리 : ${state.choiceWay.distance}` }}
           </span> -->
-        <el-button round size="small">{{ state.choiceWay.duration }}</el-button>
-        <el-button round size="small">{{ state.choiceWay.distance }}</el-button>
+        <el-button round size="small">{{
+          state.groupChoiceWay.duration
+        }}</el-button>
+        <el-button round size="small">{{
+          state.groupChoiceWay.distance
+        }}</el-button>
       </div>
     </div>
     <br />
@@ -258,44 +320,43 @@
     <br />
     <div>
       <button class="redBtn" @click="handleCancleSchedule">취소</button>
-      <button
-        class="blueBtn"
-        type="button"
-        @click="addSchedule">
+      <button class="blueBtn" type="button" @click="addGroupSchedule">
         추가
       </button>
     </div>
   </div>
-
   <teleport to="#destination">
-    <CalendarMapModal ref="mapModal" />
+    <GroupCalendarMapModal ref="groupMapModal" />
   </teleport>
 </template>
 
 <script>
 import axios from 'axios'
-import { useRoute, useRouter } from 'vue-router'
-import { reactive, onBeforeMount, ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import {
+  reactive,
+  onBeforeMount,
+  onUnmounted,
+  ref,
+  computed,
+  onMounted,
+} from 'vue'
 import { useStore } from 'vuex'
 
-// component
-import CalendarMapModal from '@/components/teleport/CalendarMapModal'
+// components
+import GroupCalendarMapModal from '@/components/teleport/GroupCalendarMapModal'
 
 export default {
   name: 'Schedule',
   components: {
-    // LMap,
-    // LGeoJson,
-    CalendarMapModal,
+    GroupCalendarMapModal,
   },
   setup() {
     const router = useRouter()
     const route = useRoute()
     const store = useStore()
 
-    const mapAutoComplete = ref(null)
-    const mapModal = ref(null)
-    // console.log(route.query.start)
+    const groupMapModal = ref(null)
 
     const state = reactive({
       uid: localStorage.getItem('uid'),
@@ -305,148 +366,140 @@ export default {
       startTime: '',
       endTime: '',
       placeName: '',
-      placeLat: '',
-      placeLng: '',
+      placeLat: 38.5,
+      placeLng: 0.00022,
       allDay: false,
       color: '#FF7C7C',
       category: '공부',
       size: true,
-      latitude: 1.1,
-      longitude: 1.1,
-      falTest: false,
-      isChoiceWay: computed(() => store.state.isChoiceWay),
-      choiceWay: computed(() => store.state.choiceWay),
+      participantsOption: [],
+      groupMember: [],
+      participants: [],
+      isGroupChoiceWay: computed(() => store.state.isGroupChoiceWay),
+      groupChoiceWay: computed(() => store.state.groupChoiceWay),
+      writer: false,
     })
 
-    onBeforeMount(async () => {
+    onBeforeMount(() => {
+      findGroupMember()
+      handleGroupCalendarCreateSchedule()
+      window.addEventListener('resize', handleGroupCalendarCreateSchedule)
+    })
+
+    onMounted(() => {
+      checkWriter()
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleGroupCalendarCreateSchedule)
+    })
+
+    const showGroupMapModal = function() {
+      groupMapModal.value.show()
+    }
+
+    const handleGroupCalendarCreateSchedule = () => {
       if (window.innerWidth < 730) {
         state.size = false
-      }
-      startMap()
-    })
-
-    window.addEventListener(
-      'resize',
-      function() {
-        if (window.innerWidth < 730) {
-          state.size = false
-        } else {
-          state.size = true
-        }
-      },
-      true
-    )
-
-    const showMapModal = function() {
-      mapModal.value.show()
-    }
-
-    const setPlace = (e) => {
-      // console.log(mapAutoComplete.value)
-      state.placeName = e.name
-      state.placeLat = e.geometry.location.lat()
-      state.placeLng = e.geometry.location.lng()
-
-      // findWay()
-
-      // mapModal.value.findWayCar()
-      // mapModal.value.choiceWay(mapModal.value.state.curWay[0], 'car')
-      store.dispatch('disableMapModalChocie')
-      store.dispatch('setCalendarMapGoal', {
-        Lat: state.placeLat,
-        Lng: state.placeLng,
-      })
-
-      // provide('plcaeLat', state.placeLat)
-      // provide('placeLng', state.placeLng)
-    }
-
-    // const findWay = () => {
-    //   // car driving
-    //   axios.get(`http://k5d105.p.ssafy.io:5000/route/v1/driving/${state.longitude},${state.latitude};${state.goal.Lng},${state.goal.Lat}?steps=true`)
-    //     .then((response) => {
-    //       console.log(response.data.routes)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // }
-
-    const startMap = () => {
-      if ('geolocation' in navigator) {
-        /* geolocation 사용 가능 */
-        navigator.geolocation.getCurrentPosition(
-          function(data) {
-            var latitude = data.coords.latitude
-            var longitude = data.coords.longitude
-            state.latitude = latitude
-            state.longitude = longitude
-          },
-          function(error) {
-            alert(error)
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: Infinity,
-            maximumAge: 0,
-          }
-        )
       } else {
-        /* geolocation 사용 불가능 */
-        alert('geolocation 사용 불가능')
+        state.size = true
       }
     }
 
     const handleCancleSchedule = () => {
-      router.push({ name: 'Calendar' })
+      router.push({ name: 'GroupCalendar', query: { gid: route.query.gid } })
     }
 
-    const addSchedule = function() {
-      let startDate = state.date[0]
-      let endDate = state.date[1]
-      if (startDate === endDate && state.startTime > state.endTime) {
-        alert('종료 시간은 시작 시간보다 빠를 수 없습니다')
+    const findGroupMember = () => {
+      axios
+        .post(
+          'https://k5d105.p.ssafy.io:3030/group/GetGroupMember',
+          {
+            gid: route.query.gid,
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .then((response) => {
+          const res = response.data.members
+          const userUid = localStorage.getItem('uid')
+          state.groupMember = res
+          state.participantsOption = res.map((m) => {
+            return {
+              value: m.uid,
+              label: m.nickname,
+            }
+          })
+          const user = res.filter((r) => {
+            return r.uid === userUid
+          })
+          state.participants.push(user[0].uid)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+
+    const addGroupSchedule = function() {
+      if (!state.writer) {
+        alert('글을 수정할 수 있는 권한이 없습니다.')
+        router.push({ name: 'GroupCalendar', query: { gid: route.query.gid } })
       } else {
-        if (state.allDay) {
-          if (
-            state.title &&
-            state.content &&
-            startDate &&
-            endDate &&
-            state.placeName
-          ) {
+        const parList = state.participants.map((par) => {
+          let parInfo = state.groupMember.find((p) => {
+            return par === p.uid
+          })
+          if (parInfo) {
+            return {
+              uid: parInfo.uid,
+              name: parInfo.name,
+              completed: false,
+              nickname: parInfo.nickname,
+            }
+          }
+        })
+        if (
+          state.date[0] === state.date[1] &&
+          state.startTime > state.endTime
+        ) {
+          alert('종료 시간은 시작 시간보다 빠를 수 없습니다')
+        } else {
+          if (state.allDay) {
             const aDay = {
               uid: state.uid,
+              gid: route.query.gid,
               title: state.title,
               content: state.content,
-              startDate: startDate,
-              endDate: endDate,
+              startDate: state.date[0],
+              endDate: state.date[1],
               startTime: '00:00',
-              endTime: '23:59',
+              endTime: '24:00',
               placeName: state.placeName,
               placeLat: state.placeLat,
               placeLng: state.placeLng,
               allDay: state.allDay,
               color: state.color,
               category: state.category,
+              participant: parList,
             }
             axios
               .post(
-                `https://k5d105.p.ssafy.io:3030/calendar/createCalendar`,
+                `https://k5d105.p.ssafy.io:3030/groupCalendar/createCalendar`,
                 aDay,
                 {
                   headers: {
-                    FCMtoken: localStorage.getItem('FCMtoken'),
                     authorization: localStorage.getItem('token'),
                   },
                 }
               )
               .then((response) => {
                 const res = response.data.calendar
-
                 const d = {
                   cid: res.cid,
-                  completed: res.completed,
+                  gid: route.query.gid,
                   title: res.title,
                   content: res.content,
                   start: res.startDate + 'T' + res.startTime,
@@ -459,33 +512,31 @@ export default {
                   endDate: res.endDate,
                   category: res.category,
                   allDay: res.allDay,
+                  participant: res.participant,
+                  creator: res.creator,
                 }
 
-                store.dispatch('pushCalendarData', d)
-                router.push({ name: 'Calendar' })
+                store.dispatch('pushGroupCalendarData', d)
+                router.push({
+                  name: 'GroupCalendar',
+                  query: { gid: route.query.gid },
+                })
               })
               .catch((error) => {
                 console.log(error)
               })
+
+              .catch((error) => {
+                console.log(error)
+              })
           } else {
-            alert('시간을 제외한 모든 항목을 입력해 주세요')
-          }
-        } else {
-          if (
-            state.title &&
-            state.content &&
-            startDate &&
-            endDate &&
-            state.placeName &&
-            state.startTime &&
-            state.endTime
-          ) {
             const day = {
               uid: state.uid,
+              gid: route.query.gid,
               title: state.title,
               content: state.content,
-              startDate: startDate,
-              endDate: endDate,
+              startDate: state.date[0],
+              endDate: state.date[1],
               startTime: state.startTime,
               endTime: state.endTime,
               placeName: state.placeName,
@@ -494,21 +545,20 @@ export default {
               allDay: state.allDay,
               color: state.color,
               category: state.category,
+              participant: parList,
             }
             axios
               .post(
-                `https://k5d105.p.ssafy.io:3030/calendar/createCalendar`,
+                `https://k5d105.p.ssafy.io:3030/groupCalendar/createCalendar`,
                 day,
                 {
                   headers: {
-                    FCMtoken: localStorage.getItem('FCMtoken'),
                     authorization: localStorage.getItem('token'),
                   },
                 }
               )
               .then((response) => {
                 const res = response.data.calendar
-
                 const day = {
                   cid: res.cid,
                   completed: res.completed,
@@ -524,197 +574,72 @@ export default {
                   endDate: res.endDate,
                   category: res.category,
                   allDay: res.allDay,
+                  participant: res.participant,
+                  creator: res.creator,
                 }
 
-                store.dispatch('pushCalendarData', day)
-                router.push({ name: 'Calendar' })
+                store.dispatch('pushGroupCalendarData', day)
+                router.push({
+                  name: 'GroupCalendar',
+                  query: { gid: route.query.gid },
+                })
               })
               .catch((error) => {
                 console.log(error)
               })
-          } else {
-            alert('모든 항목을 입력해 주세요')
           }
         }
       }
     }
 
+    const setPlace = (e) => {
+      state.placeName = e.name
+      state.placeLat = e.geometry.location.lat()
+      state.placeLng = e.geometry.location.lng()
+
+      store.dispatch('disableGroupMapModalChoice')
+      store.dispatch('setGroupCalendarMapGoal', {
+        Lat: state.placeLat,
+        Lng: state.placeLng,
+      })
+    }
+
+    const checkWriter = () => {
+      axios
+        .post(
+          'https://k5d105.p.ssafy.io:3030/groupCalendar/checkWriter',
+          {
+            uid: localStorage.getItem('uid'),
+            gid: route.query.gid,
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .then((response) => {
+          state.writer = response.data.writer
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+
     return {
       state,
-      addSchedule,
+      addGroupSchedule,
       handleCancleSchedule,
+      showGroupMapModal,
+      groupMapModal,
       setPlace,
-      mapAutoComplete,
-      showMapModal,
-      mapModal,
-      // geojson,
-      // geojsonOptions
     }
   },
 }
 </script>
 
 <style>
-.schedule-info {
-  /* 500 */
-  width: 500px;
-  margin: 0 auto;
-}
-
-.mobile-schedule-main {
-  /* width: 100%;
-    height: 100%; */
-
-  margin: 0 auto;
-  width: 300px;
-  padding: 50px;
-  border-radius: 30px;
-  background-color: #f6f6f6;
-}
-
-.memo {
-  width: 300px;
-  height: 200px;
-}
-
-.memo-content {
-  /* background-color: #F6F6F6; */
-  font-size: 20px;
-}
-
-.import-label {
-  border-radius: 50%;
-  height: 20px;
-  width: 20px;
-}
-
-.label {
-  width: 70px;
-  height: 30px;
-  font-weight: 100;
-  padding: 0px 12px 0px 0px;
-}
-
-.red {
-  background-color: #ff7c7c;
-}
-.orange {
-  background-color: #fecfa3;
-}
-.yellow {
-  background-color: #fff972;
-}
-.green {
-  background-color: #b6fb81;
-}
-.blue {
-  background-color: #7886ff;
-}
-
-/* 웹화면 */
-.scheduleDate,
-.scheduleDate .el-range-editor.el-input__inner {
-  margin: 0;
-}
-
-.scheduleDate .el-range-editor.el-input__inner {
-  border: 2px solid #a9c9de;
-}
-
-.userCalendar-schedule-row {
-  display: flex;
-  align-items: center;
-}
-
-.userCalendar-schedule-map {
-  display: flex;
-  justify-content: center;
-}
-
-.web-input {
-  width: 400px;
-  height: 30px;
-  outline: none;
-  border: 2px solid #a9c9de;
-  border-radius: 4px;
-}
-
-.date-input {
-  width: 195px;
-  height: 30px;
-  outline: none;
-  border: 2px solid #a9c9de;
-  border-radius: 4px;
-}
-
-.time-input {
-  width: 190px;
-  height: 30px;
-  outline: none;
-  border: 2px solid #a9c9de;
-  border-radius: 4px;
-}
-
-.web-memo {
-  width: 390px;
-  height: 200px;
-}
-
-.web-button-red {
-  background-color: rgb(255, 155, 155);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  width: 80px;
-  height: 40px;
-}
-
-.web-button-red:hover {
-  box-shadow: 0 0 10px rgb(255, 155, 155);
-}
-
-.web-button-blue {
-  background-color: #a9c9de;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  width: 80px;
-  height: 40px;
-}
-
-.web-button-blue:hover {
-  box-shadow: 0 0 10px #a9c9de;
-}
-
-.userCalendar-schedule-color-box {
-  width: 400px;
-  display: flex;
-  justify-content: space-evenly;
-}
-
-.userCalendar-schedule-color-wrap {
-  display: flex;
-}
-
-.userCalendar-schedule-allDay {
-  display: flex;
-  align-items: center;
-}
-
-.userCalendar-schedule-allDay > input {
-  width: 15px;
-  height: 15px;
-}
-
-.userCalendar-schedule-category {
-  display: flex;
-}
-
-.userCalendar-schedule-category .el-radio {
-  margin-right: 1px;
-}
-
-.userCalendar-schedule-category-button-wrap {
+.groupCalendar-schedule-participant {
   width: 400px;
 }
 </style>

@@ -39,7 +39,7 @@
               :percentage="
                 Math.floor((t.Num / info.totalCount).toFixed(2) * 100)
               "
-              :color="info.color[index % 5]"
+              :color="info.color[index % 2]"
               style="margin-bottom:3%"
             />
           </div>
@@ -48,10 +48,9 @@
       <div>
         <p>계획은 얼마나 달성했을까?</p>
         <p style="margin:0 0 3% 0">
-          평균
-          {{ Math.floor((info.doneCount / info.totalCount).toFixed(2) * 100) }}%
+          평균 {{ (info.doneCount / info.totalCount).toFixed(2) * 100 }}%
         </p>
-        <div class="demo-progress" v-if="info.doneCount">
+        <div class="demo-progress">
           <div v-for="(t, index) in info.categoryLi" :key="index">
             <p>
               {{ t.category }}
@@ -61,22 +60,7 @@
               :text-inside="true"
               :stroke-width="20"
               :percentage="Math.floor((t.check / t.total).toFixed(2) * 100)"
-              :color="info.color[index % 5]"
-              style="margin-bottom:3%"
-            />
-          </div>
-        </div>
-        <div class="demo-progress" v-else>
-          <div v-for="(t, index) in info.totalLi" :key="index">
-            <p>
-              {{ t.category }}
-            </p>
-            <el-progress
-              class="progress"
-              :text-inside="true"
-              :stroke-width="20"
-              :percentage="0"
-              :color="info.color[index % 5]"
+              :color="info.color[index % 2]"
               style="margin-bottom:3%"
             />
           </div>
@@ -92,29 +76,43 @@
 <script>
 import { reactive } from '@vue/reactivity'
 import axios from 'axios'
+import { watch } from 'vue-demi'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'chart',
-  setup() {
+  props: ['gid'],
+  setup(props) {
+    const route = useRoute()
     const info = reactive({
       totalCount: 0,
       totalLi: [],
       doneCount: 0,
       categoryLi: [],
-      color: ['#a9c9de', '#80CBC4', '#5FCEC6', '#A5D6A7', '#C8E6C9'],
+      color: ['#a9c9de', '#F4EF50', '#C882D8', '#D2F276', '#5FCEC6'],
     })
 
     const state = reactive({
       date: '',
     })
 
+    watch(
+      () => route.params,
+      (first) => {
+        props = first
+        state.date = ''
+        info.totalCount = 0
+      }
+    )
+
     const changeDate = function() {
       let startDate = state.date[0]
       let endDate = state.date[1]
       axios
         .post(
-          'https://k5d105.p.ssafy.io:3030/chart/getPersonal',
+          'https://k5d105.p.ssafy.io:3030/chart/getGroup',
           {
+            gid: props.gid,
             uid: localStorage.getItem('uid'),
             startDate: startDate,
             endDate: endDate,
