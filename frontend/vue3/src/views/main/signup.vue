@@ -11,7 +11,7 @@
         :rules="state.rules"
         ref="signupForm"
         :label-position="state.form.align"
-        label-width="103px"
+        label-width="105px"
       >
         <el-form-item label="이름" prop="userName">
           <el-input v-model="state.form.userName" maxlength="8"></el-input>
