@@ -6,11 +6,11 @@
       </el-dialog>
       <el-dialog v-model="info.searchDia" :title="info.groupName" width="30%">
         <div v-if="info.private">
-          <h3>{{ info.groupDes }}</h3>
+          <p style="font-size:17px;">{{ info.groupDes }}</p>
           <span style="color:rgb(255, 155, 155)">비공개 그룹입니다</span>
         </div>
         <div v-else>
-          <h3>{{ info.groupDes }}</h3>
+          <p style="font-size:17px;">{{ info.groupDes }}</p>
         </div>
         <template #footer>
           <div v-if="info.private">

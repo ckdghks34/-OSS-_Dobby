@@ -1,20 +1,51 @@
 <template>
-  <div class="icon-bar" v-if="info.size">
+  <div v-if="info.size" style="height: 100vh;display: inline;">
     <!-- id="nav" -->
 
-    <div v-if="info.userId" >
-      <div class="parent" style="display: flex; margin-top:18px;">
-        <div class="child" style="flex: 1;">{{ info.userId }} 님</div>
-        <div class="child" @click="logout" style="cursor:pointer; color: white; flex:1; ">Logout</div>
+    <div v-if="info.userId" class="icon-bar">
+      <div class="parent">
+        <div
+          class="child"
+          style="margin: 50px 0 20px 10%; text-align: left; font-size:20px;"
+        >
+          {{ info.userId }} 님
+        </div>
+        <button
+          class="whiteBtn"
+          @click="logout"
+          type="button"
+          style="width: 80%;height: 25px;margin-bottom: 50px; cursor:pointer;"
+        >
+          Logout
+        </button>
+        <!-- <div
+          class="child"
+          @click="logout"
+          style="cursor:pointer; color: white; flex:1; "
+        >
+          Logout
+        </div> -->
         <!-- <p @click="logout" style="cursor:pointer; color: white; font-size: 20px; margin-bottom: 5px;">Logout</p> -->
       </div>
       <!-- <router-link to="/main">Login</router-link>  -->
       <!-- <router-link to="/newgroup">New Group</router-link>  -->
-      <router-link to="/calendar">Calendar</router-link>
+      <router-link
+        to="/calendar"
+        style="text-align: left;margin-left: 10%; margin-bottom: 10px;"
+        >Calendar</router-link
+      >
       <!-- <router-link to="/schedule">Schedule</router-link>  -->
-      <router-link to="/chart">Chart</router-link>
+      <router-link
+        to="/chart"
+        style="text-align: left;margin-left: 10%;margin-bottom: 10px;"
+        >Chart</router-link
+      >
 
-      <router-link to="/searchGroup">Group</router-link>
+      <router-link
+        to="/searchGroup"
+        style="text-align: left;margin-left: 10%;margin-bottom: 10px;"
+        >Group</router-link
+      >
       <!-- <p class="group-p" style=":not(:hover)">Group</p> -->
       <!-- <i class="bi bi-gear-fill"></i> -->
 
@@ -25,7 +56,7 @@
             :key="groupList.gid"
             style="list-style: none; padding-bottom : 13px"
           >
-            <div class="mulit-line-ellipsis">
+            <div style="text-align: left;margin-left: 20%;">
               <p
                 @click="TogroupCallendar(groupList.gid)"
                 style="display:inline; cursor:pointer;"
@@ -59,9 +90,9 @@
       </div>
       <!-- <button @click="logout" class="logoutButton">logout</button> -->
     </div>
-    <div v-else>
+    <!-- <div v-else>
       <router-link to="/">Login</router-link>
-    </div>
+    </div> -->
   </div>
 
   <div v-else>
@@ -349,6 +380,7 @@ body,
   height: 90vh;
   vertical-align: middle;
   text-align: center;
+  padding-top: 50px;
 }
 
 @font-face {
@@ -382,6 +414,8 @@ body,
   left: 0;
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 0;
+  max-width: 280px;
+  min-width: 212px;
 }
 
 .icon-bar a {
