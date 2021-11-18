@@ -8,4 +8,5 @@ router.post("/getCalendar", calendarController.getUserCalendar);
 router.put("/updateCalendar", calendarController.updateUserCalendar);
 router.delete("/deleteCalendar", calendarController.deleteUserCalendar);
 router.put("/checkCalendar", calendarController.completeUserCalendar);
+
 module.exports = router;

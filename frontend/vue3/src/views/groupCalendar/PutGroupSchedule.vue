@@ -81,9 +81,7 @@
     <div class="userCalendar-schedule-category">
       <label class="label" for="category">분류</label>
       <div class="userCalendar-schedule-category-button-wrap">
-        <el-radio v-model="state.category" label="공부" border size="medium"
-          >공부</el-radio
-        >
+        <el-radio v-model="state.category" label="공부" border>공부</el-radio>
         <el-radio v-model="state.category" label="운동" border>운동</el-radio>
         <el-radio v-model="state.category" label="업무" border>업무</el-radio>
         <el-radio v-model="state.category" label="취미" border>취미</el-radio>
@@ -132,6 +130,7 @@
       >
         수정
       </button>
+     
     </div>
   </div>
 
@@ -250,6 +249,7 @@
         수정
       </button>
     </div>
+    
   </div>
 </template>
 

@@ -224,7 +224,9 @@ export default {
               endDate: c.endDate,
               classNames: ['calendar-done'],
               participant: c.participant,
-              creator: c.creator
+              creator: c.creator,
+              category: c.category,
+              allDay: c.allDay,
             })
           }
           else {
