@@ -19,6 +19,10 @@ export default createStore({
     calendarMapGoal: {},
     isChoiceWay: false,
     choiceWay: {},
+    putMapGoal:{},
+    isPutChoiceWay: false,
+    putChoiceWay: {},
+
     // group calendar
     isGroupData: false,
     isGroupTodoItem: false,
@@ -30,6 +34,9 @@ export default createStore({
     GroupCalendarMapGoal: {},
     isGroupChoiceWay: false,
     GroupChoiceWay: {},
+    groupPutMapGoal : {},
+    isGroupPutChoiceWay: false,
+    GroupPutChoiceWay : {},
   },
   mutations: {
     setCalendarData(state, payload) {
@@ -79,6 +86,20 @@ export default createStore({
     DISABLEMAPMODALCHOICE(state) {
       state.isChoiceWay = false
     },
+    SETPUTMAPGOAL( state, payload) {
+      state.putMapGoal = payload
+    },
+    SETPUTMAPCHOICE ( state, payload ) {
+      state.isPutChoiceWay = true
+      state.putChoiceWay = {
+        distance : payload.distance,
+        duration : payload.duration
+      }
+    },
+    DISABLEPUTMAPCHOICE ( state ) {
+      state.isPutChoiceWay = false
+    },
+
     // 그룹 캘린더
     SETGROUPCALENDARDATA(state, payload) {
       state.groupCalendarData = payload
@@ -120,6 +141,19 @@ export default createStore({
     DISABLEGROUPMAPMODALCHOICE ( state ) {
       state.isGroupChoiceWay = false
     },
+    DISABLEGROUPPUTMAPCHOICE ( state ) {
+      state.isGroupPutChoiceWay = false
+    },
+    SETGROUPPUTMAPGOAL ( state, payload ) {
+      state.groupPutMapGoal = payload
+    },
+    SETPUTGROUPMAPCHOICE ( state, payload ) {
+      state.isGroupPutChoiceWay = true
+      state.GroupPutChoiceWay = {
+        distance : payload.distance,
+        duration : payload.duration
+      }
+    }
   },
   actions: {
     // user calendar
@@ -219,6 +253,16 @@ export default createStore({
     disableMapModalChocie ( {commit} ) {
       commit('DISABLEMAPMODALCHOICE')
     },
+    setPutMapGoal ( { commit }, payload) {
+      commit('SETPUTMAPGOAL', payload)
+    },
+    setPutMapChoice ( { commit }, payload) {
+      commit('SETPUTMAPCHOICE', payload)
+    },
+    diablePutMapChoice ( { commit } ) {
+      commit('DISABLEPUTMAPCHOICE')
+    },
+
     // group calendar
     getGroupCalendarData({ commit }, payload) {
       // console.log('request g cal data')
@@ -336,6 +380,15 @@ export default createStore({
     },
     setGroupMapModalChoice ( {commit}, payload) {
       commit('SETGROUPMAPMODALCHOICE', payload)
+    },
+    diableGroupPutMapChoice ( { commit }) {
+      commit('DISABLEGROUPPUTMAPCHOICE')
+    },
+    setGroupPutMapGoal ( { commit }, payload ) {
+      commit('SETGROUPPUTMAPGOAL', payload)
+    },
+    setPutGroupMapChoice ( { commit }, payload ) {
+      commit('SETPUTGROUPMAPCHOICE', payload)
     }
   },
   modules: {},
