@@ -20,6 +20,13 @@
   box-shadow: 0 0 10px rgb(255, 155, 155);
 }
 
+.whiteBtn {
+  background-color: #ffffff !important;
+  color: rgb(0, 0, 0) !important;
+  border: none !important;
+  border-radius: 4px !important;
+}
+
 .input,
 .el-input input,
 .textarea textarea {
