@@ -99,7 +99,7 @@
     <div v-if="info.userId">
       <el-dropdown
         class="list-button"
-        style="text-align: left; min-width:355px;max-width: 540px;"
+        style="text-align: left; min-width:355px;"
       >
         <el-button btn-sm style="margin: 5% 0 0 2%; border:none;">
           <svg
