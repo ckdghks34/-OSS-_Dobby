@@ -179,6 +179,7 @@ export default {
         alert('일정을 추가할 수 있는 권한이 없습니다.')
       } else {
         if ( confirm('일정을 추가하시겠습니까?') ) {
+          store.dispatch('initGroupMapChoice')
           router.push({name: 'GroupCalendarCreateSchedule', query: {
             gid: route.query.gid,
             start: clickInfo.dateStr
