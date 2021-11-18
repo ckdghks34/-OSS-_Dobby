@@ -340,6 +340,11 @@ export default {
   .groupName {
     line-height: 6;
   }
+
+  .newGroupBtn {
+    width: 19%;
+    margin-left: 1%;
+  }
 }
 
 /* @media screen and (max-width: 620px) {
@@ -368,6 +373,11 @@ export default {
 
   .groupName {
     line-height: 3;
+  }
+
+  .newGroupBtn {
+    width: 100%;
+    margin: 0;
   }
 }
 </style>

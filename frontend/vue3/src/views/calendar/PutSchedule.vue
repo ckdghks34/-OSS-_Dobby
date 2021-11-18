@@ -56,23 +56,49 @@
     <br />
     <div class="userCalendar-schedule-row">
       <label class="label" for="place">장소</label>
-      <input
+      <div v-if="!state.isPutPlace" class="web-input web-input-placeName">
+        <span>{{ state.placeName }}</span>
+      </div>
+      <GMapAutocomplete
+        v-if="state.isPutPlace"
+        placeholder="장소를 입력해주세요"
+        @place_changed="setPutPlace"
         class="web-input"
-        type="text"
-        id="place"
-        v-model="state.placeName"
-      />
+        ref="PutMapAutoComplete"
+      >
+      </GMapAutocomplete>
+    </div>
+    <br>
+    <div class="userCalendar-schedule-row">
+      <div class="label"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <el-button v-if="!state.isPutPlace" @click="state.isPutPlace = true" type="primary" size="small">
+          장소 변경하기
+        </el-button>
+        <el-button v-if="state.isPutPlace" @click="handleCanclePutMap" type="primary" size="small">
+          장소 변경취소
+        </el-button>
+
+        <el-button v-if="state.isPutPlace" @click="showPutMapModal" type="info" size="small">
+          경로탐색
+        </el-button>
+
+        <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+          <el-button round size="mini">{{ state.choiceWay.duration }}</el-button>
+          <el-button round size="mini">{{ state.choiceWay.distance }}</el-button>
+        </div>
+
+      </div>
     </div>
     <br />
     <div class="userCalendar-schedule-category">
       <label class="label" for="category">분류</label>
       <div class="userCalendar-schedule-category-button-wrap">
-        <el-radio v-model="state.category" label="공부" border size="medium"
-          >공부</el-radio
-        >
-        <el-radio v-model="state.category" label="운동" border>운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border>업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border>취미</el-radio>
+        <el-radio v-model="state.category" label="공부" border size="mini">공부</el-radio>
+        <el-radio v-model="state.category" label="운동" border size="mini">운동</el-radio>
+        <el-radio v-model="state.category" label="업무" border size="mini">업무</el-radio>
+        <el-radio v-model="state.category" label="취미" border size="mini">취미</el-radio>
+        <el-radio v-model="state.category" label="일상" border size="mini">일상</el-radio>
       </div>
     </div>
     <br />
@@ -104,6 +130,7 @@
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
         v-model="state.content"
+        style="padding:10px;"
       />
     </div>
     <br />
@@ -113,16 +140,14 @@
         class="web-button-blue"
         style="margin-left:30px"
         type="button"
-        @click="putSchedule"
-        v-bind:disabled="title == ''"
-      >
+        @click="putSchedule">
         수정
       </button>
     </div>
   </div>
 
   <div class="mobile-schedule-main" v-else>
-    <h1>New Schedule</h1>
+    <h1>Put Schedule</h1>
     <div>
       <label class="label" for="scheduleTitle">제목</label>
       <input
@@ -162,17 +187,48 @@
     <br />
     <div>
       <label class="label" for="place">장소</label>
-      <input class="input" type="text" id="place" v-model="state.placeName" />
+      <div v-if="!state.isPutPlace">
+        <span>{{ state.placeName }}</span>
+      </div>
+      <GMapAutocomplete
+        v-if="state.isPutPlace"
+        placeholder="장소를 입력해주세요"
+        @place_changed="setPutPlace"
+        ref="PutMapAutoComplete"
+      >
+      </GMapAutocomplete>
+    </div>
+    <br>
+    <div class="userCalendar-schedule-row">
+      <div class="label"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <el-button v-if="!state.isPutPlace" @click="state.isPutPlace = true" type="primary" size="small">
+          장소 변경하기
+        </el-button>
+        <el-button v-if="state.isPutPlace" @click="handleCanclePutMap" type="primary" size="small">
+          장소 변경취소
+        </el-button>
+
+        <el-button v-if="state.isPutPlace" @click="showPutMapModal" type="info" size="small">
+          경로탐색
+        </el-button>
+
+        <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+          <el-button round size="mini">{{ state.choiceWay.duration }}</el-button>
+          <el-button round size="mini">{{ state.choiceWay.distance }}</el-button>
+        </div>
+      </div>
     </div>
     <br />
     <div>
       <label class="label" for="category">분류</label>
       <!-- <span class="label">분류</span> -->
       <div>
-        <el-radio v-model="state.category" label="공부" border>공부</el-radio>
-        <el-radio v-model="state.category" label="운동" border>운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border>업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border>취미</el-radio>
+        <el-radio v-model="state.category" label="공부" border size="mini">공부</el-radio>
+        <el-radio v-model="state.category" label="운동" border size="mini">운동</el-radio>
+        <el-radio v-model="state.category" label="업무" border size="mini">업무</el-radio>
+        <el-radio v-model="state.category" label="취미" border size="mini">취미</el-radio>
+        <el-radio v-model="state.category" label="일상" border size="mini">일상</el-radio>
       </div>
     </div>
     <br />
@@ -202,6 +258,7 @@
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
         v-model="state.content"
+        style="padding:10px;"
       />
     </div>
     <br />
@@ -217,22 +274,33 @@
       </button>
     </div>
   </div>
+
+  <teleport to="#destination">
+    <PutCalendarMapModal ref="putMapModal" />
+  </teleport>
+
 </template>
 
 <script>
 import axios from 'axios'
-import { computed, reactive, onBeforeMount, onUnmounted } from 'vue'
+import { computed, reactive, onBeforeMount, onUnmounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 
+// component
+import PutCalendarMapModal from '@/components/teleport/PutCalendarMapModal'
+
 export default {
   name: 'Schedule',
-  components: {},
+  components: {
+    PutCalendarMapModal,
+  },
   setup() {
     const store = useStore()
     const router = useRouter()
 
     const initData = computed(() => store.getters.getModalDataFormat)
+    const putMapModal = ref(null)
 
     onBeforeMount(() => {
       window.addEventListener('resize', handleUserCalendarPutWindowSize)
@@ -350,6 +418,31 @@ export default {
         .substring(0, 5)
     }
 
+    const handleCanclePutMap = () => {
+      state.placeName = initData.value.ModalDate.extendedProps.placeName
+      state.placeLat = initData.value.ModalDate.extendedProps.placeLat
+      state.placeLng = initData.value.ModalDate.extendedProps.placeLng
+
+      store.dispatch('diablePutMapChoice')
+      state.isPutPlace = false
+    }
+
+    const setPutPlace = (e) => {
+      state.placeName = e.name
+      state.placeLat = e.geometry.location.lat()
+      state.placeLng = e.geometry.location.lng()
+      
+      store.dispatch('diablePutMapChoice')
+      store.dispatch('setPutMapGoal', {
+        Lat: state.placeLat,
+        Lng: state.placeLng,
+      })
+    }
+
+    const showPutMapModal = () => {
+      putMapModal.value.show()
+    }
+
     const state = reactive({
       title: initData.value.ModalDate.title,
       start: initData.value.ModalDate.start,
@@ -375,7 +468,14 @@ export default {
       allDay: initData.value.ModalDate.allDay,
       category: initData.value.ModalDate.extendedProps.category,
       isBig: false,
+
+      // map 수정
+      isPutPlace: false,
+      isChoiceWay: computed(() => store.state.isPutChoiceWay),
+      choiceWay: computed(() => store.state.putChoiceWay),
     })
+
+
     if (initData.value.ModalDate.end) {
       state.endTime = initData.value.ModalDate.end
         .toString()
@@ -384,12 +484,17 @@ export default {
     } else {
       state.endTime = '23:59'
     }
+    // console.log(state.endTime)
 
     return {
       state,
       putSchedule,
       handleCancle,
       initData,
+      putMapModal,
+      handleCanclePutMap,
+      setPutPlace,
+      showPutMapModal,
     }
   },
 }
@@ -409,4 +514,11 @@ export default {
   transform: translateX(20px);
   opacity: 0;
 }
+
+.web-input-placeName {
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+}
+
 </style>
