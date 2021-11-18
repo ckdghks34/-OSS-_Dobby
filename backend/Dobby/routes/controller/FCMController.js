@@ -71,6 +71,8 @@ async function groupPush(gid, msg) {
       }
     }
 
+    console.log(registrationTokens);
+
     await firebase_admin.messaging().subscribeToTopic(registrationTokens, topic)
       .then((res) => {
         console.log('Successfully subscribed to topic:', res);

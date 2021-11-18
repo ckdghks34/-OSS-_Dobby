@@ -132,10 +132,10 @@
           <el-col :span="22" :offset="1" class="modal-content-body-participant">
             <div v-for="par in state.mData.ModalDate.extendedProps.participant" :key="par.uid" class="modal-content-body-participant-element">
               <el-button v-if="par.completed" size="mini" type="info" plain>
-                {{ par.name }}
+                {{ par.nickname }}
               </el-button>
               <el-button v-if="!par.completed" size="mini">
-                {{ par.name }}
+                {{ par.nickname }}
               </el-button>
             </div>
           </el-col>

@@ -52,10 +52,10 @@
         <el-col :span="21" :offset="1" class="group-todoitem-card-participant">
           <div v-for="par in state.toDo.extendedProps.participant" :key="par.uid" class="group-todoitem-card-participant-element">
             <el-button v-if="par.completed" size="mini" type="info" plain>
-              {{ par.name }}
+              {{ par.nickname }}
             </el-button>
             <el-button v-if="!par.completed" size="mini">
-              {{ par.name }}
+              {{ par.nickname }}
             </el-button>
           </div>
         </el-col>

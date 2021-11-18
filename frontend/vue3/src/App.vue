@@ -2,6 +2,7 @@
   <div v-if="info.size" style="height: 100vh;display: inline;">
     <!-- id="nav" -->
 
+<<<<<<< HEAD
     <div v-if="info.userId" class="icon-bar">
       <div class="parent">
         <div
@@ -25,6 +26,12 @@
         >
           Logout
         </div> -->
+=======
+    <div v-if="info.userId" >
+      <div class="parent" style="display: flex; margin-top:18px; margin-bottom:25px;">
+        <div class="child" style="flex: 1;">{{ info.userId }} 님</div>
+        <div class="child" @click="logout" style="cursor:pointer; color: white; flex:1; ">Logout</div>
+>>>>>>> 944a884f8a2d7b36ebdc295cba7018a035fd573d
         <!-- <p @click="logout" style="cursor:pointer; color: white; font-size: 20px; margin-bottom: 5px;">Logout</p> -->
       </div>
       <!-- <router-link to="/main">Login</router-link>  -->
@@ -106,17 +113,17 @@
           <el-dropdown-menu>
             <!-- <el-dropdown-item><router-link to="/newgroup">New Group</router-link> </el-dropdown-item> -->
             <el-dropdown-item
-              ><router-link to="/searchGroup">Group</router-link>
-            </el-dropdown-item>
-            <el-dropdown-item
               ><router-link to="/calendar">Calendar</router-link>
             </el-dropdown-item>
             <!-- <el-dropdown-item><router-link to="/schedule">Schedule</router-link> </el-dropdown-item> -->
             <el-dropdown-item
               ><router-link to="/chart">chart</router-link>
             </el-dropdown-item>
+            <el-dropdown-item
+              ><router-link to="/searchGroup">Group</router-link>
+            </el-dropdown-item>
             <div>
-              <ul>
+              <ul style="padding-left:30px;">
                 <li
                   v-for="groupList in info.groupLists"
                   :key="groupList.gid"
@@ -125,7 +132,7 @@
                   <div>
                     <p
                       @click="TogroupCallendar(groupList.gid)"
-                      style="display:inline; margin-right:7px; cursor:pointer;"
+                      style="display:inline; cursor:pointer;"
                     >
                       {{ groupList.name }}
                     </p>
@@ -228,7 +235,7 @@ export default {
         message: payload.notification.body,
         type: 'success',
       })
-      // reload();
+      reload();
     })
 
     onBeforeMount(() => {
@@ -334,11 +341,11 @@ export default {
       })
     }
 
-    // const reload = function() {
-    //   setTimeout(function(){
-    //     router.go();
-    //   }, 3000);
-    // }
+    const reload = function() {
+      setTimeout(function(){
+        router.go();
+      }, 2000);
+    }
 
     return { info, logout, ToGroup, TogroupCallendar, handleToGChart }
   },

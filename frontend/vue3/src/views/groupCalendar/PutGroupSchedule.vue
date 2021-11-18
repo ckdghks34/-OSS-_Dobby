@@ -416,6 +416,7 @@ export default {
               uid: parInfo.uid,
               name: parInfo.name,
               completed: existPar.completed,
+              nickname: parInfo.nickname,
             }
           }
           // 없는 사람
@@ -423,6 +424,7 @@ export default {
             uid: parInfo.uid,
             name: parInfo.name,
             completed: false,
+            nickname: parInfo.nickname,
           }
         }
       })
@@ -562,8 +564,6 @@ export default {
     const showPutGroupMapModal = () => {
       putGroupMapModal.value.show()
     }
-
-
 
     const state = reactive({
       title: initData.value.ModalDate.title,
