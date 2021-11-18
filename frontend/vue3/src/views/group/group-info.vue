@@ -237,6 +237,10 @@ export default {
             },
           }
         )
+        .then(() => {
+          info.dialogVisible = true
+          info.message = '그룹 정보가 수정되었습니다'
+        })
         .catch((err) => {
           if (err.response.status === 401) {
             alert('로그인이 만료되었습니다')
