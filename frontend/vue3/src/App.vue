@@ -2,7 +2,6 @@
   <div v-if="info.size" style="height: 100vh;display: inline;">
     <!-- id="nav" -->
 
-<<<<<<< HEAD
     <div v-if="info.userId" class="icon-bar">
       <div class="parent">
         <div
@@ -26,12 +25,6 @@
         >
           Logout
         </div> -->
-=======
-    <div v-if="info.userId" >
-      <div class="parent" style="display: flex; margin-top:18px; margin-bottom:25px;">
-        <div class="child" style="flex: 1;">{{ info.userId }} 님</div>
-        <div class="child" @click="logout" style="cursor:pointer; color: white; flex:1; ">Logout</div>
->>>>>>> 944a884f8a2d7b36ebdc295cba7018a035fd573d
         <!-- <p @click="logout" style="cursor:pointer; color: white; font-size: 20px; margin-bottom: 5px;">Logout</p> -->
       </div>
       <!-- <router-link to="/main">Login</router-link>  -->
@@ -235,7 +228,7 @@ export default {
         message: payload.notification.body,
         type: 'success',
       })
-      reload();
+      reload()
     })
 
     onBeforeMount(() => {
@@ -342,9 +335,9 @@ export default {
     }
 
     const reload = function() {
-      setTimeout(function(){
-        router.go();
-      }, 2000);
+      setTimeout(function() {
+        router.go()
+      }, 2000)
     }
 
     return { info, logout, ToGroup, TogroupCallendar, handleToGChart }
