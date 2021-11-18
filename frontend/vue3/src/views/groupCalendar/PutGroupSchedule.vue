@@ -70,21 +70,54 @@
     <br />
     <div class="userCalendar-schedule-row">
       <label class="label" for="place">장소</label>
-      <input
+      <!-- <input
         class="web-input"
         type="text"
         id="place"
         v-model="state.placeName"
-      />
+      /> -->
+      <div v-if="!state.isGroupPutPlace" class="web-input web-input-placeName">
+        <span>{{ state.placeName }}</span>
+      </div>
+      <GMapAutocomplete
+        v-if="state.isGroupPutPlace"
+        placeholder="장소를 입력해주세요"
+        @place_changed="setGroupPutPlace"
+        class="web-input"
+        ref="PutGroupMapAutoComplete"
+      >
+      </GMapAutocomplete>
+    </div>
+    <br>
+    <div class="userCalendar-schedule-row">
+      <div class="label"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <el-button v-if="!state.isGroupPutPlace" @click="state.isGroupPutPlace = true" type="primary" size="small">
+          장소 변경하기
+        </el-button>
+        <el-button v-if="state.isGroupPutPlace" @click="handleCanclePutGroupMap" type="primary" size="small">
+          장소 변경취소
+        </el-button>
+
+        <el-button v-if="state.isGroupPutPlace" @click="showPutGroupMapModal" type="info" size="small">
+          경로탐색
+        </el-button>
+
+        <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+          <el-button round size="mini">{{ state.choiceWay.duration }}</el-button>
+          <el-button round size="mini">{{ state.choiceWay.distance }}</el-button>
+        </div>
+      </div>
     </div>
     <br />
     <div class="userCalendar-schedule-category">
       <label class="label" for="category">분류</label>
       <div class="userCalendar-schedule-category-button-wrap">
-        <el-radio v-model="state.category" label="공부" border>공부</el-radio>
-        <el-radio v-model="state.category" label="운동" border>운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border>업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border>취미</el-radio>
+        <el-radio v-model="state.category" label="공부" border size="mini">공부</el-radio>
+        <el-radio v-model="state.category" label="운동" border size="mini">운동</el-radio>
+        <el-radio v-model="state.category" label="업무" border size="mini">업무</el-radio>
+        <el-radio v-model="state.category" label="취미" border size="mini">취미</el-radio>
+        <el-radio v-model="state.category" label="일상" border size="mini">일상</el-radio>
       </div>
     </div>
     <br />
@@ -125,17 +158,14 @@
         class="web-button-blue"
         style="margin-left:30px"
         type="button"
-        @click="putSchedule"
-        v-bind:disabled="title == ''"
-      >
+        @click="putSchedule">
         수정
       </button>
-     
     </div>
   </div>
 
   <div class="mobile-schedule-main" v-else>
-    <h1>New Schedule</h1>
+    <h1>Put Schedule</h1>
     <div>
       <label class="label" for="scheduleTitle">제목</label>
       <input
@@ -195,17 +225,49 @@
     <br />
     <div>
       <label class="label" for="place">장소</label>
-      <input class="input" type="text" id="place" v-model="state.placeName" />
+      <!-- <input class="input" type="text" id="place" v-model="state.placeName" />-->
+      <div v-if="!state.isGroupPutPlace">
+        <span>{{ state.placeName }}</span>
+      </div>
+      <GMapAutocomplete
+        v-if="state.isGroupPutPlace"
+        placeholder="장소를 입력해주세요"
+        @place_changed="setGroupPutPlace"
+        ref="PutGroupMapAutoComplete"
+      >
+      </GMapAutocomplete>
+    </div>
+    <br>
+    <div class="userCalendar-schedule-row">
+      <div class="label"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <el-button v-if="!state.isGroupPutPlace" @click="state.isGroupPutPlace = true" type="primary" size="small">
+          장소 변경하기
+        </el-button>
+        <el-button v-if="state.isGroupPutPlace" @click="handleCanclePutGroupMap" type="primary" size="small">
+          장소 변경취소
+        </el-button>
+
+        <el-button v-if="state.isGroupPutPlace" @click="showPutGroupMapModal" type="info" size="small">
+          경로탐색
+        </el-button>
+
+        <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+          <el-button round size="mini">{{ state.choiceWay.duration }}</el-button>
+          <el-button round size="mini">{{ state.choiceWay.distance }}</el-button>
+        </div>
+      </div>
     </div>
     <br />
     <div>
       <label class="label" for="category">분류</label>
       <!-- <span class="label">분류</span> -->
       <div>
-        <el-radio v-model="state.category" label="공부" border>공부</el-radio>
-        <el-radio v-model="state.category" label="운동" border>운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border>업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border>취미</el-radio>
+        <el-radio v-model="state.category" label="공부" border size="mini">공부</el-radio>
+        <el-radio v-model="state.category" label="운동" border size="mini">운동</el-radio>
+        <el-radio v-model="state.category" label="업무" border size="mini">업무</el-radio>
+        <el-radio v-model="state.category" label="취미" border size="mini">취미</el-radio>
+        <el-radio v-model="state.category" label="일상" border size="mini">일상</el-radio>
       </div>
     </div>
     <br />
@@ -244,29 +306,39 @@
         class="blueBtn"
         type="button"
         @click="putSchedule"
-        v-bind:disabled="title == ''"
       >
         수정
       </button>
     </div>
-    
   </div>
+
+  <teleport to="#destination">
+    <PutGroupCalendarMapModal ref="putGroupMapModal" />
+  </teleport>
+
 </template>
 
 <script>
 import axios from 'axios'
-import { computed, reactive, onBeforeMount, onUnmounted } from 'vue'
+import { computed, reactive, onBeforeMount, onUnmounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 
+// component
+import PutGroupCalendarMapModal from '@/components/teleport/PutGroupCalendarMapModal'
+
 export default {
   name: 'PutGroupSchedule',
+  components: {
+    PutGroupCalendarMapModal,
+  },
   setup() {
     const store = useStore()
     const router = useRouter()
     const route = useRoute()
 
     const initData = computed(() => store.getters.getGroupModalDataFormat)
+    const putGroupMapModal = ref(null)
 
     onBeforeMount(() => {
       findGroupMember()
@@ -460,6 +532,32 @@ export default {
         .substring(0, 5)
     }
 
+    const setGroupPutPlace = (e) => {
+      state.placeName = e.name
+      state.placeLat = e.geometry.location.lat()
+      state.placeLng = e.geometry.location.lng()
+      
+      store.dispatch('diableGroupPutMapChoice')
+      store.dispatch('setGroupPutMapGoal', {
+        Lat: state.placeLat,
+        Lng: state.placeLng,
+      })
+    }
+
+    const handleCanclePutGroupMap = () => {
+      state.placeName = initData.value.ModalDate.extendedProps.placeName
+      state.placeLat = initData.value.ModalDate.extendedProps.placeLat
+      state.placeLng = initData.value.ModalDate.extendedProps.placeLng
+
+      store.dispatch('diableGroupPutMapChoice')
+      state.isPutPlace = false
+    }
+
+    const showPutGroupMapModal = () => {
+      putGroupMapModal.value.show()
+    }
+
+
 
     const state = reactive({
       title: initData.value.ModalDate.title,
@@ -489,6 +587,11 @@ export default {
       participantsOption: [],
       groupMember: [],
       participants: [],
+
+      // map
+      isGroupPutPlace: false,
+      isChoiceWay: computed(() => store.state.isGroupPutChoiceWay),
+      choiceWay: computed(() => store.state.GroupPutChoiceWay),
     })
 
     return {
@@ -496,6 +599,10 @@ export default {
       putSchedule,
       handleCancle,
       initData,
+      putGroupMapModal,
+      setGroupPutPlace,
+      handleCanclePutGroupMap,
+      showPutGroupMapModal,
     }
   },
 }
