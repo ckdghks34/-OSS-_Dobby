@@ -372,7 +372,7 @@ body,
 
 /* 사이드바 */
 .icon-bar {
-  height: 100%;
+  height: 150%;
   width: 20vw;
   float: left;
   background-color: #a9c9de;
