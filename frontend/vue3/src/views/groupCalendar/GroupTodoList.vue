@@ -3,30 +3,29 @@
     <el-row :gutter="10" v-if="state.isBig">
       <el-col :span="12">
         <div class="grid-content bg-purple">
-          <TodoListInfo />
+          <GroupTodoListInfo />
         </div>
       </el-col>
       <!-- <el-col :span="2"></el-col> -->
       <el-col :span="12">
         <div class="grid-content bg-purple">
-          <TodoListCurrent />
+          <GroupTodoListCurrent />
         </div>
       </el-col>
     </el-row>
-
 
     <div v-else>
       <el-row>
         <el-col :span="24">
           <div class="grid-content bg-purple">
-            <TodoListCurrent />
+            <GroupTodoListCurrent />
           </div>
         </el-col>
       </el-row>
       <el-row :gutter="10">
         <el-col :span="24">
           <div class="grid-content bg-purple">
-            <TodoListInfo />
+            <GroupTodoListInfo />
           </div>
         </el-col>
       </el-row>
@@ -39,31 +38,47 @@
 </template>
 
 <script>
-import { computed, provide, reactive, onBeforeMount, onUnmounted } from 'vue'
+import { computed, provide, reactive, onBeforeMount, onUnmounted, watchEffect, ref } from 'vue'
 import { useStore } from 'vuex'
 
-import TodoListInfo from '@/views/calendar/TodoListInfo'
-import TodoListCurrent from '@/views/calendar/TodoListCurrent'
+// components
+import GroupTodoListInfo from '@/views/groupCalendar/GroupTodoListInfo'
+import GroupTodoListCurrent from '@/views/groupCalendar/GroupTodoListCurrent'
 
 export default {
   name: "TodoList",
   components: {
-    TodoListInfo,
-    TodoListCurrent,
+    GroupTodoListInfo,
+    GroupTodoListCurrent,
   },
   setup() {
     const store = useStore()
 
+    let grouptodayData = computed(() => state.mData)
 
-    provide( 'todayData',
-      computed(() => state.mData)
+    provide( 'grouptodayData',
+      // computed(() => state.mData)
+      ref(grouptodayData)
     )
-    provide('toDoItem',
+    provide('grouptoDoItem',
       computed(() => state.mData[0])
     )
 
+    watchEffect(() => {
+      
+    })
+
+    onBeforeMount(() => {
+      window.addEventListener('resize', handleGroupTodoListWindowSize)
+      handleGroupTodoListWindowSize()
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleGroupTodoListWindowSize)
+    })
+
     // windowSize
-    const handleWindowSize = () => {
+    const handleGroupTodoListWindowSize = () => {
       if (window.innerWidth > 992) {
         state.isBig = true
       } else {
@@ -71,23 +86,13 @@ export default {
       }
     }
 
-    onBeforeMount(() => {
-      window.addEventListener('resize', handleWindowSize)
-      handleWindowSize()
-    })
-
-    onUnmounted(() => {
-      window.removeEventListener('resize', handleWindowSize)
-    })
-
     const state = reactive({
-      mData: computed(() => store.getters.getTodayToDoList),
+      mData: computed(() => store.getters.getGroupTodayToDoList),
       isTodayData: computed(() => {
-        return (store.getters.getTodayToDoList.length > 0) ? true : false
+        return (store.getters.getGroupTodayToDoList.length > 0) ? true : false
       }),
       isBig: true,
     })
-
 
     return { state }
   }
@@ -95,9 +100,5 @@ export default {
 </script>
 
 <style>
-  .todoList{
-    border-radius: 1rem;
-    padding :10px 0;
-    background-color: #EDEDED;
-  }
+
 </style>

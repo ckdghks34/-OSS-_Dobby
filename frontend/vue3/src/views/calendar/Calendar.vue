@@ -1,16 +1,14 @@
 <template>
   <div>
-    <user-calendar />
+    <user-calendar v-if="state.waitData"/>
   </div>
 </template>
 
 <script>
 // vue
-import { mapActions } from 'vuex'
+import { useStore } from 'vuex'
 import UserCalendar from '@/views/calendar/UserCalendar'
-
-// import { onBeforeMount } from 'vue'
-
+import { computed, onBeforeMount, reactive } from 'vue'
 
 export default {
   name: 'Calendar',
@@ -18,25 +16,20 @@ export default {
     UserCalendar,
   },
   setup() {
-    // const store = useStore()
+    const store = useStore()
 
-    const test = 1
+    onBeforeMount(() => {
+      store.dispatch('getCalendarData')
+    })
+
+    const state = reactive({
+      waitData: computed(() => store.state.isData)
+    })
 
     return {
-      test,
-      // store
+      state
     }
   },
-  methods: {
-    ...mapActions([
-      'getCalendarData',
-    ]),
-  },
-  beforeMount() {
-    console.log('hi created')
-    this.getCalendarData()
-  },
-
 }
 </script>
 

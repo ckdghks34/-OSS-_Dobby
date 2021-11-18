@@ -8,33 +8,46 @@
         src="https://cdn.notefolio.net/img/4a/68/4a68c7b7158baee7602cedc5aef9c2fe42a5f680689f55b250107789f7c531b6_v1.jpg"
         alt="logo"
       />
-      <button class="mainLogin" style="float: right" @click="login">
+      <button class="mainLogin blueBtn" style="float: right" @click="login">
         로그인
       </button>
       <div class="mainLoginDiv">
         <div>
-          <span>ID</span>
-          <input type="text" v-model="info.userId" />
+          <span>Email</span>
+          <input
+            class="input"
+            type="text"
+            v-model="info.userEmail"
+            @keyup.enter="login"
+          />
         </div>
         <div>
           <span>PW</span>
-          <input type="password" v-model="info.userPw" />
+          <input
+            class="input"
+            type="password"
+            v-model="info.userPw"
+            @keyup.enter="login"
+          />
           <br />
           <router-link class="mainFind" to="/find"
-            ><span>아이디/비밀번호 찾기</span></router-link
+            ><span>이메일/비밀번호 찾기</span></router-link
           >
         </div>
       </div>
-      <div class="mainSocialLeft">
-        <img src="@/assets/naver.png" alt="" />
-        <span>네이버 로그인</span>
+      <div class="mainSocialLeft" @click="facebookSignIn">
+        <img src="@/assets/facebook.png" alt="" />
+        <span>페이스북 로그인</span>
       </div>
       <div class="mainSocialRight">
         <img src="@/assets/google.png" alt="" />
-        <span>구글 로그인</span>
+        <div class="g-signin2" @click="googleSignIn">
+          <span>구글 로그인</span>
+        </div>
       </div>
+
       <router-link to="/selectsignup"
-        ><button class="mainSign">회원가입</button></router-link
+        ><button class="mainSign blueBtn">회원가입</button></router-link
       >
     </div>
 
@@ -45,28 +58,43 @@
         alt="logo"
       />
       <div class="mainMobLogin">
-        <input type="text" placeholder="ID" v-model="info.userId" />
+        <input
+          class="input"
+          type="text"
+          placeholder="Email"
+          v-model="info.userEmail"
+          @keyup.enter="login"
+        />
         <br />
-        <input type="password" placeholder="PW" v-model="info.userPw" />
+        <input
+          class="input"
+          type="password"
+          placeholder="PW"
+          v-model="info.userPw"
+          @keyup.enter="login"
+        />
         <br />
         <div class="mainMobFind">
-          <router-link to="/find"><p>아이디/비밀번호 찾기</p></router-link>
+          <router-link to="/find"><p>이메일/비밀번호 찾기</p></router-link>
         </div>
         <br />
-        <button @click="login">로그인</button>
+        <button class="blueBtn" @click="login">로그인</button>
       </div>
-      <div class="mainMobSocialLogin">
-        <div>
-          <img src="@/assets/naver.png" alt="" /><span>네이버 로그인</span>
+      <!-- <div class="mainMobSocialLogin">
+        <div @click="facebookSignIn">
+          <img src="@/assets/facebook.png" alt="" /><span style="font-size:15px"
+            >페이스북 로그인</span
+          >
         </div>
         <br />
-        <div>
-          <img src="@/assets/google.png" alt="" /><span>구글 로그인</span>
+        <div @click="googleSignIn">
+          <img src="@/assets/google.png" alt="" />
+          <span style="font-size:15px">구글 로그인</span>
         </div>
-      </div>
+      </div> -->
       <div class="mainMobSign">
         <h3>아직 회원이 아니신가요?</h3>
-        <router-link to="/selectsignup">회원가입</router-link>
+        <router-link to="/signup">회원가입</router-link>
       </div>
     </div>
   </div>
@@ -76,27 +104,137 @@
 import { reactive } from '@vue/reactivity'
 import { onBeforeMount } from '@vue/runtime-core'
 import axios from 'axios'
+import firebase from 'firebase/compat/app'
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+} from 'firebase/auth'
+import firebaseConfig from '../../../firebaseConfig'
+import { useRouter } from 'vue-router'
+import './main.css'
 
 export default {
   name: 'main',
+  methods: {
+    googleSignIn() {
+      firebase.initializeApp(firebaseConfig)
+      const provider = new GoogleAuthProvider()
+      const auth = getAuth()
+
+      signInWithPopup(auth, provider)
+        .then((res) => {
+          const token = res._tokenResponse.idToken
+          const uid = res.user.uid
+          localStorage.setItem('token', token)
+          localStorage.setItem('uid', uid)
+          axios
+            .post(
+              'https://k5d105.p.ssafy.io:3030/users/checkUserProvider',
+              {
+                uid: uid,
+              },
+              {
+                headers: { FCMtoken: localStorage.getItem('FCMtoken') },
+              }
+            )
+            .then((res) => {
+              if (res.data.msg === '이미 등록된 회원입니다.') {
+                location.replace('/calendar')
+              } else {
+                localStorage.removeItem('token', token)
+                localStorage.removeItem('uid', uid)
+                location.replace('/welcome')
+              }
+            })
+        })
+        .catch((err) => {
+          const errorCode = err.code
+          if (errorCode === 'auth/popup-blocked') {
+            alert('팝업이 차단되었습니다')
+          }
+        })
+    },
+    facebookSignIn() {
+      firebase.initializeApp(firebaseConfig)
+      const provider = new FacebookAuthProvider()
+      const auth = getAuth()
+      signInWithPopup(auth, provider)
+        .then((res) => {
+          const uid = res.user.uid
+          const token = res._tokenResponse.idToken
+
+          localStorage.setItem('token', token)
+          localStorage.setItem('uid', uid)
+          axios
+            .post(
+              'https://k5d105.p.ssafy.io:3030/users/checkUserProvider',
+              {
+                uid: uid,
+              },
+              {
+                headers: { FCMtoken: localStorage.getItem('FCMtoken') },
+              }
+            )
+            .then((res) => {
+              if (res.data.msg === '이미 등록된 회원입니다.') {
+                location.replace('/calendar')
+              } else {
+                localStorage.removeItem('token', token)
+                localStorage.removeItem('uid', uid)
+                location.replace('/welcome')
+              }
+            })
+        })
+        .catch((err) => {
+          const errorCode = err.code
+          if (errorCode === 'auth/popup-blocked') {
+            alert('팝업이 차단되었습니다')
+          }
+        })
+    },
+  },
   setup() {
-    // const router = useRouter()
+    const router = useRouter()
+
     const info = reactive({
       size: true,
-      userId: '',
+      userEmail: '',
       userPw: '',
       dialogVisible: false,
       message: '',
     })
+
+    if (localStorage.getItem('token')) {
+      axios
+        .post(
+          'https://k5d105.p.ssafy.io:3030/token/checkToken',
+          {},
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
+          }
+        )
+        .then(() => {
+          router.push({ name: 'Calendar' })
+        })
+        .catch(() => {
+          localStorage.removeItem('token')
+          localStorage.removeItem('uid')
+        })
+    }
+
     onBeforeMount(() => {
-      if (window.innerWidth < 730) {
+      if (window.innerWidth < 890) {
         info.size = false
       }
     })
     window.addEventListener(
       'resize',
       function() {
-        if (window.innerWidth < 730) {
+        if (window.innerWidth < 890) {
           info.size = false
         } else {
           info.size = true
@@ -106,18 +244,28 @@ export default {
     )
 
     const login = function() {
-      if (info.userId && info.userPw) {
+      if (info.userEmail && info.userPw) {
         axios
-          .post('https://k5d105.p.ssafy.io:3030/users/login', {
-            id: info.userId,
-            password: info.userPw,
-          })
+          .post(
+            'https://k5d105.p.ssafy.io:3030/users/login',
+            {
+              email: info.userEmail,
+              password: info.userPw,
+            },
+            {
+              headers: {
+                FCMtoken: localStorage.getItem('FCMtoken'),
+              },
+            }
+          )
           .then((res) => {
-            console.log(res)
+            localStorage.setItem('token', res.data.token.accessToken)
+            localStorage.setItem('uid', res.data.user.uid)
+            location.replace('/calendar')
           })
           .catch(() => {
             info.dialogVisible = true
-            info.message = '아이디 또는 비밀번호가 잘못 되었습니다'
+            info.message = '이메일 또는 비밀번호가 잘못 되었습니다'
           })
       }
     }
@@ -128,12 +276,6 @@ export default {
 </script>
 
 <style>
-.main {
-  display: flex;
-  height: 85vh;
-  align-items: center;
-}
-
 .main .el-dialog {
   width: 30%;
   top: 20%;
@@ -166,11 +308,6 @@ export default {
 .mainDiv > button,
 .mainSign,
 .mainMobLogin > button {
-  color: white;
-  background-color: #a9c9de;
-  border: none;
-  border-radius: 4px;
-  font-family: 'Gowun Batang', serif !important;
   font-size: 17px;
 }
 
@@ -185,11 +322,8 @@ export default {
   margin-top: 20px;
 }
 
-.mainDiv > button:hover,
-.mainSign:hover,
 .mainSocialLeft:hover,
 .mainSocialRight:hover,
-.mainMobLogin > button:hover,
 .mainMobSocialLogin > div:hover {
   box-shadow: 0 0 10px #a9c9de;
 }
@@ -203,15 +337,10 @@ export default {
   height: 40px;
   width: 230px;
   padding-left: 10px;
-  border: 2px solid #a9c9de;
-  border-radius: 4px;
 }
 
 .mainLoginDiv > div > input:focus,
 .mainMobLogin > input:focus {
-  outline: none;
-  border: 2px solid #a9c9de;
-  box-shadow: 0 0 5px #a9c9de;
   margin-bottom: 0;
 }
 
@@ -224,7 +353,7 @@ export default {
 }
 
 .mainLoginDiv > div:nth-child(2) > span:nth-child(1) {
-  margin-right: 10px;
+  margin-right: 34.8px;
 }
 
 .mainFind {
@@ -237,16 +366,16 @@ export default {
 .mainSocialLeft,
 .mainSocialRight {
   display: inline-block;
+  cursor: pointer;
   width: 210px;
   height: 35px;
-  text-align: left;
   margin-top: 17px;
-  padding: 5px;
   text-align: center;
+  padding: 5px;
   background-color: white;
   border: 1px solid #a9c9de;
   border-radius: 2px;
-  cursor: pointer;
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 25%);
 }
 
 .mainSocialLeft {
@@ -262,12 +391,33 @@ export default {
 }
 
 .mainSocialLeft > span,
-.mainSocialRight > span {
+.mainSocialRight > div > span {
   line-height: 2;
 }
 
 .mainSocialRight > span {
   margin-left: 7px;
+}
+
+.mainSocialRight .g-signin2 {
+  width: 100%;
+  height: 100%;
+}
+
+.g-signin2 > div {
+  height: 45px !important;
+  width: 210px !important;
+  top: 16px;
+  border: 1px solid #a9c9de;
+  border-radius: 2px;
+}
+
+.g-signin2 .abcRioButtonIcon {
+  padding: 14px !important;
+}
+
+.g-signin2 .abcRioButtonContents span:nth-child(1) {
+  line-height: 3.5 !important;
 }
 
 .mainMobLogin > input {
@@ -308,11 +458,28 @@ export default {
   border-radius: 1px;
   background-color: white;
   border: 1px solid #a9c9de;
+  cursor: pointer;
 }
 
-.mainMobSocialLogin > div > img {
+.mainMobSocialLogin > div > img,
+.g-signin2 > img {
   float: left;
-  width: 25px;
+  width: 15%;
+  max-width: 24px;
+}
+
+.mainMobSocialLogin .g-signin2 {
+  display: inline-block;
+  width: 85%;
+
+  height: 25px;
+}
+
+.mainMobSocialLogin .g-signin2 > div {
+  height: 45px !important;
+  width: 100% !important;
+  border: 1px solid #a9c9de;
+  border-radius: 2px;
 }
 
 .mainMobSign {

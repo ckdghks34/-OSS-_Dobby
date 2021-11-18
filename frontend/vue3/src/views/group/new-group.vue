@@ -1,5 +1,5 @@
 <template>
-  <div class="newGroup">
+  <div class="newGroup textarea">
     <div class="newGroupDiv">
       <img src="@/assets/dobby.png" alt="" />
       <el-form
@@ -16,7 +16,10 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="비공개" prop="private" style="text-align:left;">
-          <el-switch v-model="state.form.private"></el-switch>
+          <el-switch
+            v-model="state.form.private"
+            @change="state.form.password = ''"
+          ></el-switch>
         </el-form-item>
         <el-form-item
           v-if="state.form.private"
@@ -39,8 +42,10 @@
           ></el-input>
         </el-form-item>
       </el-form>
-      <router-link to="/main"><button>취소</button></router-link>
-      <button type="button" @click="clickNewGroupBtn">생성</button>
+      <router-link to="/"><button class="redBtn">취소</button></router-link>
+      <button class="blueBtn" type="button" @click="createNewGroup">
+        생성
+      </button>
     </div>
   </div>
 </template>
@@ -77,31 +82,45 @@ export default {
       },
     })
 
-    const clickNewGroupBtn = function() {
+    const createNewGroup = function() {
       newGroupForm.value.validate((valid) => {
         if (valid) {
-          axios.post('http://localhost:8080/group', {
-            groupTitle: state.form.groupTitle,
-            info: state.form.info,
-          })
-          console.log(valid)
-        } else {
-          console.log(valid)
+          axios
+            .post(
+              'https://k5d105.p.ssafy.io:3030/group/createGroup',
+              {
+                uid: localStorage.getItem('uid'),
+                name: state.form.groupTitle,
+                description: state.form.info,
+                private: state.form.private,
+                password: state.form.password,
+              },
+              {
+                headers: {
+                  authorization: localStorage.getItem('token'),
+                },
+              }
+            )
+            .then((res) => {
+              location.replace(`/groupCalendar?gid=${res.data.group.gid}`)
+            })
+            .catch((err) => {
+              if (err.response.status === 401) {
+                alert('로그인이 만료되었습니다')
+                location.replace('/')
+                localStorage.removeItem('token')
+                localStorage.removeItem('uid')
+              }
+            })
         }
       })
     }
-    return { state, newGroupForm, clickNewGroupBtn }
+    return { state, newGroupForm, createNewGroup }
   },
 }
 </script>
 
 <style>
-.newGroup {
-  display: flex;
-  height: 80vh;
-  align-items: center;
-}
-
 .newGroupDiv {
   width: 90%;
   min-width: 260px;
@@ -119,46 +138,22 @@ export default {
   text-align: left;
 }
 
-.newGroupDiv input,
-.newGroupDiv textarea {
-  border: 2px solid #a9c9de;
-}
-
-.newGroupDiv input:hover,
-.newGroupDiv input:focus,
-.newGroupDiv textarea:hover,
-.newGroupDiv textarea:focus,
-.newGroupDiv > button:hover {
-  outline: none;
-  border: 2px solid #a9c9de;
-  box-shadow: 0 0 5px #a9c9de;
-}
-
 .newGroupDiv textarea {
   height: 100px !important;
+}
+
+.newGroupDiv .el-form-item.is-error .el-textarea__inner {
+  border-color: rgb(255, 155, 155);
 }
 
 .newGroupDiv button {
   width: 48%;
   height: 30px;
   margin-top: 5%;
-  font-family: 'Gowun Batang', serif !important;
-  color: white;
-  border: none;
-  border-radius: 4px;
 }
 
 .newGroupDiv > a > button {
-  background-color: rgb(255, 155, 155);
   margin-right: 4%;
-}
-
-.newGroupDiv > a > button:hover {
-  box-shadow: 0 0 10px rgb(255, 155, 155);
-}
-
-.newGroupDiv > button {
-  background-color: #a9c9de;
 }
 
 .newGroupDiv .el-switch.is-checked .el-switch__core {
