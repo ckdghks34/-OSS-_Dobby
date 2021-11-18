@@ -337,7 +337,11 @@ export default {
     }
 
     const checkEndTime = () => {
-      if (initData.value.ModalDate.allDay && (initData.value.ModalDate.end === null || initData.value.ModalDate.end === undefined)) {
+      if (
+        initData.value.ModalDate.allDay &&
+        (initData.value.ModalDate.end === null ||
+          initData.value.ModalDate.end === undefined)
+      ) {
         return '23:59'
       }
       return initData.value.ModalDate.end
@@ -366,7 +370,7 @@ export default {
         .split(' ')[4]
         .substring(0, 5),
 
-      endTime : checkEndTime(),
+      endTime: checkEndTime(),
 
       allDay: initData.value.ModalDate.allDay,
       category: initData.value.ModalDate.extendedProps.category,
@@ -380,7 +384,6 @@ export default {
     } else {
       state.endTime = '23:59'
     }
-    console.log(state.endTime)
 
     return {
       state,
@@ -406,5 +409,4 @@ export default {
   transform: translateX(20px);
   opacity: 0;
 }
-
 </style>

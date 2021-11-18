@@ -271,7 +271,6 @@ export default {
                 address: state.form.address,
               })
               .then(() => router.push({ name: 'SuccessSignup' }))
-              .catch((err) => console.log(err))
           } else {
             info.dialogVisible = true
             info.message = '중복 확인을 해 주세요'
