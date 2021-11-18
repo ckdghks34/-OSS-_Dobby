@@ -2,15 +2,17 @@
   <div class="icon-bar" v-if="info.size">
     <!-- id="nav" -->
 
-    <div v-if="info.userId">
-      <div>{{ info.userId }} 님</div>
-      <br />
-      <p @click="logout" style="cursor:pointer; color: white;">logout</p>
+    <div v-if="info.userId" >
+      <div class="parent" style="display: flex; margin-top:18px;">
+        <div class="child" style="flex: 1;">{{ info.userId }} 님</div>
+        <div class="child" @click="logout" style="cursor:pointer; color: white; flex:1; ">Logout</div>
+        <!-- <p @click="logout" style="cursor:pointer; color: white; font-size: 20px; margin-bottom: 5px;">Logout</p> -->
+      </div>
       <!-- <router-link to="/main">Login</router-link>  -->
       <!-- <router-link to="/newgroup">New Group</router-link>  -->
       <router-link to="/calendar">Calendar</router-link>
       <!-- <router-link to="/schedule">Schedule</router-link>  -->
-      <router-link to="/chart">chart</router-link>
+      <router-link to="/chart">Chart</router-link>
 
       <router-link to="/searchGroup">Group</router-link>
       <!-- <p class="group-p" style=":not(:hover)">Group</p> -->
@@ -21,7 +23,7 @@
           <li
             v-for="groupList in info.groupLists"
             :key="groupList.gid"
-            style="list-style: none;"
+            style="list-style: none; padding-bottom : 13px"
           >
             <div class="mulit-line-ellipsis">
               <p
@@ -57,7 +59,6 @@
       </div>
       <!-- <button @click="logout" class="logoutButton">logout</button> -->
     </div>
-
     <div v-else>
       <router-link to="/">Login</router-link>
     </div>
@@ -386,16 +387,17 @@ body,
 .icon-bar a {
   display: block;
   text-align: center;
-  padding: 4px;
+  padding-top: 15px;
+  padding-bottom: 5px;
   transition: all 0.3s ease;
   color: white;
-  font-size: 20px;
+  font-size: 23px;
 }
 
 .group-p {
   display: block;
   text-align: center;
-  padding: 4px;
+  padding: 10px;
   transition: all 0.3s ease;
   color: white;
   font-size: 20px;
