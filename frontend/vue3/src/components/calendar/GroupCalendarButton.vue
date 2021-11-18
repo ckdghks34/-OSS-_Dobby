@@ -32,7 +32,7 @@
           <el-dropdown-menu>
             <el-dropdown-item @click="handleViewMonth">월</el-dropdown-item>
             <el-dropdown-item @click="handleViewWeek">주</el-dropdown-item>
-            <el-dropdown-item @click="handleViewList">목록</el-dropdown-item>
+            <!-- <el-dropdown-item @click="handleViewList">목록</el-dropdown-item> -->
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -76,7 +76,7 @@
             <el-dropdown-menu>
               <el-dropdown-item @click="handleViewMonth">월</el-dropdown-item>
               <el-dropdown-item @click="handleViewWeek">주</el-dropdown-item>
-              <el-dropdown-item @click="handleViewList">목록</el-dropdown-item>
+              <!-- <el-dropdown-item @click="handleViewList">목록</el-dropdown-item> -->
             </el-dropdown-menu>
           </template>
         </el-dropdown>

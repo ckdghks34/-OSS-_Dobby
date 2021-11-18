@@ -586,7 +586,7 @@ export default {
 @media screen and (max-width: 1199px) and (min-width: 993px) {
   .modal-content {
     width: 900px;
-    height:
+    height: 700px;
   }
   .modal-content-body-contents-map {
     height: 300px;
