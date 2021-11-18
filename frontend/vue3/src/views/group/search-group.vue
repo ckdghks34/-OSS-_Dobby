@@ -199,7 +199,6 @@ export default {
     }
 
     const joinGroup = function() {
-      console.log('join')
       axios
         .get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {
           params: {

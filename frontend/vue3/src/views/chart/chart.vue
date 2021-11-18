@@ -111,7 +111,6 @@ export default {
     const changeDate = function() {
       let startDate = state.date[0]
       let endDate = state.date[1]
-      console.log(startDate, endDate)
       axios
         .post(
           'https://k5d105.p.ssafy.io:3030/chart/getPersonal',
@@ -131,7 +130,6 @@ export default {
           info.totalLi = res.data.totalCategory
           info.doneCount = res.data.checkNum
           info.categoryLi = res.data.checkCategory
-          console.log(info.totalLi)
         })
         .catch((err) => {
           if (err.response.status === 401) {

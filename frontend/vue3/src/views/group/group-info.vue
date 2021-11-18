@@ -198,7 +198,6 @@ export default {
             },
           })
           .then((res) => {
-            console.log(res)
             info.name = res.data.group.name
             info.description = res.data.group.description
             info.private = res.data.group.private
@@ -256,7 +255,6 @@ export default {
     }
 
     const changeAdmin = function() {
-      console.log(info.changeAdmin)
       axios
         .put(
           'https://k5d105.p.ssafy.io:3030/group/changeAdmin',
@@ -271,8 +269,7 @@ export default {
             },
           }
         )
-        .then((res) => {
-          console.log(res)
+        .then(() => {
           alert(`그룹장이 ${info.changeAdmin} 님으로 변경되었습니다`)
           info.changeDia = false
           info.changeAdmin = ''
@@ -302,8 +299,7 @@ export default {
               headers: { authorization: localStorage.getItem('token') },
             }
           )
-          .then((res) => {
-            console.log(res)
+          .then(() => {
             info.dialogVisible = true
             info.message = '일정 작성 권한이 수정되었습니다'
             getGroup()
@@ -363,14 +359,12 @@ export default {
               info.dialogVisible = true
               info.message = '이미 존재하는 유저입니다'
             } else {
-              console.log(res)
               info.inviteDia = false
               info.inviteEmail = ''
               getGroup()
             }
           })
           .catch((err) => {
-            console.log(err)
             if (err.response.status === 401) {
               alert('로그인이 만료되었습니다')
               location.replace('/')

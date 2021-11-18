@@ -4,7 +4,7 @@
 
     <div v-if="info.userId">
       <div>{{ info.userId }} 님</div>
-      <br>
+      <br />
       <p @click="logout" style="cursor:pointer; color: white;">logout</p>
       <!-- <router-link to="/main">Login</router-link>  -->
       <!-- <router-link to="/newgroup">New Group</router-link>  -->
@@ -121,7 +121,9 @@
                 </li>
               </ul>
             </div>
-            <el-dropdown-item><p @click="logout" style="cursor:pointer;">logout</p>  </el-dropdown-item>
+            <el-dropdown-item
+              ><p @click="logout" style="cursor:pointer;">logout</p>
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -178,7 +180,6 @@ export default {
     })
       .then((currentToken) => {
         if (currentToken) {
-          console.log('currentToken : ' + currentToken)
           localStorage.setItem('FCMtoken', currentToken)
         } else {
           console.log(
@@ -190,14 +191,12 @@ export default {
         console.log('An error occurred while retrieving token. ', err)
       })
     onMessage(messaging, function(payload) {
-      console.log('메세지왔다!')
-      console.log('Message received. ', payload.notification.body)
       ElNotification({
         title: 'Success',
         message: payload.notification.body,
         type: 'success',
       })
-      reload();
+      // reload();
     })
 
     onBeforeMount(() => {
@@ -209,7 +208,6 @@ export default {
           },
         })
         .then((response) => {
-          // console.log(response)
           info.userId = response.data.user.nickname
         })
         .catch((error) => {
@@ -233,7 +231,6 @@ export default {
           },
         })
         .then((response) => {
-          // console.log(response)
           info.groupLists = response.data.group
         })
         .catch((error) => {
@@ -271,27 +268,23 @@ export default {
             },
           }
         )
-        .then((res) => {
-          console.log(res)
+        .then(() => {
           localStorage.removeItem('token')
           localStorage.removeItem('uid')
           localStorage.removeItem('FCMtoken')
           location.replace('/')
-          // router.push({ name: 'main' })
         })
-      // .catch((err) => {
-      //   console.log(err.response.status)
-      //   if (err.response.status === 403) {
-      //     alert('로그인이 만료되었습니다')
-      //     router.push({ name: 'main' })
-      //     localStorage.removeItem('token')
-      //     localStorage.removeItem('uid')
-      //   }
-      // })
+        .catch((err) => {
+          if (err.response.status === 403) {
+            alert('로그인이 만료되었습니다')
+            location.replace('/')
+            localStorage.removeItem('token')
+            localStorage.removeItem('uid')
+          }
+        })
     }
 
     const ToGroup = function(gid) {
-      console.log(info.email)
       router.push({
         name: 'GroupInfo',
         params: { gid: gid },
@@ -309,9 +302,11 @@ export default {
       })
     }
 
-    const reload = function() {
-      router.go();
-    }
+    // const reload = function() {
+    //   setTimeout(function(){
+    //     router.go();
+    //   }, 3000);
+    // }
 
     return { info, logout, ToGroup, TogroupCallendar, handleToGChart }
   },
@@ -353,11 +348,20 @@ body,
   height: 90vh;
   vertical-align: middle;
   text-align: center;
-  /* float: left; */
+}
+
+@font-face {
+  font-family: 'Godo';
+  font-style: normal;
+  font-weight: 400;
+  src: url('//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoM.woff2')
+      format('woff2'),
+    url('//cdn.jsdelivr.net/korean-webfonts/1/corps/godo/Godo/GodoM.woff')
+      format('woff');
 }
 
 * {
-  font-family: 'Gowun Batang', serif !important;
+  font-family: 'Godo' !important;
 }
 
 .logoutButton {

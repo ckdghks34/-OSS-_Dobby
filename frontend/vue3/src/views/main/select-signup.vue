@@ -47,7 +47,6 @@ export default {
   name: 'SelectSignup',
   methods: {
     googleSignIn() {
-      console.log('signin')
       firebase.initializeApp(firebaseConfig)
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
@@ -59,14 +58,21 @@ export default {
           localStorage.setItem('token', token)
           localStorage.setItem('uid', uid)
           axios
-            .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
-              uid: uid,
-            })
+            .post(
+              'https://k5d105.p.ssafy.io:3030/users/checkUserProvider',
+              {
+                uid: uid,
+              },
+              {
+                headers: { FCMtoken: localStorage.getItem('FCMtoken') },
+              }
+            )
             .then((res) => {
-              console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
                 location.replace('/calendar')
               } else {
+                localStorage.removeItem('token', token)
+                localStorage.removeItem('uid', uid)
                 location.replace('/welcome')
               }
             })
@@ -79,7 +85,6 @@ export default {
         })
     },
     facebookSignIn() {
-      console.log('facebook')
       firebase.initializeApp(firebaseConfig)
       const provider = new FacebookAuthProvider()
       const auth = getAuth()
@@ -90,18 +95,22 @@ export default {
           const token = credential.accessToken
           localStorage.setItem('token', token)
           localStorage.setItem('uid', uid)
-          // console.log('result: ' + JSON.stringify(result))
-          // console.log('user: ' + user)
-          // console.log('token: ' + token)
           axios
-            .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
-              uid: uid,
-            })
+            .post(
+              'https://k5d105.p.ssafy.io:3030/users/checkUserProvider',
+              {
+                uid: uid,
+              },
+              {
+                headers: { FCMtoken: localStorage.getItem('FCMtoken') },
+              }
+            )
             .then((res) => {
-              console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
                 location.replace('/calendar')
               } else {
+                localStorage.removeItem('token', token)
+                localStorage.removeItem('uid', uid)
                 location.replace('/welcome')
               }
             })

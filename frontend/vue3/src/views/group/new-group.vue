@@ -102,7 +102,6 @@ export default {
               }
             )
             .then((res) => {
-              console.log(res)
               location.replace(`/groupCalendar?gid=${res.data.group.gid}`)
             })
             .catch((err) => {
