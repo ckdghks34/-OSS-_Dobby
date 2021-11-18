@@ -112,7 +112,7 @@
 
 ***
 
-![KakaoTalk_20211118_145434725](C:\Users\Hwan\Documents\S05P31D105\exec\img\KakaoTalk_20211118_145434725.png)
+![KakaoTalk_20211118_145434725](./exec/img/KakaoTalk_20211118_145434725.png)
 
 
 
@@ -267,22 +267,22 @@
 
 - ### 회원가입 및 로그인
 
-  ![회원가입 및 로그인](C:\Users\Hwan\Documents\S05P31D105\exec\img\회원가입 및 로그인.gif)
+  ![회원가입 및 로그인](./exec/img/회원가입 및 로그인.gif)
 
   
 
 - ### 개인 일정 보기 및 수정
 
-  ![일정 보기 및 수정](C:\Users\Hwan\Documents\S05P31D105\exec\img\일정 보기 및 수정.gif)
+  ![일정 보기 및 수정](./exec/img/일정 보기 및 수정.gif)
 
   
 
 - ### 그룹 일정 등록 및 수정
 
-  ![일정_보기_등록_수정_삭제](C:\Users\Hwan\Documents\S05P31D105\exec\img\일정_보기_등록_수정_삭제.gif)
+  ![일정_보기_등록_수정_삭제](./exec/img/일정_보기_등록_수정_삭제.gif)
 
   
 
 - ### 개인 및 그룹 일정 차트
 
-![개인 및 그룹 차트](C:\Users\Hwan\Documents\S05P31D105\exec\img\개인 및 그룹 차트.gif)
+![개인 및 그룹 차트](./exec/img/개인 및 그룹 차트.gif)
