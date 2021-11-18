@@ -152,6 +152,7 @@
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
         v-model="state.content"
+        style="padding:10px;"
       />
     </div>
     <br />
@@ -300,6 +301,7 @@
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
         v-model="state.content"
+        style="padding:10px;"
       />
     </div>
     <br />

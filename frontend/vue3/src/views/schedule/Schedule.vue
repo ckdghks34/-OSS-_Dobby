@@ -123,6 +123,7 @@
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
         v-model="state.content"
+        style="padding:10px;"
       />
     </div>
     <br />
@@ -229,6 +230,7 @@
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
         v-model="state.content"
+        style="padding:10px;"
       />
     </div>
     <br />
@@ -634,7 +636,7 @@ export default {
 }
 
 .web-memo {
-  width: 400px;
+  width: 390px;
   height: 200px;
 }
 
