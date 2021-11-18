@@ -4,6 +4,16 @@
 
 - 구미 1반 D105 팀 (채승협, 박준홍, 신지현, 허창환, 황규진)
 
+## 🤹 역할
+
+- FrontEnd
+  - 박준홍 : 캘린더기능, leaflet 을 사용한 지도 구현, Google api 를 사용한 장소 검색 기능
+  - 신지현 : 메인페이지, 회원가입, 차트, 그룹 검색, 그룹 조회, 그룹 생성 컴포넌트 개발
+  - 황규진 : sidebar, 일정추가 컴포넌트 개발,  ucc, 발표
+- BackEnd 
+  - 채승협 : REST api서버개발, CI/CD, FCM(Firebase Cloud Messaging) 개발, 라우팅 기능, 하이드리드 앱 제작
+  - 허창환: REST API 서버 개발, Firebase 환경 설정 및 설계 (Firebase Cloud Messaging, Authentication)연동, OSRM 서버 환경 구축
+
 ## 📖 기술 스택
 
 - 언어 : c++, javascript, html
@@ -36,16 +46,6 @@
     npm install
     npm start
     ```
-
-## 🤹 역할
-
-- FrontEnd
-  - 박준홍 : 캘린더기능, leaflet 을 사용한 지도 구현, Google api 를 사용한 장소 검색 기능
-  - 신지현 : 메인페이지, 회원가입, 차트, 그룹 검색, 그룹 조회, 그룹 생성 컴포넌트 개발
-  - 황규진 : sidebar, 일정추가 컴포넌트 개발,  ucc, 발표
-- BackEnd 
-  - 채승협 : REST api서버개발, CI/CD, FCM(Firebase Cloud Messaging) 개발, 라우팅 기능, 하이드리드 앱 제작
-  - 허창환: REST API 서버 개발, Firebase 환경 설정 및 설계 (Firebase Cloud Messaging, Authentication)연동, OSRM 서버 환경 구축
 
 
 # Architecture
