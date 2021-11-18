@@ -180,7 +180,6 @@ export default {
               info.result = true
               info.userEmail = res.data.id
             }
-            console.log(res)
           })
       }
     }

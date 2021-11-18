@@ -118,7 +118,7 @@
     <br />
     <div class="userCalendar-schedule-row">
       <label class="label">내용</label>
-      <input
+      <textarea
         class="web-memo"
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
@@ -224,7 +224,7 @@
     <br />
     <div>
       <label>내용</label>
-      <input
+      <textarea
         class="memo"
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"

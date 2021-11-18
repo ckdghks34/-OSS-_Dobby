@@ -83,7 +83,6 @@ export default {
   name: 'chart',
   props: ['gid'],
   setup(props) {
-    console.log(props)
     const route = useRoute()
     const info = reactive({
       totalCount: 0,
@@ -109,7 +108,6 @@ export default {
     const changeDate = function() {
       let startDate = state.date[0]
       let endDate = state.date[1]
-      console.log(startDate, endDate)
       axios
         .post(
           'https://k5d105.p.ssafy.io:3030/chart/getGroup',
@@ -126,12 +124,10 @@ export default {
           }
         )
         .then((res) => {
-          console.log(res)
           info.totalCount = res.data.totalNum
           info.totalLi = res.data.totalCategory
           info.doneCount = res.data.checkNum
           info.categoryLi = res.data.checkCategory
-          console.log(info.totalLi)
         })
         .catch((err) => {
           if (err.response.status === 401) {
