@@ -71,9 +71,17 @@
           <div v-for="(t, index) in info.member" :key="index">
             <span
               v-if="t.admin"
-              style="float: left; margin-left:2%; cursor: pointer;"
-              >👑</span
-            >
+              style="float: left; margin-left:2%; cursor: pointer;width:20px; margin-top:5px;"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 1024 1024"
+                data-v-394d1fd8=""
+              >
+                <path
+                  fill="currentColor"
+                  d="M320 320V128h384v192h192v192H128V320h192zM128 576h768v320H128V576zm256-256h256.064V192H384v128z"
+                ></path></svg
+            ></span>
             <span
               v-else-if="t.writer"
               style="float: left; margin-left:2%; cursor: pointer;font-weight: 900; font-size: 20px; width:20px; margin-top:5px;"
