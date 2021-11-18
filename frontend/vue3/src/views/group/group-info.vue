@@ -117,7 +117,7 @@
                 ></path></svg
             ></span>
             <p
-              style="display:inline-block; margin: 4px 0; cursor:pointer"
+              style="display:inline-block; margin: 6px 0; cursor:pointer"
               @click="changeAdminBtn(t.nickname)"
             >
               {{ t.nickname }}
