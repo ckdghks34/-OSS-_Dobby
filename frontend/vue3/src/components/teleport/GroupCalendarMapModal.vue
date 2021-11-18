@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" v-if="isOpen">
+  <div class="modal" v-if="isOpen && state.isBig">
     <el-card class="box-card modal-map-content">
       <el-container>
         <el-header>
@@ -108,6 +108,118 @@
       </el-container>    
     </el-card>
   </div>
+
+  <!-- small -->
+  <div class="modal" v-if="isOpen && !state.isBig">
+    <el-card class="box-card modal-map-content-small">
+      <el-container>
+        <el-header>
+            <el-row class="modal-map-content-row">
+              <el-col :span="24">
+                <div class="modal-content-header">
+                  <div></div>
+                  <div>
+                    <i class="el-icon-place modalIcon" v-if="state.curDriveCourse || state.curFootCourse" @click="hide"></i>
+                    <i class="el-icon-close modalIcon" @click="hide"></i>
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+        </el-header>
+
+        <el-scrollbar height="400px">
+          <el-main>
+            <div 
+              v-if="state.goal.Lat"
+              class="modal-map-small">
+              <l-map
+                v-model="state.zoom"
+                v-model:zoom="state.zoom"
+                ref="userMap"
+                :center="[ state.latitude, state.longitude ]">
+
+                <l-tile-layer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">
+                </l-tile-layer>
+                <l-control-layers />
+
+                <!-- start -->
+                <l-marker :lat-lng="[state.latitude, state.longitude]" draggable>
+                  <l-tooltip>
+                    start
+                  </l-tooltip>
+                </l-marker>
+
+                <!-- end -->
+                <l-marker
+                  :lat-lng="[state.goal.Lat, state.goal.Lng]">
+                  <l-tooltip>
+                    end
+                  </l-tooltip>
+                </l-marker>
+
+                <l-polyline
+                  v-if="state.isWay === 'foot' && state.curFootCourse.length > 0"
+                  :lat-lngs="state.curFootCourse"
+                  color="blue">
+                </l-polyline>
+
+                <l-polyline
+                  v-if="state.isWay === 'car' && state.curDriveCourse.length > 0"
+                  :lat-lngs="state.curDriveCourse"
+                  color="green">
+                </l-polyline>
+
+              </l-map>
+            </div>
+          </el-main>
+
+          <el-footer>
+              <el-row class="modal-map-content-row">
+                <el-col>
+                  <div class="modal-map-content-way-button"> 
+                    <el-button @click="findWayWalking" type="primary" plain>도보</el-button>
+                    <el-button @click="findWayCar" type="success" plain>차량</el-button>
+                  </div>
+                </el-col>
+                <el-col>
+                  <el-scrollbar height= "400px">
+                    <el-card v-for="way in state.curWay" :key="way.instanceId" @click="choiceWay(way, state.isWay)" class="box-card modal-map-content-way-card">
+                      <template #header>
+                        <div class="card-header">
+                          <span>경로 {{way.instanceId}}</span>
+                        </div>
+                      </template>
+                      <div>
+                        <div class="modal-map-content-way-card-info">
+                          <div>
+                            <el-icon><bicycle /></el-icon> 
+                          </div>
+                          <span>
+                            {{ changeDistance(way.distance) }}                    
+                          </span>
+                        </div>
+                        <div class="modal-map-content-way-card-info">
+                          <div>
+                            <el-icon><Timer /></el-icon>
+                          </div>
+                          <span>
+                            {{ changeSeconds(way.duration) }}
+                          </span>
+                        </div>
+                      </div>
+                    </el-card>
+                  </el-scrollbar>
+                </el-col>
+              </el-row>
+          </el-footer>
+        </el-scrollbar>
+      </el-container>
+    </el-card>
+  </div>
+
+
+
 </template>
 <script>
 import {
@@ -313,6 +425,7 @@ export default {
 
 
     const state = reactive({
+      isBig: false,
       latitude: 1.2,
       longitude: 1.3,
       goal: computed(() => store.state.GroupCalendarMapGoal),

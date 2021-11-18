@@ -99,6 +99,10 @@ export default createStore({
     DISABLEPUTMAPCHOICE ( state ) {
       state.isPutChoiceWay = false
     },
+    INITMAPCHOICE ( state ) {
+      state.isChoiceWay = false
+      state.choiceWay = {}
+    },
 
     // 그룹 캘린더
     SETGROUPCALENDARDATA(state, payload) {
@@ -153,6 +157,10 @@ export default createStore({
         distance : payload.distance,
         duration : payload.duration
       }
+    },
+    INITGROUPMAPCHOICE ( state ) {
+      state.isGroupPutChoiceWay = false
+      state.GroupPutChoiceWay = {}
     }
   },
   actions: {
@@ -261,6 +269,9 @@ export default createStore({
     },
     diablePutMapChoice ( { commit } ) {
       commit('DISABLEPUTMAPCHOICE')
+    },
+    initMapChoice( { commit }) {
+      commit('INITMAPCHOICE')
     },
 
     // group calendar
@@ -389,7 +400,10 @@ export default createStore({
     },
     setPutGroupMapChoice ( { commit }, payload ) {
       commit('SETPUTGROUPMAPCHOICE', payload)
-    }
+    },
+    initGroupMapChoice ({ commit }) {
+      commit('INITGROUPMAPCHOICE')
+    },
   },
   modules: {},
   getters: {
