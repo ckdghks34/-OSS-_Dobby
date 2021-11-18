@@ -116,6 +116,7 @@
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
         v-model="state.content"
+        style="padding:10px;"
       />
     </div>
     <br />
@@ -130,7 +131,6 @@
       >
         수정
       </button>
-     
     </div>
   </div>
 
@@ -235,6 +235,7 @@
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
         v-model="state.content"
+        style="padding:10px;"
       />
     </div>
     <br />
@@ -249,7 +250,6 @@
         수정
       </button>
     </div>
-    
   </div>
 </template>
 
