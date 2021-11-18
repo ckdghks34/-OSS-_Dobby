@@ -76,8 +76,9 @@ export default {
 
     const handleClickDate = function(clickInfo) {
       // console.log(clickInfo)
-      if (confirm('일정을 추가하시겠습니까?')) {
-        router.push({ name: 'Schedule', query: { start: clickInfo.dateStr } })
+      if ( confirm('일정을 추가하시겠습니까?') ) {
+        store.dispatch('initMapChoice')
+        router.push({name: 'Schedule', query: {start: clickInfo.dateStr}})
       }
     }
 
