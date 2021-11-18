@@ -419,6 +419,7 @@ export default {
               classNames: ['calendar-done'],
               allDay: res.allDay,
               participant: res.participant,
+              creator: res.creator,
             })
           } else {
             store.dispatch('pushGroupCalendarData', {
@@ -436,6 +437,7 @@ export default {
               category: res.category,
               allDay: res.allDay,
               participant: res.participant,
+              creator: res.creator,
             })
           }
           router.push({
