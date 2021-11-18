@@ -473,8 +473,8 @@ async function checkUserWithProvider(req, res, next) {
 
   const userRef = admin.collection("users").doc(uid);
   const user = await userRef.get();
-  const fcm = req.headers.FCMtoken;
-  console.log(fcm);
+  const fcm = req.headers.fcmtoken;
+
   const tokenRef = admin.collection("users").doc(uid).collection("tokens");
   const tokens = await tokenRef.get();
   var check = false;
