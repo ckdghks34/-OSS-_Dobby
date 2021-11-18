@@ -457,6 +457,7 @@ export default {
               uid: parInfo.uid,
               name: parInfo.name,
               completed: false,
+              nickname: parInfo.nickname,
             }
           }
         })
