@@ -73,6 +73,19 @@
         <el-row class="modal-content-body-contents-row">
           <el-col :span="1">
             <div class="modal-content-body-contents-row-icon-wrap">
+              <el-icon><FolderOpened /></el-icon>
+            </div>
+          </el-col>
+          <el-col :span="22" :offset="1">
+            <el-button plain>
+              {{ state.mData.ModalDate.extendedProps.category }}
+            </el-button>
+          </el-col>
+        </el-row>
+
+        <el-row class="modal-content-body-contents-row">
+          <el-col :span="1">
+            <div class="modal-content-body-contents-row-icon-wrap">
               <el-icon><Location /></el-icon>
             </div>
           </el-col>
@@ -188,7 +201,7 @@ import {
 import "leaflet/dist/leaflet.css";
 
 //icons
-import { Calendar, Location, Document, User } from '@element-plus/icons'
+import { Calendar, Location, Document, User, FolderOpened } from '@element-plus/icons'
 
 
 export default {
@@ -203,6 +216,7 @@ export default {
     LControlLayers,
     LTooltip,
     LPolyline,
+    FolderOpened,
   },
 
   setup() {
