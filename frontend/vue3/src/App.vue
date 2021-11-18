@@ -196,7 +196,7 @@ export default {
         message: payload.notification.body,
         type: 'success',
       })
-      reload()
+      // reload()
     })
 
     onBeforeMount(() => {
@@ -302,9 +302,9 @@ export default {
       })
     }
 
-    const reload = function() {
-      router.go()
-    }
+    // const reload = function() {
+    //   router.go()
+    // }
 
     return { info, logout, ToGroup, TogroupCallendar, handleToGChart }
   },
