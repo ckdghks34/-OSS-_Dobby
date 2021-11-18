@@ -192,7 +192,7 @@ export default {
       })
     onMessage(messaging, function(payload) {
       ElNotification({
-        title: '곧 새로고침이 됩니다.',
+        title: 'Success',
         message: payload.notification.body,
         type: 'success',
       })
