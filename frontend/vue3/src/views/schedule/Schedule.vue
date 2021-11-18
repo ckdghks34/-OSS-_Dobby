@@ -185,10 +185,32 @@
       <GMapAutocomplete
         placeholder="장소를 입력해주세요"
         @place_changed="setPlace"
-        class="web-input"
         ref="mapAutoComplete"
       >
       </GMapAutocomplete>
+    </div>
+    <br />
+    <div class="userCalendar-schedule-row">
+      <div class="label"></div>
+      <div>
+        <el-button
+          v-if="state.placeName"
+          round
+          @click="showMapModal"
+          type="info"
+          size="mini">
+          경로탐색</el-button>
+        <el-button v-else disabled round @click="showMapModal" type="info" size="mini">
+          경로탐색
+        </el-button>
+      </div>
+      <div v-if="state.isChoiceWay" style="margin-left: 1rem;">
+        <!-- <span class="userCalendar-choice-">
+            {{ `시간 : ${state.choiceWay.duration}  거리 : ${state.choiceWay.distance}` }}
+          </span> -->
+        <el-button round size="small">{{ state.choiceWay.duration }}</el-button>
+        <el-button round size="small">{{ state.choiceWay.distance }}</el-button>
+      </div>
     </div>
     <br />
     <div>
