@@ -251,34 +251,73 @@ export default {
     }
 
     const changeInfo = function() {
-      axios
-        .put(
-          'https://k5d105.p.ssafy.io:3030/group/updateGroup',
-          {
-            private: info.private,
-            password: info.password,
-            name: info.name,
-            description: info.description,
-            gid: props.gid,
-          },
-          {
-            headers: {
-              authorization: localStorage.getItem('token'),
-            },
-          }
-        )
-        .then(() => {
+      if (info.private) {
+        if (!info.password) {
           info.dialogVisible = true
-          info.message = '그룹 정보가 수정되었습니다'
-        })
-        .catch((err) => {
-          if (err.response.status === 401) {
-            alert('로그인이 만료되었습니다')
-            location.replace('/')
-            localStorage.removeItem('token')
-            localStorage.removeItem('uid')
-          }
-        })
+          info.message = '비밀번호를 입력해 주세요'
+        } else if (!info.password.match(/^[0-9]{4}/)) {
+          info.dialogVisible = true
+          info.message = '비밀번호는 숫자 4자리입니다'
+        } else {
+          axios
+            .put(
+              'https://k5d105.p.ssafy.io:3030/group/updateGroup',
+              {
+                private: info.private,
+                password: info.password,
+                name: info.name,
+                description: info.description,
+                gid: props.gid,
+              },
+              {
+                headers: {
+                  authorization: localStorage.getItem('token'),
+                },
+              }
+            )
+            .then(() => {
+              alert('그룹 정보가 수정되었습니다')
+              location.reload()
+            })
+            .catch((err) => {
+              if (err.response.status === 401) {
+                alert('로그인이 만료되었습니다')
+                location.replace('/')
+                localStorage.removeItem('token')
+                localStorage.removeItem('uid')
+              }
+            })
+        }
+      } else {
+        axios
+          .put(
+            'https://k5d105.p.ssafy.io:3030/group/updateGroup',
+            {
+              private: info.private,
+              password: info.password,
+              name: info.name,
+              description: info.description,
+              gid: props.gid,
+            },
+            {
+              headers: {
+                authorization: localStorage.getItem('token'),
+              },
+            }
+          )
+          .then(() => {
+            alert('그룹 정보가 수정되었습니다')
+            location.reload()
+          })
+          .catch((err) => {
+            if (err.response.status === 401) {
+              alert('로그인이 만료되었습니다')
+              location.replace('/')
+              localStorage.removeItem('token')
+              localStorage.removeItem('uid')
+            }
+          })
+      }
     }
 
     const changeAdminBtn = function(e) {
