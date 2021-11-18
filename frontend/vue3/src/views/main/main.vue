@@ -119,7 +119,6 @@ export default {
   name: 'main',
   methods: {
     googleSignIn() {
-      console.log('signin')
       firebase.initializeApp(firebaseConfig)
       const provider = new GoogleAuthProvider()
       const auth = getAuth()
@@ -131,18 +130,24 @@ export default {
           localStorage.setItem('token', token)
           localStorage.setItem('uid', uid)
           axios
-            .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
-              uid: uid,
-            })
+            .post(
+              'https://k5d105.p.ssafy.io:3030/users/checkUserProvider',
+              {
+                uid: uid,
+              },
+              {
+                headers: { FCMtoken: localStorage.getItem('FCMtoken') },
+              }
+            )
             .then((res) => {
-              console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
                 location.replace('/calendar')
               } else {
+                localStorage.removeItem('token', token)
+                localStorage.removeItem('uid', uid)
                 location.replace('/welcome')
               }
             })
-            .catch((err) => console.log(err))
         })
         .catch((err) => {
           const errorCode = err.code
@@ -163,14 +168,21 @@ export default {
           localStorage.setItem('token', token)
           localStorage.setItem('uid', uid)
           axios
-            .post('https://k5d105.p.ssafy.io:3030/users/checkUserProvider', {
-              uid: uid,
-            })
+            .post(
+              'https://k5d105.p.ssafy.io:3030/users/checkUserProvider',
+              {
+                uid: uid,
+              },
+              {
+                headers: { FCMtoken: localStorage.getItem('FCMtoken') },
+              }
+            )
             .then((res) => {
-              console.log(res)
               if (res.data.msg === '이미 등록된 회원입니다.') {
                 location.replace('/calendar')
               } else {
+                localStorage.removeItem('token', token)
+                localStorage.removeItem('uid', uid)
                 location.replace('/welcome')
               }
             })
@@ -247,7 +259,6 @@ export default {
             }
           )
           .then((res) => {
-            console.log(res)
             localStorage.setItem('token', res.data.token.accessToken)
             localStorage.setItem('uid', res.data.user.uid)
             location.replace('/calendar')

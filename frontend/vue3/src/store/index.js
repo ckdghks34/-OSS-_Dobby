@@ -269,6 +269,7 @@ export default createStore({
                   endDate: r.endDate,
                   classNames: ['calendar-done'],
                   participant: r.participant,
+                  allDay: r.allDay,
                   creator: r.creator,
                   category: r.category,
                 }
@@ -288,6 +289,7 @@ export default createStore({
                 startDate: r.startDate,
                 endDate: r.endDate,
                 participant: r.participant,
+                allDay: r.allDay,
                 creator: r.creator,
                 category: r.category,
               }
@@ -343,7 +345,7 @@ export default createStore({
       // 날짜 정리하기
       // Fri Nov 26 2021 18:00:00 GMT+0900 (한국 표준시)
       const ModalDate = state.modalData
-      // console.log(ModalDate)
+
       const start = ModalDate.start.toString().split(' ')
       // 시작하는 날
       const startDay = changeDateFormat(start, ModalDate.allDay)
@@ -399,7 +401,6 @@ export default createStore({
       const start = ModalDate.start.toString().split(' ')
       // 시작하는 날
       const startDay = changeDateFormat(start, ModalDate.allDay)
-
       if (ModalDate.allDay && ModalDate.end === null) {
         return {
           ModalDate: ModalDate,

@@ -28,18 +28,18 @@
     </div>
     <br />
     <transition name="slide-fade">
-    <div v-if="!state.allDay">
-      <div class="userCalendar-schedule-row">
-        <label class="label" for="time">시간</label>
-        <input
-          class="time-input"
-          type="time"
-          id="time"
-          v-model="state.startTime"
-        />
-        ~ <input class="time-input" type="time" v-model="state.endTime" />
-      </div>
-      <br />
+      <div v-if="!state.allDay">
+        <div class="userCalendar-schedule-row">
+          <label class="label" for="time">시간</label>
+          <input
+            class="time-input"
+            type="time"
+            id="time"
+            v-model="state.startTime"
+          />
+          ~ <input class="time-input" type="time" v-model="state.endTime" />
+        </div>
+        <br />
       </div>
     </transition>
     <div class="userCalendar-schedule-allDay">
@@ -81,9 +81,7 @@
     <div class="userCalendar-schedule-category">
       <label class="label" for="category">분류</label>
       <div class="userCalendar-schedule-category-button-wrap">
-        <el-radio v-model="state.category" label="공부" border size="medium"
-          >공부</el-radio
-        >
+        <el-radio v-model="state.category" label="공부" border>공부</el-radio>
         <el-radio v-model="state.category" label="운동" border>운동</el-radio>
         <el-radio v-model="state.category" label="업무" border>업무</el-radio>
         <el-radio v-model="state.category" label="취미" border>취미</el-radio>
@@ -113,7 +111,7 @@
     <br />
     <div class="userCalendar-schedule-row">
       <label class="label">내용</label>
-      <input
+      <textarea
         class="web-memo"
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
@@ -132,6 +130,7 @@
       >
         수정
       </button>
+     
     </div>
   </div>
 
@@ -231,7 +230,7 @@
     <br />
     <div>
       <label>내용</label>
-      <input
+      <textarea
         class="memo"
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
@@ -250,6 +249,7 @@
         수정
       </button>
     </div>
+    
   </div>
 </template>
 
@@ -449,7 +449,11 @@ export default {
     }
 
     const checkEndTime = () => {
-      if (initData.value.ModalDate.allDay && (initData.value.ModalDate.end === null || initData.value.ModalDate.end === undefined)) {
+      if (
+        initData.value.ModalDate.allDay &&
+        (initData.value.ModalDate.end === null ||
+          initData.value.ModalDate.end === undefined)
+      ) {
         return '23:59'
       }
       return initData.value.ModalDate.end
@@ -457,7 +461,6 @@ export default {
         .split(' ')[4]
         .substring(0, 5)
     }
-
 
     const state = reactive({
       title: initData.value.ModalDate.title,

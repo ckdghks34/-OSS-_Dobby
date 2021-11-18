@@ -99,7 +99,7 @@
     <br />
     <div class="userCalendar-schedule-row">
       <label class="label">내용</label>
-      <input
+      <textarea
         class="web-memo"
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
@@ -135,13 +135,16 @@
     <br />
     <div>
       <label class="label" for="date">날짜</label>
-      <div>
-        <input
-          class="input"
-          type="date"
-          id="date"
-          v-model="state.startDate"
-        />~<input class="input" type="date" v-model="state.endDate" />
+      <div class="scheduleDate">
+        <div class="block">
+          <el-date-picker
+            class="datePicker"
+            v-model="state.date"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+          >
+          </el-date-picker>
+        </div>
       </div>
     </div>
     <br />
@@ -194,7 +197,7 @@
     <br />
     <div>
       <label>내용</label>
-      <input
+      <textarea
         class="memo"
         v-bind:class="{ 'memo-content': true, input: true }"
         type="text"
@@ -334,7 +337,11 @@ export default {
     }
 
     const checkEndTime = () => {
-      if (initData.value.ModalDate.allDay && (initData.value.ModalDate.end === null || initData.value.ModalDate.end === undefined)) {
+      if (
+        initData.value.ModalDate.allDay &&
+        (initData.value.ModalDate.end === null ||
+          initData.value.ModalDate.end === undefined)
+      ) {
         return '23:59'
       }
       return initData.value.ModalDate.end
@@ -363,7 +370,7 @@ export default {
         .split(' ')[4]
         .substring(0, 5),
 
-      endTime : checkEndTime(),
+      endTime: checkEndTime(),
 
       allDay: initData.value.ModalDate.allDay,
       category: initData.value.ModalDate.extendedProps.category,
@@ -377,7 +384,6 @@ export default {
     } else {
       state.endTime = '23:59'
     }
-    console.log(state.endTime)
 
     return {
       state,
@@ -403,5 +409,4 @@ export default {
   transform: translateX(20px);
   opacity: 0;
 }
-
 </style>

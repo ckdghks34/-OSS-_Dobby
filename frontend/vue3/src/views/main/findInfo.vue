@@ -54,7 +54,7 @@
       </div>
 
       <div v-else>
-        <div v-if="info.find">
+        <div class="findEmailResult" v-if="info.find">
           <span>이메일: {{ info.userEmail }}</span>
         </div>
         <div v-else>
@@ -173,12 +173,13 @@ export default {
             phone: info.userPhone,
           })
           .then((res) => {
-            info.result = true
-            info.userEmail = res.data.id
-          })
-          .catch(() => {
-            info.dialogVisible = true
-            info.message = '일치하는 정보가 없습니다'
+            if (res.data.error === '등록된 아이디가 없습니다.') {
+              info.dialogVisible = true
+              info.message = '일치하는 정보가 없습니다'
+            } else {
+              info.result = true
+              info.userEmail = res.data.id
+            }
           })
       }
     }
@@ -190,12 +191,13 @@ export default {
             email: info.userEmail,
             phone: info.userPhone,
           })
-          .then(() => {
-            info.result = true
-          })
-          .catch(() => {
-            info.dialogVisible = true
-            info.message = '일치하는 정보가 없습니다'
+          .then((res) => {
+            if (res.data.error === '등록된 회원 정보가 없습니다.') {
+              info.dialogVisible = true
+              info.message = '일치하는 정보가 없습니다'
+            } else {
+              info.result = true
+            }
           })
       }
     }
@@ -285,6 +287,13 @@ export default {
 
 .findInfo .el-dialog__body {
   word-break: keep-all;
+}
+
+.findEmailResult {
+  height: 100px;
+  line-height: 6;
+  background: #f0f2f5;
+  border-radius: 4px;
 }
 
 @media screen and (max-width: 950px) {

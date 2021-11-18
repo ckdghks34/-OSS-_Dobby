@@ -24,5 +24,5 @@ const admin = firebase_admin.firestore();
 const adminauth = firebase_admin.auth();
 const auth = firebaseauth.getAuth();
 
-firebaseauth.signInWithEmailAndPassword;
-module.exports = { admin, adminauth, auth };
+admin.settings({ ignoreUndefinedProperties: true });
+module.exports = { admin, adminauth, auth, firebase_admin };
