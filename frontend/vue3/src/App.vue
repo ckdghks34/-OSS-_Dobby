@@ -192,11 +192,11 @@ export default {
       })
     onMessage(messaging, function(payload) {
       ElNotification({
-        title: 'Success',
+        title: '곧 새로고침이 됩니다.',
         message: payload.notification.body,
         type: 'success',
       })
-      reload()
+      // reload();
     })
 
     onBeforeMount(() => {
@@ -302,9 +302,11 @@ export default {
       })
     }
 
-    const reload = function() {
-      router.go()
-    }
+    // const reload = function() {
+    //   setTimeout(function(){
+    //     router.go();
+    //   }, 3000);
+    // }
 
     return { info, logout, ToGroup, TogroupCallendar, handleToGChart }
   },
