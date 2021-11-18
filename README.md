@@ -1,10 +1,27 @@
-# Calender
-
-
+# Dobby
 
 - 구미 1반 D105 팀
 
 
+## 📖 기술 스택
+
+언어 : c++, javascript, html
+
+Frontend : Vue, React-Native
+
+Backend : Node.js
+
+데이터베이스 : Firebase
+
+개발툴 : Visudal studio code
+
+클라우드 : AWS
+
+협업툴 : GIT, JIRA
+
+DevOps : Jenkins, Docker, Nginx
+
+Library : OSRM, OSM, leaflet, FullCalendar, FCM
 
 
 
