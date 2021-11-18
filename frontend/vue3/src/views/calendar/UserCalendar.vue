@@ -216,7 +216,7 @@ export default {
           dayGridPlugin,
           timeGridPlugin,
           interactionPlugin,
-          listPlugin
+          listPlugin,
         ],
         headerToolbar: {
           left: '',

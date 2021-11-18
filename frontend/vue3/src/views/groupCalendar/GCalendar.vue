@@ -29,6 +29,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
+
+//vue
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
@@ -320,7 +322,7 @@ export default {
           dayGridPlugin,
           timeGridPlugin,
           interactionPlugin,
-          listPlugin
+          listPlugin,
         ],
         headerToolbar: {
           left: '',
