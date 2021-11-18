@@ -97,32 +97,63 @@
 
   <div v-else>
     <div v-if="info.userId">
-      <el-dropdown class="list-button">
-        <el-button btn-sm icon="el-icon-notebook-2">
-          <el-icon class="el-icon--right"><arrow-down /></el-icon>
+      <el-dropdown
+        class="list-button"
+        style="text-align: left; min-width:355px;max-width: 540px;"
+      >
+        <el-button btn-sm style="margin: 5% 0 0 2%; border:none;">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1024 1024"
+            data-v-394d1fd8=""
+            style="width:20px; "
+          >
+            <path
+              fill="currentColor"
+              d="M160 448a32 32 0 0 1-32-32V160.064a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V416a32 32 0 0 1-32 32H160zm448 0a32 32 0 0 1-32-32V160.064a32 32 0 0 1 32-32h255.936a32 32 0 0 1 32 32V416a32 32 0 0 1-32 32H608zM160 896a32 32 0 0 1-32-32V608a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32v256a32 32 0 0 1-32 32H160zm448 0a32 32 0 0 1-32-32V608a32 32 0 0 1 32-32h255.936a32 32 0 0 1 32 32v256a32 32 0 0 1-32 32H608z"
+            ></path>
+          </svg>
         </el-button>
+        <h1 style="display: inline-block; float:right; margin:7% 7% 0 0;">
+          Dobby
+        </h1>
 
         <template #dropdown>
           <el-dropdown-menu>
             <!-- <el-dropdown-item><router-link to="/newgroup">New Group</router-link> </el-dropdown-item> -->
             <el-dropdown-item
-              ><router-link to="/calendar">Calendar</router-link>
+              ><router-link
+                to="/calendar"
+                style="text-decoration:none; color:black; font-size:20px; height: 40px;line-height: 2;"
+                >Calendar</router-link
+              >
             </el-dropdown-item>
             <!-- <el-dropdown-item><router-link to="/schedule">Schedule</router-link> </el-dropdown-item> -->
             <el-dropdown-item
-              ><router-link to="/chart">chart</router-link>
+              ><router-link
+                to="/chart"
+                style="text-decoration:none; color:black; font-size:20px;height: 40px;line-height: 2;"
+                >Chart</router-link
+              >
             </el-dropdown-item>
             <el-dropdown-item
-              ><router-link to="/searchGroup">Group</router-link>
+              ><router-link
+                to="/searchGroup"
+                style="text-decoration:none; color:black; font-size:20px;height: 40px;line-height: 2;"
+                >Group</router-link
+              >
             </el-dropdown-item>
             <div>
-              <ul style="padding-left:30px;">
+              <ul style="padding:0 30px;">
                 <li
                   v-for="groupList in info.groupLists"
                   :key="groupList.gid"
                   style="list-style: none;"
                 >
-                  <div>
+                  <div
+                    class="mobGroupName"
+                    style="width:100%; height:30px; line-height:2; font-size:15px; padding:5px;"
+                  >
                     <p
                       @click="TogroupCallendar(groupList.gid)"
                       style="display:inline; cursor:pointer;"
@@ -130,11 +161,6 @@
                       {{ groupList.name }}
                     </p>
                     <!-- <a @click="TogroupCallendar(groupList.gid)">{{ groupList.name }}</a> -->
-                    <span
-                      @click="handleToGChart(groupList.gid)"
-                      style=" margin-right:1%; cursor:pointer;"
-                      >📊</span
-                    >
                     <svg
                       @click="ToGroup(groupList.gid)"
                       xmlns="http://www.w3.org/2000/svg"
@@ -143,18 +169,33 @@
                       fill="currentColor"
                       class="bi bi-gear-fill"
                       viewBox="0 0 16 16"
-                      style="cursor:pointer; "
+                      style="cursor:pointer; float:right; margin: 10px 0 0 10px;"
                     >
                       <path
                         d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"
                       />
                     </svg>
+                    <span
+                      @click="handleToGChart(groupList.gid)"
+                      style=" margin-right:1%; cursor:pointer;float:right;"
+                      >📊</span
+                    >
                   </div>
                 </li>
               </ul>
             </div>
             <el-dropdown-item
-              ><p @click="logout" style="cursor:pointer;">logout</p>
+              ><div style="margin-top:50px; ">
+                <button
+                  class="blueBtn"
+                  @click="logout"
+                  type="button"
+                  style="width:100%; height:25px; cursor:pointer;"
+                >
+                  Logout
+                </button>
+              </div>
+              <!-- <p @click="logout" style="cursor:pointer;">logout</p> -->
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -448,8 +489,8 @@ body,
 }
 
 .list-button {
-  float: left;
-  position: relative;
+  display: block;
+  width: 100%;
 }
 
 .el-icon-notebook-2 {
@@ -474,7 +515,15 @@ body,
   right: 0;
   bottom: 0;
 }
+.el-popper.is-pure {
+  width: 90%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 
+.mobGroupName:hover {
+  background-color: #ecf5ff;
+}
 /* @media (max-width: 1086px) {
   svg {
     display: none;

@@ -353,7 +353,7 @@ export default {
 }
 
 .mainLoginDiv > div:nth-child(2) > span:nth-child(1) {
-  margin-right: 39px;
+  margin-right: 34.8px;
 }
 
 .mainFind {
