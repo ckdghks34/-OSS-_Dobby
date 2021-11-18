@@ -335,7 +335,8 @@ export default {
               endDate: r.endDate,
               classNames: ['calendar-done'],
               participant: r.participant,
-              creator: r.creator
+              creator: r.creator,
+              allDay: r.allDay,
             }
             store.dispatch('pushGroupCalendarData', cal)
             calendarApi.batchRendering(function() {
@@ -357,7 +358,8 @@ export default {
               startDate: r.startDate,
               endDate: r.endDate,
               participant: r.participant,
-              creator: r.creator
+              creator: r.creator,
+              allDay: r.allDay,
             }
             store.dispatch('pushGroupCalendarData', cal)
 
