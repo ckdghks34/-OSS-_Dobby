@@ -15,13 +15,15 @@ async function userPush(fcmtoken, uid, msg) {
       for (let doc of user.docs) {
         registrationTokens.push(doc.data().token);
       }
-      await firebase_admin.messaging().subscribeToTopic(registrationTokens, topic)
-      .then((res) => {
-        console.log('Successfully subscribed to topic:', res);
-      })
-      .catch((error) => {
-        console.log('Error subscribing to topic:', error);
-      });
+      await firebase_admin
+        .messaging()
+        .subscribeToTopic(registrationTokens, topic)
+        .then((res) => {
+          console.log("Successfully subscribed to topic:", res);
+        })
+        .catch((error) => {
+          console.log("Error subscribing to topic:", error);
+        });
 
       let message = {
         notification: {
@@ -31,20 +33,20 @@ async function userPush(fcmtoken, uid, msg) {
         topic: topic,
       };
 
-      console.log(message);
-
       await firebase_admin
         .messaging()
         .send(message)
         .then(async (res) => {
           console.log("Successfully sent message : ", res);
-          await firebase_admin.messaging().unsubscribeFromTopic(registrationTokens, topic)
-          .then((res) => {
-            console.log('Successfully unsubscribed from topic:', res);
-          })
-          .catch((error) => {
-            console.log('Error unsubscribing from topic:', error);
-          });
+          await firebase_admin
+            .messaging()
+            .unsubscribeFromTopic(registrationTokens, topic)
+            .then((res) => {
+              console.log("Successfully unsubscribed from topic:", res);
+            })
+            .catch((error) => {
+              console.log("Error unsubscribing from topic:", error);
+            });
         })
         .catch((err) => {
           console.log("Error Sending message! : ", err);
@@ -71,14 +73,14 @@ async function groupPush(gid, msg) {
       }
     }
 
-    console.log(registrationTokens);
-
-    await firebase_admin.messaging().subscribeToTopic(registrationTokens, topic)
+    await firebase_admin
+      .messaging()
+      .subscribeToTopic(registrationTokens, topic)
       .then((res) => {
-        console.log('Successfully subscribed to topic:', res);
+        console.log("Successfully subscribed to topic:", res);
       })
       .catch((error) => {
-        console.log('Error subscribing to topic:', error);
+        console.log("Error subscribing to topic:", error);
       });
 
     let message = {
@@ -89,20 +91,21 @@ async function groupPush(gid, msg) {
       // token: docu.data().token,
       topic: topic,
     };
-    console.log(message);
 
     await firebase_admin
       .messaging()
       .send(message)
       .then(async (res) => {
         console.log("Successfully sent message : ", res);
-        await firebase_admin.messaging().unsubscribeFromTopic(registrationTokens, topic)
-        .then((res) => {
-          console.log('Successfully unsubscribed from topic:', res);
-        })
-        .catch((error) => {
-          console.log('Error unsubscribing from topic:', error);
-        });
+        await firebase_admin
+          .messaging()
+          .unsubscribeFromTopic(registrationTokens, topic)
+          .then((res) => {
+            console.log("Successfully unsubscribed from topic:", res);
+          })
+          .catch((error) => {
+            console.log("Error unsubscribing from topic:", error);
+          });
       })
       .catch((err) => {
         console.log("Error Sending message! : ", err);
