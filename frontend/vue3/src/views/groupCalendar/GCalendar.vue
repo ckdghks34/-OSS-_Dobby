@@ -5,14 +5,15 @@
         {{ state.currentMonth }}
       </GroupCalendarButton>
     </div>
-    <div class='calendar-calwrap'>
+    <div class="calendar-calwrap">
       <FullCalendar
-            class="calendar-calendar"
-            ref="groupfullCalendar"
-            :options="calendarOptions" />
+        class="calendar-calendar"
+        ref="groupfullCalendar"
+        :options="calendarOptions"
+      />
     </div>
-    <div class='calendar-todowrap'>
-      <GroupTodoList class="calendar-todolist"/>
+    <div class="calendar-todowrap">
+      <GroupTodoList class="calendar-todolist" />
     </div>
   </div>
   <teleport to="#destination">
@@ -21,7 +22,6 @@
 </template>
 
 <script>
-
 // Calendar
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
@@ -54,7 +54,6 @@ export default {
   },
 
   setup() {
-
     const store = useStore()
     const router = useRouter()
     const route = useRoute()
@@ -156,34 +155,31 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error)
-          // console.log(error.response)
-          if(error.response) {
+          if (error.response) {
             if (
               error.response.status == 401 &&
               error.response.data.error === '그룹 캘린더가 없습니다.'
             ) {
               store.dispatch('getChangeGroupCalendarData', [])
               initData()
-            } else {
-              console.log(error)
             }
           }
         })
-      
     }
 
-
-    const handleClickDate =  function (clickInfo) {
+    const handleClickDate = function(clickInfo) {
       if (!state.writer) {
         alert('일정을 추가할 수 있는 권한이 없습니다.')
       } else {
-        if ( confirm('일정을 추가하시겠습니까?') ) {
+        if (confirm('일정을 추가하시겠습니까?')) {
           store.dispatch('initGroupMapChoice')
-          router.push({name: 'GroupCalendarCreateSchedule', query: {
-            gid: route.query.gid,
-            start: clickInfo.dateStr
-          }})
+          router.push({
+            name: 'GroupCalendarCreateSchedule',
+            query: {
+              gid: route.query.gid,
+              start: clickInfo.dateStr,
+            },
+          })
         }
       }
     }
@@ -194,22 +190,20 @@ export default {
       showGroupModal()
     }
 
-    const initData = function () {
-      console.log('g init')
+    const initData = function() {
       let calendarApi = groupfullCalendar.value.getApi()
       const data = calendarApi.getEvents()
 
       // 중복을 방지하기 위해서!
       if (data.length) {
-        data.forEach(element => {
+        data.forEach((element) => {
           element.remove()
-        });
+        })
       }
 
       // state 와 동기화 해주기
       calendarApi.batchRendering(function() {
-        gCData.value.map(
-        (c) => {
+        gCData.value.map((c) => {
           if (c.completed) {
             calendarApi.addEvent({
               cid: c.cid,
@@ -231,8 +225,7 @@ export default {
               category: c.category,
               allDay: c.allDay,
             })
-          }
-          else {
+          } else {
             calendarApi.addEvent(c)
           }
         })
@@ -243,101 +236,113 @@ export default {
     const handleViewTitle = () => {
       let calendarApi = groupfullCalendar.value.getApi()
 
-      const title = calendarApi.getDate().toString().split(' ')
+      const title = calendarApi
+        .getDate()
+        .toString()
+        .split(' ')
       if (state.calendarView === '월') {
         state.currentMonth = `${title[3]}년 ${changeMonthFormat(title[1])}월`
       }
       // else if (state.calendarView === '주') {
       else {
         let today = dayjs(calendarApi.getDate().toString())
-        let start = today.day(1).toString().split(' ')
-        let end = today.endOf('week').toString().split(' ')
+        let start = today
+          .day(1)
+          .toString()
+          .split(' ')
+        let end = today
+          .endOf('week')
+          .toString()
+          .split(' ')
 
         // 다를 경우 -1 1년 -2 1개월만
         if (start[3] === end[3]) {
           // 같은 년도
           if (start[2] === end[2]) {
             // 같은 달
-            state.currentMonth = `${changeMonthFormat(start[2])}월 ${start[1]} - ${end[1]}일 ${start[3]}년`
+            state.currentMonth = `${changeMonthFormat(start[2])}월 ${
+              start[1]
+            } - ${end[1]}일 ${start[3]}년`
           } else {
             // 다른 달
-            state.currentMonth = `${changeMonthFormat(start[2])}월 ${start[1]}일 - ${changeMonthFormat(end[2])}월 ${end[1]}일, ${start[3]}년`
+            state.currentMonth = `${changeMonthFormat(start[2])}월 ${
+              start[1]
+            }일 - ${changeMonthFormat(end[2])}월 ${end[1]}일, ${start[3]}년`
           }
         } else {
           // 다른 년도
-          state.currentMonth = `${start[3]}년 ${changeMonthFormat(start[2])}월 ${start[1]}일 -  ${end[3]}년 ${changeMonthFormat(end[2])}월 ${end[1]}일`
+          state.currentMonth = `${start[3]}년 ${changeMonthFormat(
+            start[2]
+          )}월 ${start[1]}일 -  ${end[3]}년 ${changeMonthFormat(end[2])}월 ${
+            end[1]
+          }일`
         }
       }
     }
 
     const changeMonthFormat = (month) => {
-      switch(month) {
+      switch (month) {
         case 'Jan':
-          return '1';
+          return '1'
         case 'Feb':
-          return '2';
+          return '2'
         case 'Mar':
-          return '3';
+          return '3'
         case 'Apr':
-          return '4';
+          return '4'
         case 'May':
-          return '5';
+          return '5'
         case 'Jun':
-          return '6';
+          return '6'
         case 'Jul':
-          return '7';
+          return '7'
         case 'Aug':
-          return '8';
+          return '8'
         case 'Sep':
-          return '9';
+          return '9'
         case 'Oct':
-          return '10';
+          return '10'
         case 'Nov':
-          return '11';
+          return '11'
         case 'Dec':
-          return '12';
+          return '12'
       }
     }
 
     const checkWriter = () => {
       axios
-        .post('https://k5d105.p.ssafy.io:3030/groupCalendar/checkWriter',{
-          uid : localStorage.getItem('uid'),
-          gid: route.query.gid
-        },{
-          headers: {
-            authorization: localStorage.getItem('token')
+        .post(
+          'https://k5d105.p.ssafy.io:3030/groupCalendar/checkWriter',
+          {
+            uid: localStorage.getItem('uid'),
+            gid: route.query.gid,
+          },
+          {
+            headers: {
+              authorization: localStorage.getItem('token'),
+            },
           }
+        )
+        .then((response) => {
+          state.writer = response.data.writer
         })
-          .then((response)=>{
-            state.writer = response.data.writer
-          })
-          .catch((error) => {
-            console.log(error)
-          })
     }
 
-
     const calendarOptions = {
-        plugins: [ 
-          dayGridPlugin,
-          timeGridPlugin,
-          interactionPlugin,
-          listPlugin,
-        ],
-        headerToolbar: {
-          left: '',
-          center: '',
-          right: ''
-        },
-        initialView: 'dayGridMonth',
-        dateClick: handleClickDate,
-        eventClick: handleEventClick,
-        events: [],
-        eventColor: 'red', // color default?
-        timeZone: "local", // local default
-        display: 'list-item',
-        height: "auto", // height
+      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
+      headerToolbar: {
+        left: '',
+        center: '',
+        right: '',
+      },
+      initialView: 'dayGridMonth',
+      dateClick: handleClickDate,
+      eventClick: handleEventClick,
+      events: [],
+      eventColor: 'red', // color default?
+      timeZone: 'local', // local default
+      display: 'list-item',
+      height: 'auto', // height
     }
 
     const state = reactive({
@@ -355,10 +360,8 @@ export default {
       showGroupModal,
       handleViewTitle,
     }
-  }
+  },
 }
 </script>
 
-<style>
-
-</style>
+<style></style>
