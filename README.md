@@ -90,7 +90,7 @@
     yarn serve
     ```
     
-  - Open Street Routing Machine
+  - Open Street Routing Machine (파일 용량 문제로 인해 없음)
 
     ```shell
     # 프로젝트 디렉토리 진입
@@ -106,7 +106,11 @@
     docker run -t -i -p 5000:5000 -v "${PWD}:/data" osrm/osrm-backend osrm-routed --algorithm mld /data/berlin-latest.osrm
     ```
     
+    * 아래의 git 가이드를 참고하여 실행 필수
     
+      * OpenStreet Routing Machine
+    
+        git :　https://github.com/Project-OSRM/osrm-backend
 
 # 1. Architecture
 
