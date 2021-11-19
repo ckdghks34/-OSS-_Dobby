@@ -501,7 +501,7 @@ body,
   right: 0;
   bottom: 0;
 }
-#el-popper-934 {
+.el-dropdown__popper {
   width: 90%;
   overflow-x: auto;
   overflow-y: hidden;
