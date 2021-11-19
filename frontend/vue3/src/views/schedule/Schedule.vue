@@ -86,11 +86,21 @@
     <div class="userCalendar-schedule-category">
       <label class="label" for="category">분류</label>
       <div class="userCalendar-schedule-category-button-wrap">
-        <el-radio v-model="state.category" label="공부" border size="mini">공부</el-radio>
-        <el-radio v-model="state.category" label="운동" border size="mini">운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border size="mini">업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border size="mini">취미</el-radio>
-        <el-radio v-model="state.category" label="일상" border size="mini">일상</el-radio>
+        <el-radio v-model="state.category" label="공부" border size="mini"
+          >공부</el-radio
+        >
+        <el-radio v-model="state.category" label="운동" border size="mini"
+          >운동</el-radio
+        >
+        <el-radio v-model="state.category" label="업무" border size="mini"
+          >업무</el-radio
+        >
+        <el-radio v-model="state.category" label="취미" border size="mini"
+          >취미</el-radio
+        >
+        <el-radio v-model="state.category" label="일상" border size="mini"
+          >일상</el-radio
+        >
       </div>
     </div>
     <br />
@@ -199,9 +209,18 @@
           round
           @click="showMapModal"
           type="info"
-          size="mini">
-          경로탐색</el-button>
-        <el-button v-else disabled round @click="showMapModal" type="info" size="mini">
+          size="mini"
+        >
+          경로탐색</el-button
+        >
+        <el-button
+          v-else
+          disabled
+          round
+          @click="showMapModal"
+          type="info"
+          size="mini"
+        >
           경로탐색
         </el-button>
       </div>
@@ -218,11 +237,21 @@
       <label class="label" for="category">분류</label>
       <!-- <span class="label">분류</span> -->
       <div>
-        <el-radio v-model="state.category" label="공부" border size="mini">공부</el-radio>
-        <el-radio v-model="state.category" label="운동" border size="mini">운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border size="mini">업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border size="mini">취미</el-radio>
-        <el-radio v-model="state.category" label="일상" border size="mini">일상</el-radio>
+        <el-radio v-model="state.category" label="공부" border size="mini"
+          >공부</el-radio
+        >
+        <el-radio v-model="state.category" label="운동" border size="mini"
+          >운동</el-radio
+        >
+        <el-radio v-model="state.category" label="업무" border size="mini"
+          >업무</el-radio
+        >
+        <el-radio v-model="state.category" label="취미" border size="mini"
+          >취미</el-radio
+        >
+        <el-radio v-model="state.category" label="일상" border size="mini"
+          >일상</el-radio
+        >
       </div>
     </div>
     <br />
@@ -258,10 +287,7 @@
     <br />
     <div>
       <button class="redBtn" @click="handleCancleSchedule">취소</button>
-      <button
-        class="blueBtn"
-        type="button"
-        @click="addSchedule">
+      <button class="blueBtn" type="button" @click="addSchedule">
         추가
       </button>
     </div>
@@ -295,7 +321,6 @@ export default {
 
     const mapAutoComplete = ref(null)
     const mapModal = ref(null)
-    // console.log(route.query.start)
 
     const state = reactive({
       uid: localStorage.getItem('uid'),
@@ -342,7 +367,6 @@ export default {
     }
 
     const setPlace = (e) => {
-      // console.log(mapAutoComplete.value)
       state.placeName = e.name
       state.placeLat = e.geometry.location.lat()
       state.placeLng = e.geometry.location.lng()
@@ -464,8 +488,13 @@ export default {
                 store.dispatch('pushCalendarData', d)
                 router.push({ name: 'Calendar' })
               })
-              .catch((error) => {
-                console.log(error)
+              .catch((err) => {
+                if (err.response.status === 401) {
+                  alert('로그인이 만료되었습니다')
+                  location.replace('/')
+                  localStorage.removeItem('token')
+                  localStorage.removeItem('uid')
+                }
               })
           } else {
             alert('시간을 제외한 모든 항목을 입력해 주세요')
@@ -529,8 +558,13 @@ export default {
                 store.dispatch('pushCalendarData', day)
                 router.push({ name: 'Calendar' })
               })
-              .catch((error) => {
-                console.log(error)
+              .catch((err) => {
+                if (err.response.status === 401) {
+                  alert('로그인이 만료되었습니다')
+                  location.replace('/')
+                  localStorage.removeItem('token')
+                  localStorage.removeItem('uid')
+                }
               })
           } else {
             alert('모든 항목을 입력해 주세요')
