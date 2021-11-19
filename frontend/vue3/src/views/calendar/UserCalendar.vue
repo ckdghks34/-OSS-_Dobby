@@ -76,9 +76,9 @@ export default {
 
     const handleClickDate = function(clickInfo) {
       // console.log(clickInfo)
-      if ( confirm('일정을 추가하시겠습니까?') ) {
+      if (confirm('일정을 추가하시겠습니까?')) {
         store.dispatch('initMapChoice')
-        router.push({name: 'Schedule', query: {start: clickInfo.dateStr}})
+        router.push({ name: 'Schedule', query: { start: clickInfo.dateStr } })
       }
     }
 
@@ -91,7 +91,6 @@ export default {
     }
 
     const initData = function() {
-      console.log('init data')
       let calendarApi = fullCalendar.value.getApi()
       const data = calendarApi.getEvents()
 

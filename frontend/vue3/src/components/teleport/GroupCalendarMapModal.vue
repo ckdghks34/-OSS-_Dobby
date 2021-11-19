@@ -369,9 +369,6 @@ export default {
           state.curWay = data
           state.isWay = 'foot'
         })
-        .catch((error) => {
-          console.log(error)
-        })
     }
 
     const findWayCar = () => {
@@ -396,9 +393,6 @@ export default {
           state.curWay = data
           state.isWay = 'car'
           // console.log(state.curWay)
-        })
-        .catch((error) => {
-          console.log(error)
         })
     }
 

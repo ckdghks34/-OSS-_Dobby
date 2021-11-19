@@ -117,11 +117,21 @@
     <div class="userCalendar-schedule-category">
       <label class="label" for="category">분류</label>
       <div class="userCalendar-schedule-category-button-wrap">
-        <el-radio v-model="state.category" label="공부" border size="mini">공부</el-radio>
-        <el-radio v-model="state.category" label="운동" border size="mini">운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border size="mini">업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border size="mini">취미</el-radio>
-        <el-radio v-model="state.category" label="일상" border size="mini">일상</el-radio>
+        <el-radio v-model="state.category" label="공부" border size="mini"
+          >공부</el-radio
+        >
+        <el-radio v-model="state.category" label="운동" border size="mini"
+          >운동</el-radio
+        >
+        <el-radio v-model="state.category" label="업무" border size="mini"
+          >업무</el-radio
+        >
+        <el-radio v-model="state.category" label="취미" border size="mini"
+          >취미</el-radio
+        >
+        <el-radio v-model="state.category" label="일상" border size="mini"
+          >일상</el-radio
+        >
       </div>
     </div>
     <br />
@@ -249,7 +259,7 @@
       </GMapAutocomplete>
     </div>
     <br />
-       <div class="userCalendar-schedule-row">
+    <div class="userCalendar-schedule-row">
       <div class="label"></div>
       <div>
         <el-button
@@ -280,11 +290,21 @@
       <label class="label" for="category">분류</label>
       <!-- <span class="label">분류</span> -->
       <div>
-        <el-radio v-model="state.category" label="공부" border size="mini">공부</el-radio>
-        <el-radio v-model="state.category" label="운동" border size="mini">운동</el-radio>
-        <el-radio v-model="state.category" label="업무" border size="mini">업무</el-radio>
-        <el-radio v-model="state.category" label="취미" border size="mini">취미</el-radio>
-        <el-radio v-model="state.category" label="일상" border size="mini">일상</el-radio>
+        <el-radio v-model="state.category" label="공부" border size="mini"
+          >공부</el-radio
+        >
+        <el-radio v-model="state.category" label="운동" border size="mini"
+          >운동</el-radio
+        >
+        <el-radio v-model="state.category" label="업무" border size="mini"
+          >업무</el-radio
+        >
+        <el-radio v-model="state.category" label="취미" border size="mini"
+          >취미</el-radio
+        >
+        <el-radio v-model="state.category" label="일상" border size="mini"
+          >일상</el-radio
+        >
       </div>
     </div>
     <br />
@@ -438,9 +458,6 @@ export default {
           })
           state.participants.push(user[0].uid)
         })
-        .catch((error) => {
-          console.log(error)
-        })
     }
 
     const addGroupSchedule = function() {
@@ -522,12 +539,13 @@ export default {
                   query: { gid: route.query.gid },
                 })
               })
-              .catch((error) => {
-                console.log(error)
-              })
-
-              .catch((error) => {
-                console.log(error)
+              .catch((err) => {
+                if (err.response.status === 401) {
+                  alert('로그인이 만료되었습니다')
+                  location.replace('/')
+                  localStorage.removeItem('token')
+                  localStorage.removeItem('uid')
+                }
               })
           } else {
             const day = {
@@ -584,8 +602,13 @@ export default {
                   query: { gid: route.query.gid },
                 })
               })
-              .catch((error) => {
-                console.log(error)
+              .catch((err) => {
+                if (err.response.status === 401) {
+                  alert('로그인이 만료되었습니다')
+                  location.replace('/')
+                  localStorage.removeItem('token')
+                  localStorage.removeItem('uid')
+                }
               })
           }
         }
@@ -620,9 +643,6 @@ export default {
         )
         .then((response) => {
           state.writer = response.data.writer
-        })
-        .catch((error) => {
-          console.log(error)
         })
     }
 
