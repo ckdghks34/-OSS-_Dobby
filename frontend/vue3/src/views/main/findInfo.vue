@@ -65,7 +65,7 @@
             :rules="state.rules"
             ref="changePwForm"
             :label-position="state.form.align"
-            label-width="103px"
+            label-width="105px"
           >
             <el-form-item label="비밀번호" prop="password">
               <el-input

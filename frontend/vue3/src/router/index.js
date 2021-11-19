@@ -8,7 +8,6 @@ import NewGroup from '@/views/group/new-group'
 import GroupInfo from '@/views/group/group-info'
 import Calendar from '@/views/calendar/Calendar'
 import Schedule from '@/views/schedule/Schedule'
-import sideBar from '@/views/sidebar/sideBar'
 import Chart from '@/views/chart/chart'
 import PutSchedule from '@/views/calendar/PutSchedule'
 import GroupCalendar from '@/views/groupCalendar/GroupCalendar'
@@ -18,15 +17,6 @@ import GroupSchedule from '@/views/schedule/GroupSchedule'
 import PutGroupSchedule from '@/views/groupCalendar/PutGroupSchedule'
 
 const routes = [
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ '../views/About.vue'),
-  },
   {
     path: '/',
     name: 'main',
@@ -72,11 +62,6 @@ const routes = [
     path: '/schedule',
     name: 'Schedule',
     component: Schedule,
-  },
-  {
-    path: '/sideBar',
-    name: 'sideBar',
-    component: sideBar,
   },
   {
     path: '/chart',

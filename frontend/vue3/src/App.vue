@@ -283,17 +283,6 @@ export default {
         .then((response) => {
           info.userId = response.data.user.nickname
         })
-        .catch((error) => {
-          console.log(error)
-        })
-
-      // axios.get('https://k5d105.p.ssafy.io:3030/groupCalendar/getGroup', {params: {
-      //     uid :localStorage.getItem('uid')
-      // } })
-      //   .then((response) => {
-      //       console.log(response)
-      //   })
-      //   .catch((error) => {console.log(error)})
 
       // groupLists
       axios
@@ -305,9 +294,6 @@ export default {
         })
         .then((response) => {
           info.groupLists = response.data.group
-        })
-        .catch((error) => {
-          console.log(error)
         })
 
       if (window.innerWidth < 730) {
