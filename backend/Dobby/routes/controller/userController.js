@@ -75,7 +75,7 @@ async function login(req, res, next) {
         const uid = userCredential.user.uid;
         const users = await admin.collection("users").doc(uid).get();
         const fcm = req.headers.fcmtoken;
-        console.log(fcm);
+        // console.log(fcm);
         const tokenRef = admin.collection("users").doc(uid).collection("tokens");
         const tokens = await tokenRef.get();
         var check = false;
@@ -412,7 +412,7 @@ async function authSignout(req, res, next) {
     .verifyIdToken(idToken)
     .then((decodedToken) => {
       const uid = decodedToken.uid;
-      console.log("uid : " + uid);
+      // console.log("uid : " + uid);
       adminauth
         .revokeRefreshTokens(uid)
         .then((revokeRes) => {
