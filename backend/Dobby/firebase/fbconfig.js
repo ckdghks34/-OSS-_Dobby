@@ -4,13 +4,13 @@ const firebaseauth = require("firebase/auth");
 const serviceAccount = require("./dobby-eba4c-firebase-adminsdk-voed8-afd1eeb458.json");
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDqARHqN5dQAk_JKYCvRlO6O7VyWzZQb0w",
-  authDomain: "dobby-eba4c.firebaseapp.com",
-  projectId: "dobby-eba4c",
-  storageBucket: "dobby-eba4c.appspot.co",
-  messagingSenderId: "185760420823",
-  appId: "1:185760420823:web:8fa5c8b47f5c1dbbcfb192",
-  measurementId: "G-VEVJDN7LYX",
+  apiKey: process.env.apiKey,
+  authDomain: process.env.authDomain,
+  projectId: process.env.projectId,
+  storageBucket: process.env.storageBucket,
+  messagingSenderId: process.env.messagingSenderId,
+  appId: process.env.appId,
+  measurementId: process.env.measurementId,
 };
 
 firebase.initializeApp(firebaseConfig);
